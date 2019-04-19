@@ -1,0 +1,30 @@
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.TailTracking.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.TailTracking.pdb
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Core.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\OpenCV.Net.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Core.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Interfaces.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Linq.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Core.xml
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\OpenCV.Net.xml
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Core.xml
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Interfaces.xml
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Linq.xml
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojResolveAssemblyReference.cache
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.dll
+C:\Users\Thiele Lab\Documents\Bonsai\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.pdb
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.pdb
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.TailTracking.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.TailTracking.pdb
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Core.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\OpenCV.Net.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Core.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Interfaces.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Linq.dll
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Core.xml
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\OpenCV.Net.xml
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Core.xml
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Interfaces.xml
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Linq.xml
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojResolveAssemblyReference.cache

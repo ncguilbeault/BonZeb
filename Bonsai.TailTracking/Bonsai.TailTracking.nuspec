@@ -1,0 +1,13 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Bonsai - Tail Tracking Library</title>
+    <authors>Nicholas Guilbeault</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Bonsai library containing modules for online tail tracking.</description>
+    <copyright>Nicholas Guilbeault © 2018</copyright>
+    <tags>Bonsai</tags>
+  </metadata>
+</package>
