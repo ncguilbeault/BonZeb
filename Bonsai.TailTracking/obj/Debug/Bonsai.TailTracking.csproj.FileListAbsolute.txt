@@ -27,4 +27,6 @@ C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\OpenCV
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Core.xml
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Interfaces.xml
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System.Reactive.Linq.xml
-C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojResolveAssemblyReference.cache
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojAssemblyReference.cache
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CoreCompileInputs.cache
+C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CopyComplete

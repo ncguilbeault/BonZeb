@@ -104,13 +104,14 @@ namespace Bonsai.TailTracking
                 int numTailPointAngles = NumTailPointAngles;
 
                 Point[] points = new Point[numTailPoints + 1];
-                int frameWidth = value.Size.Width;
+                int frameWidth = value.WidthStep;
                 int frameHeight = value.Size.Height;
-                byte[] byteArray = new byte[frameWidth * frameHeight];
-                Marshal.Copy(value.ImageData, byteArray, 0, frameWidth * frameHeight);
+                int widthStep = value.WidthStep;
+                byte[] frameData = new byte[widthStep * frameHeight];
+                Marshal.Copy(value.ImageData, frameData, 0, widthStep * frameHeight);
 
                 double tailAngle = 0;
-                Point tailBasePoint = new Point();
+                Point tailBasePoint = new Point(0, 0);
 
                 if (tailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking || tailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
                 {
@@ -122,25 +123,28 @@ namespace Bonsai.TailTracking
                         int distEyes = DistEyes;
                         int numEyeAngles = NumEyeAngles;
                         int x = 0;
+                        int y = 0;
 
-                        for (int i = 0; i < byteArray.Length; i++)
+                        for (int i = 0; i < frameHeight; i++)
                         {
-                            if (pixelSearch == Utilities.PixelSearch.Darkest && (int)byteArray[i] < (int)byteArray[x])
+                            for (int j = 0; j < frameWidth; j++)
                             {
-                                x = i;
-                            }
-                            else
-                            {
-                                if (pixelSearch == Utilities.PixelSearch.Brightest && (int)byteArray[i] > (int)byteArray[x])
+                                if (pixelSearch == Utilities.PixelSearch.Darkest && (int)frameData[j + (i * widthStep)] < (int)frameData[x + (y * widthStep)])
                                 {
-                                    x = i;
+                                    y = i;
+                                    x = j;
+                                }
+                                else if (pixelSearch == Utilities.PixelSearch.Brightest && (int)frameData[j + (i * widthStep)] > (int)frameData[x + (y * widthStep)])
+                                {
+                                    y = i;
+                                    x = j;
                                 }
                             }
                         }
-                        Point firstEyePoint = new Point((int)(x - (((int)x / frameWidth) * frameWidth)), (int)(x / frameWidth));
-                        Point secondEyePoint = Utilities.CalculateNextPoint(0, 360, numEyeAngles, firstEyePoint, distEyes, pixelSearch, frameWidth, frameHeight, byteArray);
+                        Point firstEyePoint = new Point(x, y);
+                        Point secondEyePoint = Utilities.CalculateNextPoint(0, 360, numEyeAngles, firstEyePoint, distEyes, pixelSearch, frameWidth, frameHeight, frameData);
                         Point headingPoint = new Point((firstEyePoint.X + secondEyePoint.X) / 2, (firstEyePoint.Y + secondEyePoint.Y) / 2);
-                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, headingPoint, distTailBase, pixelSearch, frameWidth, frameHeight, byteArray);
+                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, headingPoint, distTailBase, pixelSearch, frameWidth, frameHeight, frameData);
                         tailAngle = Math.Atan2((tailBasePoint.X - headingPoint.X), (tailBasePoint.Y - headingPoint.Y)) * 180 / Math.PI;
                     }
                     else
@@ -154,7 +158,7 @@ namespace Bonsai.TailTracking
                         CV.Threshold(value, thresholdedImage, thresholdValue, maxValue, thresholdType);
                         Moments moments = new Moments(thresholdedImage, true);
                         Point centroid = new Point((int)(moments.M10 / moments.M00), (int)(moments.M01 / moments.M00));
-                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, centroid, distTailBase, pixelSearch, frameWidth, frameHeight, byteArray);
+                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, centroid, distTailBase, pixelSearch, frameWidth, frameHeight, frameData);
                         tailAngle = Math.Atan2((tailBasePoint.X - centroid.X), (tailBasePoint.Y - centroid.Y)) * 180 / Math.PI;
                     }
                 }
@@ -162,7 +166,6 @@ namespace Bonsai.TailTracking
                 {
                     tailBasePoint = TailBasePoint;
                     double headingAngle = HeadingAngle;
-                    double thresholdValue = ThresholdValue;
 
                     if (headingAngle <= 180)
                     {
@@ -180,17 +183,22 @@ namespace Bonsai.TailTracking
                 {
                     if (i > 0)
                     {
-                        tailAngle = Math.Atan2((points[i].X - points[i - 1].X), (points[i].Y - points[i - 1].Y));
+                        tailAngle = Math.Atan2((points[i].X - points[i - 1].X), (points[i].Y - points[i - 1].Y)) * 180 / Math.PI;
                     }
-
-                    points[i + 1] = Utilities.CalculateNextPoint(tailAngle, rangeTailPointAngles, numTailPointAngles, points[i], distTailPoints, pixelSearch, frameWidth, frameHeight, byteArray);
+                    if (tailAngle > 360)
+                    {
+                        tailAngle -= 360;
+                    }
+                    else if (tailAngle < 0)
+                    {
+                        tailAngle += 360;
+                    }
+                    points[i + 1] = Utilities.CalculateNextPoint(tailAngle, rangeTailPointAngles, numTailPointAngles, points[i], distTailPoints, pixelSearch, frameWidth, frameHeight, frameData);
                 }
 
                 return points;
 
             });
-
         }
-
     }
 }

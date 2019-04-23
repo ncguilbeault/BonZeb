@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalculateBackground.cs" />
+    <Compile Include="CropImage.cs" />
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
     <Compile Include="DrawTailPoints.cs" />

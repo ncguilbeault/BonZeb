@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Bonsai.TailTracking
 {
-    public class MaskImage : Transform<IplImage, IplImage>
+    public unsafe class MaskImage : Transform<IplImage, IplImage>
     {
         [Description("The region of interest inside the input image.")]
         [Editor("Bonsai.Vision.Design.IplImageInputRectangleEditor, Bonsai.Vision.Design", typeof(UITypeEditor))]
@@ -27,36 +27,35 @@ namespace Bonsai.TailTracking
             {
                 int frameWidth = value.Size.Width;
                 int frameHeight = value.Size.Height;
-                byte[] frameData = new byte[frameWidth * frameHeight];
-                Marshal.Copy(value.ImageData, frameData, 0, frameWidth * frameHeight);
-                IplImage newFrame = value.Clone();
+                int frameWidthStep = value.WidthStep;
+                byte[] frameData = new byte[frameWidthStep * frameHeight];
+                Marshal.Copy(value.ImageData, frameData, 0, frameWidthStep * frameHeight);
+                IplImage newFrame;
+                byte[] newFrameData;
 
                 Rect regionOfInterest = RegionOfInterest;
                 if (regionOfInterest.Width > 0 && regionOfInterest.Height > 0)
                 {
-                    byte[] newFrameData = new byte[frameWidth * frameHeight];
+                    newFrameData = new byte[frameWidthStep * frameHeight];
                     for (int i = 0; i < frameHeight; i++)
                     {
                         for (int j = 0; j < frameWidth; j++)
                         {
                             if (i >= regionOfInterest.Y && i <= (regionOfInterest.Y + regionOfInterest.Height) && j >= regionOfInterest.X && j <= (regionOfInterest.X + regionOfInterest.Width))
                             {
-                                newFrameData[(i * frameWidth) + j] = frameData[(i * frameWidth) + j];
+                                newFrameData[(i * frameWidthStep) + j] = frameData[(i * frameWidthStep) + j];
                             }
                             else
                             {
-                                newFrameData[(i * frameWidth) + j] = (byte) Colour.Val0;
+                                newFrameData[(i * frameWidthStep) + j] = (byte) Colour.Val0;
                             }
                         }
                     }
-                    unsafe
-                    {
-                        fixed (byte* bytePointer = newFrameData)
-                        {
-                            IntPtr newFramePtrData = (IntPtr)bytePointer;
-                            newFrame = new IplImage(new OpenCV.Net.Size(frameWidth, frameHeight), IplDepth.U8, 1, newFramePtrData);
-                        }
-                    }
+                }
+                fixed (byte* bytePointer = newFrameData)
+                {
+                    IntPtr newFramePtrData = (IntPtr)bytePointer;
+                    newFrame = new IplImage(new OpenCV.Net.Size(frameWidth, frameHeight), IplDepth.U8, 1, newFramePtrData);
                 }
                 return newFrame;
             });

@@ -35,9 +35,9 @@ namespace Bonsai.TailTracking
                 double[] tailCurvature = new double[0];
                 if (!extractAllSegments)
                 {
-                    Console.WriteLine("Here");
                     Utilities.LocationOfTailCurvature locationOfTailCurvature = LocationOfTailCurvature;
                     int tailPoint = locationOfTailCurvature == Utilities.LocationOfTailCurvature.StartOfTail ? 1 : locationOfTailCurvature == Utilities.LocationOfTailCurvature.MiddleOfTail ? (int)Math.Floor((double)(numTailPoints / 2)) : numTailPoints - 2;
+                    tailCurvature = new double[1];
                     tailCurvature[0] = (Math.Atan2((tailPoints[tailPoint + 1].X - tailPoints[tailPoint].X), (tailPoints[tailPoint + 1].Y - tailPoints[tailPoint].Y)) - Math.Atan2((tailPoints[1].X - tailPoints[0].X), (tailPoints[1].Y - tailPoints[0].Y))) * 180 / Math.PI;
                 }
                 else
