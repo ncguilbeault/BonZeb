@@ -24,10 +24,7 @@ namespace Bonsai.TailTracking
             TailBasePoint = new Point(0, 0);
             HeadingAngle = 180;
             ThresholdValue = 128;
-            MaxValue = 255;
-            ThresholdType = ThresholdTypes.Binary;
-            ContourRetrievalMode = ContourRetrieval.List;
-            ContourApproximationMethod = ContourApproximation.ChainApproxNone;
+            ThresholdType = Utilities.ThresholdType.Binary;
             DistTailBase = 12;
             NumTailBaseAngles = 20;
             NumTailPoints = 7;
@@ -35,6 +32,10 @@ namespace Bonsai.TailTracking
             RangeTailPointAngles = 120;
             NumTailPointAngles = 10;
         }
+
+        [Description("The region of interest inside the input image.")]
+        [Editor("Bonsai.Vision.Design.IplImageInputRectangleEditor, Bonsai.Vision.Design", typeof(UITypeEditor))]
+        public Rect RegionOfInterest { get; set; }
 
         [Description("Method to use for tail tracking. The options are EyeTracking, SeededTailBasePoint, and Centroid. EyeTracking utilizes a method for calculating the eyes first, followed by tracking the tail base and tail points. SeededTailBasePoint utilizes a method where the tail is tracked after the tail base is seeded by the given TailBase point. Centroid utilizes a method for thresholding and finding the centroid first followed by tracking the tail.")]
         public Utilities.TailTrackingMethod TailTrackingMethod { get; set; }
@@ -60,17 +61,8 @@ namespace Bonsai.TailTracking
         [Editor(DesignTypes.SliderEditor, typeof(UITypeEditor))]
         public double ThresholdValue { get; set; }
 
-        [Description("The maximum value assigned to pixels determined to be above the threshold. Only used for the Centroid method.")]
-        public double MaxValue { get; set; }
-
         [Description("The type of threshold to apply to individual pixels. Only used for the Centroid method.")]
-        public ThresholdTypes ThresholdType { get; set; }
-
-        [Description("Specifies the contour retrieval strategy. Only used for the Centroid method.")]
-        public ContourRetrieval ContourRetrievalMode { get; set; }
-
-        [Description("The approximation method used to output the contours. Only used for the Centroid method.")]
-        public ContourApproximation ContourApproximationMethod { get; set; }
+        public Utilities.ThresholdType ThresholdType { get; set; }
 
         [Description("Distance between the eyes and the tail trunk in number of pixels. Only used for the EyeTracking method and Centroid method.")]
         public int DistTailBase { get; set; }
@@ -95,105 +87,50 @@ namespace Bonsai.TailTracking
 
             return source.Select(value => {
 
-                Utilities.TailTrackingMethod tailTrackingMethod = TailTrackingMethod;
-                Utilities.PixelSearch pixelSearch = PixelSearch;
-
-                int numTailPoints = NumTailPoints;
-                int distTailPoints = DistTailPoints;
-                double rangeTailPointAngles = RangeTailPointAngles;
-                int numTailPointAngles = NumTailPointAngles;
-
-                Point[] points = new Point[numTailPoints + 1];
-                int frameWidth = value.WidthStep;
+                Point[] points = new Point[NumTailPoints + 1];
                 int frameHeight = value.Size.Height;
-                int widthStep = value.WidthStep;
-                byte[] frameData = new byte[widthStep * frameHeight];
-                Marshal.Copy(value.ImageData, frameData, 0, widthStep * frameHeight);
+                int frameWidthStep = value.WidthStep;
+                byte[] frameData = new byte[frameWidthStep * frameHeight];
+                Marshal.Copy(value.ImageData, frameData, 0, frameWidthStep * frameHeight);
 
-                double tailAngle = 0;
-                Point tailBasePoint = new Point(0, 0);
-
-                if (tailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking || tailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
+                if (RegionOfInterest.Width > 0 && RegionOfInterest.Height > 0)
                 {
-                    int distTailBase = DistTailBase;
-                    int numTailBaseAngles = NumTailBaseAngles;
-
-                    if (tailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking)
+                    int widthStep = RegionOfInterest.Width % 4 == 0 ? RegionOfInterest.Width : (int)Math.Ceiling((decimal)RegionOfInterest.Width / 4) * 4;
+                    byte[] newFrameData = new byte[widthStep * RegionOfInterest.Height];
+                    for (int i = 0; i < RegionOfInterest.Height; i++)
                     {
-                        int distEyes = DistEyes;
-                        int numEyeAngles = NumEyeAngles;
-                        int x = 0;
-                        int y = 0;
-
-                        for (int i = 0; i < frameHeight; i++)
+                        for (int j = 0; j < widthStep; j++)
                         {
-                            for (int j = 0; j < frameWidth; j++)
-                            {
-                                if (pixelSearch == Utilities.PixelSearch.Darkest && (int)frameData[j + (i * widthStep)] < (int)frameData[x + (y * widthStep)])
-                                {
-                                    y = i;
-                                    x = j;
-                                }
-                                else if (pixelSearch == Utilities.PixelSearch.Brightest && (int)frameData[j + (i * widthStep)] > (int)frameData[x + (y * widthStep)])
-                                {
-                                    y = i;
-                                    x = j;
-                                }
-                            }
+                            newFrameData[j + (i * widthStep)] = frameData[(RegionOfInterest.Y * frameWidthStep) + (i * frameWidthStep) + RegionOfInterest.X + j];
                         }
-                        Point firstEyePoint = new Point(x, y);
-                        Point secondEyePoint = Utilities.CalculateNextPoint(0, 360, numEyeAngles, firstEyePoint, distEyes, pixelSearch, frameWidth, frameHeight, frameData);
-                        Point headingPoint = new Point((firstEyePoint.X + secondEyePoint.X) / 2, (firstEyePoint.Y + secondEyePoint.Y) / 2);
-                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, headingPoint, distTailBase, pixelSearch, frameWidth, frameHeight, frameData);
-                        tailAngle = Math.Atan2((tailBasePoint.X - headingPoint.X), (tailBasePoint.Y - headingPoint.Y)) * 180 / Math.PI;
+                    }
+                    if (TailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking)
+                    {
+                        points = Utilities.CalculateTailPointsUsingEyeTracking(NumTailPoints, PixelSearch, RegionOfInterest.Height, widthStep, newFrameData, RegionOfInterest.X, RegionOfInterest.Y, NumEyeAngles, DistEyes, NumTailBaseAngles, DistTailBase, RangeTailPointAngles, NumTailPointAngles, DistTailPoints);
+                    }
+                    else if (TailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
+                    {
+                        points = Utilities.CalculateTailPointsUsingCentroid(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, RegionOfInterest.Height, widthStep, newFrameData, RegionOfInterest.X, RegionOfInterest.Y, ThresholdType, DistTailBase, NumTailBaseAngles, PixelSearch, ThresholdValue);
                     }
                     else
                     {
-                        double thresholdValue = ThresholdValue;
-                        double maxValue = MaxValue;
-                        ContourRetrieval contourRetrievalMode = ContourRetrievalMode;
-                        ContourApproximation contourApproximationMethod = ContourApproximationMethod;
-                        ThresholdTypes thresholdType = ThresholdType;
-                        IplImage thresholdedImage = new IplImage(value.Size, value.Depth, value.Channels);
-                        CV.Threshold(value, thresholdedImage, thresholdValue, maxValue, thresholdType);
-                        Moments moments = new Moments(thresholdedImage, true);
-                        Point centroid = new Point((int)(moments.M10 / moments.M00), (int)(moments.M01 / moments.M00));
-                        tailBasePoint = Utilities.CalculateNextPoint(0, 360, numTailBaseAngles, centroid, distTailBase, pixelSearch, frameWidth, frameHeight, frameData);
-                        tailAngle = Math.Atan2((tailBasePoint.X - centroid.X), (tailBasePoint.Y - centroid.Y)) * 180 / Math.PI;
+                        points = Utilities.CalculateTailPointsUsingSeededTailBasePoint(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, TailBasePoint, HeadingAngle, PixelSearch, widthStep, RegionOfInterest.Height, newFrameData, RegionOfInterest.X, RegionOfInterest.Y);
                     }
                 }
                 else
                 {
-                    tailBasePoint = TailBasePoint;
-                    double headingAngle = HeadingAngle;
-
-                    if (headingAngle <= 180)
+                    if (TailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking)
                     {
-                        tailAngle = headingAngle + 180;
+                        points = Utilities.CalculateTailPointsUsingEyeTracking(NumTailPoints, PixelSearch, frameHeight, frameWidthStep, frameData, 0, 0, NumEyeAngles, DistEyes, NumTailBaseAngles, DistTailBase, RangeTailPointAngles, NumTailPointAngles, DistTailPoints);
+                    }
+                    else if (TailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
+                    {
+                        points = Utilities.CalculateTailPointsUsingCentroid(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, frameHeight, frameWidthStep, frameData, 0, 0, ThresholdType, DistTailBase, NumTailBaseAngles, PixelSearch, ThresholdValue);
                     }
                     else
                     {
-                        tailAngle = headingAngle - 180;
+                        points = Utilities.CalculateTailPointsUsingSeededTailBasePoint(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, TailBasePoint, HeadingAngle, PixelSearch, frameWidthStep, frameHeight, frameData, 0, 0);
                     }
-                }
-
-                points[0] = tailBasePoint;
-
-                for (int i = 0; i < numTailPoints; i++)
-                {
-                    if (i > 0)
-                    {
-                        tailAngle = Math.Atan2((points[i].X - points[i - 1].X), (points[i].Y - points[i - 1].Y)) * 180 / Math.PI;
-                    }
-                    if (tailAngle > 360)
-                    {
-                        tailAngle -= 360;
-                    }
-                    else if (tailAngle < 0)
-                    {
-                        tailAngle += 360;
-                    }
-                    points[i + 1] = Utilities.CalculateNextPoint(tailAngle, rangeTailPointAngles, numTailPointAngles, points[i], distTailPoints, pixelSearch, frameWidth, frameHeight, frameData);
                 }
 
                 return points;

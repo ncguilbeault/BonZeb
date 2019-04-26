@@ -62,15 +62,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalculateBackground.cs" />
-    <Compile Include="CropImage.cs" />
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
     <Compile Include="DrawTailPoints.cs" />
     <Compile Include="ExtractTailCurvature.cs" />
-    <Compile Include="MaskImage.cs" />
+    <Compile Include="TrackTail.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TrackTail.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Bonsai.TailTracking.nuspec">
