@@ -22,7 +22,8 @@ namespace Bonsai.TailTracking
 
         public override IObservable<double> Process(IObservable<double> source)
         {
-            return source.Select(value => {
+            return source.Select(value => 
+            {
 
                 double delta = Delta;
                 amplitude = 0;

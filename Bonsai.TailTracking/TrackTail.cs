@@ -85,7 +85,8 @@ namespace Bonsai.TailTracking
         public override IObservable<Point[]> Process(IObservable<IplImage> source)
         {
 
-            return source.Select(value => {
+            return source.Select(value => 
+            {
 
                 Point[] points = new Point[NumTailPoints + 1];
                 int frameHeight = value.Size.Height;
@@ -130,6 +131,57 @@ namespace Bonsai.TailTracking
                     else
                     {
                         points = Utilities.CalculateTailPointsUsingSeededTailBasePoint(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, TailBasePoint, HeadingAngle, PixelSearch, frameWidthStep, frameHeight, frameData, 0, 0);
+                    }
+                }
+
+                return points;
+
+            });
+        }
+
+        public IObservable<Point[]> Process(IObservable<Utilities.RawImageData> source)
+        {
+
+            return source.Select(value => {
+
+                Point[] points = new Point[NumTailPoints + 1];
+                if (RegionOfInterest.Width > 0 && RegionOfInterest.Height > 0)
+                {
+                    int widthStep = RegionOfInterest.Width % 4 == 0 ? RegionOfInterest.Width : (int)Math.Ceiling((decimal)RegionOfInterest.Width / 4) * 4;
+                    byte[] newFrameData = new byte[widthStep * RegionOfInterest.Height];
+                    for (int i = 0; i < RegionOfInterest.Height; i++)
+                    {
+                        for (int j = 0; j < widthStep; j++)
+                        {
+                            newFrameData[j + (i * widthStep)] = value.ImageData[(RegionOfInterest.Y * value.WidthStep) + (i * value.WidthStep) + RegionOfInterest.X + j];
+                        }
+                    }
+                    if (TailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking)
+                    {
+                        points = Utilities.CalculateTailPointsUsingEyeTracking(NumTailPoints, PixelSearch, RegionOfInterest.Height, widthStep, newFrameData, RegionOfInterest.X, RegionOfInterest.Y, NumEyeAngles, DistEyes, NumTailBaseAngles, DistTailBase, RangeTailPointAngles, NumTailPointAngles, DistTailPoints);
+                    }
+                    else if (TailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
+                    {
+                        points = Utilities.CalculateTailPointsUsingCentroid(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, RegionOfInterest.Height, widthStep, newFrameData, RegionOfInterest.X, RegionOfInterest.Y, ThresholdType, DistTailBase, NumTailBaseAngles, PixelSearch, ThresholdValue);
+                    }
+                    else
+                    {
+                        points = Utilities.CalculateTailPointsUsingSeededTailBasePoint(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, TailBasePoint, HeadingAngle, PixelSearch, widthStep, RegionOfInterest.Height, newFrameData, RegionOfInterest.X, RegionOfInterest.Y);
+                    }
+                }
+                else
+                {
+                    if (TailTrackingMethod == Utilities.TailTrackingMethod.EyeTracking)
+                    {
+                        points = Utilities.CalculateTailPointsUsingEyeTracking(NumTailPoints, PixelSearch, value.Height, value.WidthStep, value.ImageData, 0, 0, NumEyeAngles, DistEyes, NumTailBaseAngles, DistTailBase, RangeTailPointAngles, NumTailPointAngles, DistTailPoints);
+                    }
+                    else if (TailTrackingMethod == Utilities.TailTrackingMethod.Centroid)
+                    {
+                        points = Utilities.CalculateTailPointsUsingCentroid(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, value.Height, value.WidthStep, value.ImageData, 0, 0, ThresholdType, DistTailBase, NumTailBaseAngles, PixelSearch, ThresholdValue);
+                    }
+                    else
+                    {
+                        points = Utilities.CalculateTailPointsUsingSeededTailBasePoint(NumTailPoints, RangeTailPointAngles, NumTailPointAngles, DistTailPoints, TailBasePoint, HeadingAngle, PixelSearch, value.WidthStep, value.Height, value.ImageData, 0, 0);
                     }
                 }
 

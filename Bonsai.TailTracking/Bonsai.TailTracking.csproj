@@ -65,6 +65,7 @@
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
     <Compile Include="DrawTailPoints.cs" />
+    <Compile Include="ExtractImageBytes.cs" />
     <Compile Include="ExtractTailCurvature.cs" />
     <Compile Include="TrackTail.cs" />
     <Compile Include="Utilities.cs" />

@@ -27,7 +27,8 @@ namespace Bonsai.TailTracking
         public override IObservable<double[]> Process(IObservable<Point[]> source)
         {
 
-            return source.Select(value => {
+            return source.Select(value => 
+            {
 
                 Point[] tailPoints = value;
                 int numTailPoints = tailPoints.Length;

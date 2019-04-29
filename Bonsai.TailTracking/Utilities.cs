@@ -45,6 +45,13 @@ namespace Bonsai.TailTracking
             }
         }
 
+        public struct RawImageData
+        {
+            public byte[] ImageData;
+            public int WidthStep;
+            public int Height;
+        }
+
         private static double[] LinSpace(double a, double b, int length)
         {
 
