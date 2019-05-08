@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OpenCV.Net;
 
 namespace Bonsai.TailTracking
@@ -122,7 +123,6 @@ namespace Bonsai.TailTracking
 
                 for (int i = 0; i < angles.Length; i++)
                 {
-                    angles[i] = angles[i] * Math.PI / 180;
                     potentialX = (float)Math.Min(Math.Max(initPoint.X + (radius * Math.Cos(angles[i])), 0), frameWidth - 1);
                     potentialY = (float)Math.Min(Math.Max(initPoint.Y + (radius * Math.Sin(angles[i])), 0), frameHeight - 1);
                     point = i == 0 || ((potentialX != point.X || potentialY != point.Y) && (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
@@ -137,7 +137,36 @@ namespace Bonsai.TailTracking
             return point;
         }
 
-        public static Point2f FindCenterOfMassOnArc(double angle, double rangeAngles, int nAngles, Point2f initPoint, int radius, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f CalculateNextPoint(double angle, double rangeAngles, Point[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        {
+
+            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found with the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+
+            Point2f point = new Point2f(0, 0);
+            //int startIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle - rangeAngles / 2)), (int)(radius * Math.Sin(angle - rangeAngles / 2))));
+            //int endIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle + rangeAngles / 2)), (int)(radius * Math.Sin(angle + rangeAngles / 2))));
+            //Console.WriteLine("Angle potential point 1: {0}.\nTail angle: {1}.\nRange angles: {2}.\n Acceptable point: {3}.\n", Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X), angle, rangeAngles, Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) < angle + rangeAngles / 2);
+            try
+            {
+                for (int i = 0; i < potentialPoints.Length; i++)
+                {
+                    float potentialX = Math.Min(Math.Max(initPoint.X + potentialPoints[i].X, 0), frameWidth - 1);
+                    float potentialY = Math.Min(Math.Max(initPoint.Y + potentialPoints[i].Y, 0), frameHeight - 1);
+                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && (rangeAngles == 360 || (Math.Atan2(potentialPoints[i].Y, potentialPoints[i].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[i].Y, potentialPoints[i].X) < angle + rangeAngles / 2)) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
+                }
+
+            }
+            catch
+            {
+                point = new Point2f(0, 0);
+            }
+
+            return point;
+        }
+
+        public static Point2f FindCenterOfMassAlongArc(double angle, double rangeAngles, int nAngles, Point2f initPoint, int radius, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /* Function that returns a point that exists along an arc of known length from an initial point in an image.
@@ -153,7 +182,7 @@ namespace Bonsai.TailTracking
                 double M00 = 0, M01 = 0, M10 = 0;
                 for (int i = 0; i < angles.Length; i++)
                 {
-                    angles[i] = angles[i] * Math.PI / 180;
+                    //angles[i] = angles[i] * Math.PI / 180;
                     potentialX = (int)Math.Min(Math.Max(initPoint.X + (radius * Math.Cos(angles[i])), 0), frameWidth - 1);
                     potentialY = (int)Math.Min(Math.Max(initPoint.Y + (radius * Math.Sin(angles[i])), 0), frameHeight - 1);
                     if (potentialX != prevX || potentialY != prevY)
@@ -175,6 +204,36 @@ namespace Bonsai.TailTracking
             }
 
             return point;
+        }
+
+        public static Point[] GeneratePotentialPoints(int radius)
+        {
+            List<Point> points = new List<Point>();
+            int X = radius;
+            int Y = 0;
+            points.Add(new Point(X, Y));
+            while (X > Y)
+            {
+                Y++;
+                if (Math.Pow(X, 2) + Math.Pow(Y, 2) - Math.Pow(radius, 2) > 0)
+                {
+                    X--;
+                }
+                points.Add(new Point(X, Y));
+            }
+            for (int i = points.Count - 2; i >= 0; i--)
+            {
+                points.Add(new Point(points[i].Y, points[i].X));
+            }
+            for (int i = points.Count - 2; i >= 0; i--)
+            {
+                points.Add(new Point(-points[i].X, points[i].Y));
+            }
+            for (int i = points.Count - 2; i >= 1; i--)
+            {
+                points.Add(new Point(points[i].X, -points[i].Y));
+            }
+            return points.ToArray();
         }
 
         public static Point[] CalculateTailPointsUsingEyeTracking(int numTailPoints, PixelSearch pixelSearch, int frameHeight, int frameWidth, byte[] frameData, int x_offset, int y_offset, int numEyeAngles, int distEyes, int numTailBaseAngles, int distTailBase, double rangeTailPointAngles, int numTailPointAngles, int distTailPoints)
