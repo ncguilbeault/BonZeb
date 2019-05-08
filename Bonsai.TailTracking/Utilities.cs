@@ -137,7 +137,36 @@ namespace Bonsai.TailTracking
             return point;
         }
 
-        public static Point2f CalculateNextPoint(double angle, double rangeAngles, Point[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f CalculateNextPoint(double angle, double rangeAngles, Point2f[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        {
+
+            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found with the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+
+            Point2f point = new Point2f(0, 0);
+            //int startIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle - rangeAngles / 2)), (int)(radius * Math.Sin(angle - rangeAngles / 2))));
+            //int endIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle + rangeAngles / 2)), (int)(radius * Math.Sin(angle + rangeAngles / 2))));
+            //Console.WriteLine("Angle potential point 1: {0}.\nTail angle: {1}.\nRange angles: {2}.\n Acceptable point: {3}.\n", Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X), angle, rangeAngles, Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) < angle + rangeAngles / 2);
+            try
+            {
+                for (int i = 0; i < potentialPoints.Length; i++)
+                {
+                    float potentialX = Math.Min(Math.Max(initPoint.X + RotatePoint(potentialPoints[i], new Point2f(0, 0), -angle).X, 0), frameWidth - 1);
+                    float potentialY = Math.Min(Math.Max(initPoint.Y + RotatePoint(potentialPoints[i], new Point2f(0, 0), -angle).Y, 0), frameHeight - 1);
+                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
+                }
+
+            }
+            catch
+            {
+                point = new Point2f(0, 0);
+            }
+
+            return point;
+        }
+
+        public static Point2f CalculateTailBasePoint(Point2f[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /* Function that returns a point that exists along an arc of known length from an initial point in an image.
@@ -154,7 +183,7 @@ namespace Bonsai.TailTracking
                 {
                     float potentialX = Math.Min(Math.Max(initPoint.X + potentialPoints[i].X, 0), frameWidth - 1);
                     float potentialY = Math.Min(Math.Max(initPoint.Y + potentialPoints[i].Y, 0), frameHeight - 1);
-                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && (rangeAngles == 360 || (Math.Atan2(potentialPoints[i].Y, potentialPoints[i].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[i].Y, potentialPoints[i].X) < angle + rangeAngles / 2)) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
+                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
                 }
 
             }
@@ -206,12 +235,12 @@ namespace Bonsai.TailTracking
             return point;
         }
 
-        public static Point[] GeneratePotentialPoints(int radius)
+        public static Point2f[] GeneratePotentialTailBasePoints(int radius)
         {
-            List<Point> points = new List<Point>();
+            List<Point2f> points = new List<Point2f>();
             int X = radius;
             int Y = 0;
-            points.Add(new Point(X, Y));
+            points.Add(new Point2f(X, Y));
             while (X > Y)
             {
                 Y++;
@@ -219,20 +248,105 @@ namespace Bonsai.TailTracking
                 {
                     X--;
                 }
-                points.Add(new Point(X, Y));
+                points.Add(new Point2f(X, Y));
             }
             for (int i = points.Count - 2; i >= 0; i--)
             {
-                points.Add(new Point(points[i].Y, points[i].X));
+                points.Add(new Point2f(points[i].Y, points[i].X));
             }
             for (int i = points.Count - 2; i >= 0; i--)
             {
-                points.Add(new Point(-points[i].X, points[i].Y));
+                points.Add(new Point2f(-points[i].X, points[i].Y));
             }
             for (int i = points.Count - 2; i >= 1; i--)
             {
-                points.Add(new Point(points[i].X, -points[i].Y));
+                points.Add(new Point2f(points[i].X, -points[i].Y));
             }
+            return points.ToArray();
+        }
+
+        public static Point2f[] GeneratePotentialTailPoints(int radius, double rangeAngles)
+        {
+            List<Point2f> points = new List<Point2f>();
+            float X = radius;
+            float Y = 0;
+            double pointAngle = Math.Atan2(Y, X);
+
+            if (pointAngle <= rangeAngles)
+            {
+                points.Add(new Point2f(X, Y));
+            }
+            else
+            {
+                return points.ToArray();
+            }
+            
+            while (X > Y)
+            {
+                Y++;
+                if (Math.Pow(X, 2) + Math.Pow(Y, 2) - Math.Pow(radius, 2) > 0)
+                {
+                    X--;
+                }
+                pointAngle = Math.Atan2(Y, X);
+                if (pointAngle <= rangeAngles)
+                {
+                    points.Add(new Point2f(X, Y));
+                }
+                else
+                {
+                    return points.ToArray();
+                }
+            }
+
+            for (int i = points.Count - 2; i >= 0; i--)
+            {
+                X = points[i].Y;
+                Y = points[i].X;
+
+                pointAngle = Math.Atan2(Y, X);
+                if (pointAngle <= rangeAngles)
+                {
+                    points.Add(new Point2f(X, Y));
+                }
+                else
+                {
+                    return points.ToArray();
+                }
+            }
+
+            for (int i = points.Count - 2; i >= 0; i--)
+            {
+                X = -points[i].X;
+                Y = points[i].Y;
+
+                pointAngle = Math.Atan2(Y, X);
+                if (pointAngle <= rangeAngles)
+                {
+                    points.Add(new Point2f(X, Y));
+                }
+                else
+                {
+                    return points.ToArray();
+                }
+            }
+
+            for (int i = points.Count - 2; i >= 1; i--)
+            {
+                X = points[i].X;
+                Y = -points[i].Y;
+
+                pointAngle = Math.Atan2(Y, X);
+                if (pointAngle <= rangeAngles)
+                {
+                    points.Add(new Point2f(X, Y));
+                }
+                else
+                {
+                    return points.ToArray();
+                }
+            }
+
             return points.ToArray();
         }
 

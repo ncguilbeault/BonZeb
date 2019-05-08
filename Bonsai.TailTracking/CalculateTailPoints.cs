@@ -83,16 +83,17 @@ namespace Bonsai.TailTracking
         }
         public IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, Utilities.RawImageData>> source)
         {
-            Point[] potentialTailBasePoints = Utilities.GeneratePotentialPoints(DistTailBase);
+            Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialTailBasePoints(DistTailBase);
             //Console.WriteLine("Potential tailbase point 0 : {0}.\nPotential tailbase point 5 : {1}.\nPotential tailbase point 10 : {2}.\n", potentialTailBasePoints[0], potentialTailBasePoints[5], potentialTailBasePoints[10]);
-            Point[] potentialTailPoints = Utilities.GeneratePotentialPoints(DistTailPoints);
+            Point2f[] potentialTailPoints = Utilities.GeneratePotentialTailPoints(DistTailPoints, RangeTailPointAngles * Math.PI / 180);
             //Console.WriteLine("Potential tailpoint 0 : {0}.\nPotential tailpoint 5 : {1}.\nPotential tailpoint 10 : {2}.\n", potentialTailPoints[0], potentialTailPoints[5], potentialTailPoints[10]);
             return source.Select(value =>
             {
 
                 Point2f[] points = new Point2f[NumTailPoints + 1];
                 //points[0] = Utilities.CalculateNextPoint(0, 2 * Math.PI, NumTailBaseAngles, value.Item1, DistTailBase, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                points[0] = Utilities.CalculateNextPoint(0, 2 * Math.PI, potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                //points[0] = Utilities.CalculateNextPoint(0, 2 * Math.PI, potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                points[0] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
 
                 for (int i = 0; i < NumTailPoints; i++)
                 {
