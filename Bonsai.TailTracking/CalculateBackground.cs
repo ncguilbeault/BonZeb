@@ -54,7 +54,7 @@ namespace Bonsai.TailTracking
                     {
                         for (int j = 0; j < frameWidth; j++)
                         {
-                            if ((((int) frameData[j + (i * frameWidthStep)] > (int) background[j + (i * frameWidthStep)]) && pixelSearch == Utilities.PixelSearch.Brightest) || (((int) frameData[j + (i * frameWidthStep)] < (int) background[j + (i * frameWidthStep)]) && pixelSearch == Utilities.PixelSearch.Darkest))
+                            if ((pixelSearch == Utilities.PixelSearch.Brightest && (frameData[j + (i * frameWidthStep)] > background[j + (i * frameWidthStep)])) || (pixelSearch == Utilities.PixelSearch.Darkest && (frameData[j + (i * frameWidthStep)] < background[j + (i * frameWidthStep)])))
                             {
                                 background[j + (i * frameWidthStep)] = frameData[j + (i * frameWidthStep)];
                             }

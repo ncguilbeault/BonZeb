@@ -62,10 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalculateBackground.cs" />
+    <Compile Include="CalculateCentroid.cs" />
+    <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
     <Compile Include="DrawTailPoints.cs" />
-    <Compile Include="ExtractImageBytes.cs" />
+    <Compile Include="ExtractRawImageData.cs" />
     <Compile Include="ExtractTailCurvature.cs" />
     <Compile Include="TrackTail.cs" />
     <Compile Include="Utilities.cs" />
