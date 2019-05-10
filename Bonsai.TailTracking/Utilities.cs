@@ -118,26 +118,17 @@ namespace Bonsai.TailTracking
             float potentialX, potentialY;
             double[] angles = LinSpace(angle - rangeAngles / 2, angle + rangeAngles / 2, nAngles);
 
-            try
+            for (int i = 0; i < angles.Length; i++)
             {
-
-                for (int i = 0; i < angles.Length; i++)
-                {
-                    potentialX = (float)Math.Min(Math.Max(initPoint.X + (radius * Math.Cos(angles[i])), 0), frameWidth - 1);
-                    potentialY = (float)Math.Min(Math.Max(initPoint.Y + (radius * Math.Sin(angles[i])), 0), frameHeight - 1);
-                    point = i == 0 || ((potentialX != point.X || potentialY != point.Y) && (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
-                }
-
-            }
-            catch
-            {
-                point = new Point2f(0, 0);
+                potentialX = (float)Math.Min(Math.Max(initPoint.X + (radius * Math.Cos(angles[i])), 0), frameWidth - 1);
+                potentialY = (float)Math.Min(Math.Max(initPoint.Y + (radius * Math.Sin(angles[i])), 0), frameHeight - 1);
+                point = i == 0 || ((potentialX != point.X || potentialY != point.Y) && (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
             }
 
             return point;
         }
 
-        public static Point2f CalculateNextPoint(double angle, double rangeAngles, Point2f[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f CalculateTailPoint(double angle, double rangeAngles, Point2f[] potentialPoints, int radius, Point2f initPoint, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /* Function that returns a point that exists along an arc of known length from an initial point in an image.
@@ -145,22 +136,14 @@ namespace Bonsai.TailTracking
             Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
 
             Point2f point = new Point2f(0, 0);
-            //int startIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle - rangeAngles / 2)), (int)(radius * Math.Sin(angle - rangeAngles / 2))));
-            //int endIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle + rangeAngles / 2)), (int)(radius * Math.Sin(angle + rangeAngles / 2))));
-            //Console.WriteLine("Angle potential point 1: {0}.\nTail angle: {1}.\nRange angles: {2}.\n Acceptable point: {3}.\n", Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X), angle, rangeAngles, Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) < angle + rangeAngles / 2);
-            try
-            {
-                for (int i = 0; i < potentialPoints.Length; i++)
-                {
-                    float potentialX = Math.Min(Math.Max(initPoint.X + RotatePoint(potentialPoints[i], new Point2f(0, 0), -angle).X, 0), frameWidth - 1);
-                    float potentialY = Math.Min(Math.Max(initPoint.Y + RotatePoint(potentialPoints[i], new Point2f(0, 0), -angle).Y, 0), frameHeight - 1);
-                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
-                }
+            Point2f[] newPotentialPoints = RotatePoints(potentialPoints, new Point2f(0, 0), angle - rangeAngles / 2);
+            newPotentialPoints = AddOffsetToPoints(newPotentialPoints, (int)initPoint.X, (int)initPoint.Y);
 
-            }
-            catch
+            for (int i = 0; i < newPotentialPoints.Length; i++)
             {
-                point = new Point2f(0, 0);
+                float potentialX = Math.Min(Math.Max(newPotentialPoints[i].X, 0), frameWidth - 1);
+                float potentialY = Math.Min(Math.Max(newPotentialPoints[i].Y, 0), frameWidth - 1);
+                point = i == 0 || (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X]) ? new Point2f(potentialX, potentialY) : point;
             }
 
             return point;
@@ -174,23 +157,40 @@ namespace Bonsai.TailTracking
             Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
 
             Point2f point = new Point2f(0, 0);
-            //int startIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle - rangeAngles / 2)), (int)(radius * Math.Sin(angle - rangeAngles / 2))));
-            //int endIndex = Array.FindIndex(potentialPoints, startPoint => startPoint == new Point((int)(radius * Math.Cos(angle + rangeAngles / 2)), (int)(radius * Math.Sin(angle + rangeAngles / 2))));
-            //Console.WriteLine("Angle potential point 1: {0}.\nTail angle: {1}.\nRange angles: {2}.\n Acceptable point: {3}.\n", Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X), angle, rangeAngles, Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) > angle - rangeAngles / 2 && Math.Atan2(potentialPoints[1].Y, potentialPoints[1].X) < angle + rangeAngles / 2);
-            try
-            {
-                for (int i = 0; i < potentialPoints.Length; i++)
-                {
-                    float potentialX = Math.Min(Math.Max(initPoint.X + potentialPoints[i].X, 0), frameWidth - 1);
-                    float potentialY = Math.Min(Math.Max(initPoint.Y + potentialPoints[i].Y, 0), frameHeight - 1);
-                    point = i == 0 || (potentialX != point.X || potentialY != point.Y) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
-                }
 
-            }
-            catch
+            for (int i = 0; i < potentialPoints.Length; i++)
             {
-                point = new Point2f(0, 0);
+                float potentialX = Math.Min(Math.Max(initPoint.X + potentialPoints[i].X, 0), frameWidth - 1);
+                float potentialY = Math.Min(Math.Max(initPoint.Y + potentialPoints[i].Y, 0), frameHeight - 1);
+                point = i == 0 || (potentialX != point.X || potentialY != point.Y) && ((method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X])) ? new Point2f(potentialX, potentialY) : point;
             }
+
+            return point;
+        }
+
+        public static Point2f FindCenterOfMassAlongArc(double angle, double rangeAngles, Point2f[] potentialPoints, int radius, Point2f initPoint, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
+        {
+
+            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found with the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+
+            Point2f point = new Point2f(0, 0);
+            Point2f[] newPotentialPoints = RotatePoints(potentialPoints, new Point2f(0, 0), angle - rangeAngles / 2);
+            newPotentialPoints = AddOffsetToPoints(newPotentialPoints, (int)initPoint.X, (int)initPoint.Y);
+            double M00 = 0, M01 = 0, M10 = 0;
+
+            for (int i = 0; i < newPotentialPoints.Length; i++)
+            {
+                float potentialX = Math.Min(Math.Max(newPotentialPoints[i].X, 0), frameWidth - 1);
+                float potentialY = Math.Min(Math.Max(newPotentialPoints[i].Y, 0), frameHeight - 1);
+                double pixelValue = (thresholdType == ThresholdType.Binary && byteArray[(int)potentialY * frameWidth + (int)potentialX] > thresholdValue) || (thresholdType == ThresholdType.BinaryInvert && byteArray[(int)potentialY * frameWidth + (int)potentialX] < thresholdValue) ? 255 : 0;
+                M00 += pixelValue;
+                M01 += pixelValue * potentialY;
+                M10 += pixelValue * potentialX;
+            }
+
+            point = M00 > 0 ? new Point2f((float)(M10 / M00), (float)(M01 / M00)) : point;
 
             return point;
         }
@@ -211,13 +211,11 @@ namespace Bonsai.TailTracking
                 double M00 = 0, M01 = 0, M10 = 0;
                 for (int i = 0; i < angles.Length; i++)
                 {
-                    //angles[i] = angles[i] * Math.PI / 180;
                     potentialX = (int)Math.Min(Math.Max(initPoint.X + (radius * Math.Cos(angles[i])), 0), frameWidth - 1);
                     potentialY = (int)Math.Min(Math.Max(initPoint.Y + (radius * Math.Sin(angles[i])), 0), frameHeight - 1);
                     if (potentialX != prevX || potentialY != prevY)
                     {
                         double pixelValue = (thresholdType == ThresholdType.Binary && byteArray[potentialY * frameWidth + potentialX] > thresholdValue) || (thresholdType == ThresholdType.BinaryInvert && byteArray[potentialY * frameWidth + potentialX] < thresholdValue) ? 255 : 0;
-                        //double pixelValue = byteArray[(int)potentialY * frameWidth + (int)potentialX];
                         M00 += pixelValue;
                         M01 += pixelValue * potentialY;
                         M10 += pixelValue * potentialX;
@@ -225,7 +223,7 @@ namespace Bonsai.TailTracking
                         prevY = potentialY;
                     }
                 }
-                point = new Point2f((float)(M10/M00), (float)(M01/M00));
+                point = new Point2f((float)(M10 / M00), (float)(M01 / M00));
             }
             catch
             {
@@ -470,18 +468,34 @@ namespace Bonsai.TailTracking
             return centroid;
         }
 
-        public static Point2f[] AddOffsetToPoints(Point2f[] points, int offsetX, int offsetY)
+        public static Point2f AddOffsetToPoint(Point2f point, int offsetX, int offsetY)
         {
-            for (int i = 0; i < points.Length; i++)
-            {
-                points[i] = new Point2f(points[i].X + offsetX, points[i].Y + offsetY);
-            }
-            return points;
+            return new Point2f(point.X + offsetX, point.Y + offsetY);
         }
 
-        public static Point2f RotatePoint(Point2f initPoint, Point2f origin, double angle)
+        public static Point2f[] AddOffsetToPoints(Point2f[] points, int offsetX, int offsetY)
         {
-            return new Point2f((float)((initPoint.X - origin.X) * Math.Cos(angle) - (initPoint.Y - origin.Y) * Math.Sin(angle)), (float)((initPoint.X - origin.X) * Math.Sin(angle) + (initPoint.Y - origin.Y) * Math.Cos(angle)));
+            Point2f[] newPoints = new Point2f[points.Length];
+            for (int i = 0; i < newPoints.Length; i++)
+            {
+                newPoints[i] = new Point2f(points[i].X + offsetX, points[i].Y + offsetY);
+            }
+            return newPoints;
+        }
+
+        public static Point2f RotatePoint(Point2f point, Point2f origin, double angle)
+        {
+            return new Point2f((float)((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)), (float)((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)));
+        }
+
+        public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
+        {
+            Point2f[] newPoints = new Point2f[points.Length];
+            for (int i = 0; i < newPoints.Length; i++)
+            {
+                newPoints[i] = new Point2f((float)((points[i].X - origin.X) * Math.Cos(angle) - (points[i].Y - origin.Y) * Math.Sin(angle)), (float)((points[i].X - origin.X) * Math.Sin(angle) + (points[i].Y - origin.Y) * Math.Cos(angle)));
+            }
+            return newPoints;
         }
     }
 }

@@ -53,7 +53,6 @@ namespace Bonsai.TailTracking
             });
 
         }
-        //private double[] prevTailCurvature = new double[0];
         public IObservable<double[]> Process(IObservable<Point2f[]> source)
         {
             double[] prevTailCurvature = new double[0];
@@ -69,6 +68,10 @@ namespace Bonsai.TailTracking
                 for (int i = 0; i < value.Length - 1; i++)
                 {
                     tailCurvature[i] = Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X) * 180 / Math.PI;
+                    if (prevTailCurvature.Length > 0)
+                    {
+                        tailCurvature[i] = tailCurvature[i] - prevTailCurvature[i] > Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i] - prevTailCurvature[i]  < -Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i];
+                    }
                 }
                 prevTailCurvature = tailCurvature;
                 return tailCurvature;

@@ -65,15 +65,11 @@ namespace Bonsai.TailTracking
             return source.Select(value => {
 
                 Point2f[] points = new Point2f[NumTailPoints + 1];
-                Point2f tailBasePoint = Utilities.CalculateNextPoint(0, 360, NumTailBaseAngles, value.Item2, DistTailBase, PixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
-                double tailAngle = Math.Atan2((tailBasePoint.X - value.Item2.X), (tailBasePoint.Y - value.Item2.Y)) * 180 / Math.PI;
-
-                points[0] = tailBasePoint;
+                points[0]= Utilities.CalculateNextPoint(0, 360, NumTailBaseAngles, value.Item2, DistTailBase, PixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
 
                 for (int i = 0; i < NumTailPoints; i++)
                 {
-                    tailAngle = i > 0 ? Math.Atan2((points[i].X - points[i - 1].X), (points[i].Y - points[i - 1].Y)) * 180 / Math.PI : tailAngle;
-                    tailAngle = tailAngle > 360 ? tailAngle - 360 : tailAngle < 0 ? tailAngle + 360 : tailAngle;
+                    double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) : Math.Atan2(points[i].Y - value.Item2.Y, points[i].X - value.Item2.X);
                     points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles, NumTailPointAngles, points[i], DistTailPoints, PixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
                 }
                 points = Utilities.AddOffsetToPoints(points, OffsetX, OffsetY);
@@ -84,23 +80,20 @@ namespace Bonsai.TailTracking
         public IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, Utilities.RawImageData>> source)
         {
             Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialTailBasePoints(DistTailBase);
-            //Console.WriteLine("Potential tailbase point 0 : {0}.\nPotential tailbase point 5 : {1}.\nPotential tailbase point 10 : {2}.\n", potentialTailBasePoints[0], potentialTailBasePoints[5], potentialTailBasePoints[10]);
             Point2f[] potentialTailPoints = Utilities.GeneratePotentialTailPoints(DistTailPoints, RangeTailPointAngles * Math.PI / 180);
-            //Console.WriteLine("Potential tailpoint 0 : {0}.\nPotential tailpoint 5 : {1}.\nPotential tailpoint 10 : {2}.\n", potentialTailPoints[0], potentialTailPoints[5], potentialTailPoints[10]);
             return source.Select(value =>
             {
 
                 Point2f[] points = new Point2f[NumTailPoints + 1];
-                //points[0] = Utilities.CalculateNextPoint(0, 2 * Math.PI, NumTailBaseAngles, value.Item1, DistTailBase, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                //points[0] = Utilities.CalculateNextPoint(0, 2 * Math.PI, potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                 points[0] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
 
                 for (int i = 0; i < NumTailPoints; i++)
                 {
                     double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X);
-                    //points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    //points[i + 1] = Utilities.CalculateTailPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                     //points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    //points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                 }
                 points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
                 return points;
