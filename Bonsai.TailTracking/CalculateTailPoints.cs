@@ -110,10 +110,18 @@ namespace Bonsai.TailTracking
             Point2f[] previousPoints = new Point2f[0];
             return source.Select(value =>
             {
-                Point2f[] points = new Point2f[NumTailPoints + 1];
-                points[0] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-
-                for (int i = 0; i < NumTailPoints; i++)
+                Point2f[] points = new Point2f[NumTailPoints + 2];
+                if (value.Item1.X.Equals(float.NaN) || value.Item1.Y.Equals(float.NaN))
+                {
+                    for (int i = 0; i < points.Length; i++)
+                    {
+                        points[i] = value.Item1;
+                    }
+                    return points;
+                }
+                points[0] = value.Item1;
+                points[1] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                for (int i = 1; i < NumTailPoints + 1; i++)
                 {
                     double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X) - rangeAngles;
                     int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
@@ -130,8 +138,8 @@ namespace Bonsai.TailTracking
                     }
                     points[i + 1] = nextPoint;
                 }
-                points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
 
+                points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
                 for (int i = 0; i < previousPoints.Length; i++)
                 {
                     points[i] = points[i].X - previousPoints[i].X > -1 && points[i].X - previousPoints[i].X < 1 && points[i].Y - previousPoints[i].Y > -1 && points[i].Y - previousPoints[i].Y < 1 ? previousPoints[i] : points[i];

@@ -19,7 +19,7 @@ namespace Bonsai.TailTracking
                 double yRange = cameraDrawParameters.YRange * projectorDrawParameters.YRange;
                 double xOffset = xRange < 1 ? cameraDrawParameters.XOffset * projectorDrawParameters.XRange + projectorDrawParameters.XOffset : projectorDrawParameters.XOffset;
                 double yOffset = yRange < 1 ? cameraDrawParameters.YOffset * projectorDrawParameters.YRange + projectorDrawParameters.YOffset : projectorDrawParameters.YOffset;
-                return new Utilities.DrawParameters(xOffset, yOffset, xRange, yRange, cameraDrawParameters.Fill);
+                return new Utilities.DrawParameters(xOffset, yOffset, xRange, yRange, cameraDrawParameters.Colour);
             });
         }
     }

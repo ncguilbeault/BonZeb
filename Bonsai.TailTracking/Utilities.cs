@@ -79,14 +79,14 @@ namespace Bonsai.TailTracking
             public double YOffset { get; set; }
             public double XRange { get; set; }
             public double YRange { get; set; }
-            public Scalar Fill { get; set; }
-            public DrawParameters(double xOffset, double yOffset, double xRange, double yRange, Scalar fill)
+            public Scalar Colour { get; set; }
+            public DrawParameters(double xOffset, double yOffset, double xRange, double yRange, Scalar colour)
             {
                 XOffset = xOffset;
                 YOffset = yOffset;
                 XRange = xRange;
                 YRange = yRange;
-                Fill = fill;
+                Colour = colour;
             }
         }
 
