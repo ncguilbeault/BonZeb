@@ -33,6 +33,14 @@ namespace Bonsai.TailTracking
             BinaryInvert = 1
         }
 
+        public enum Flip
+        {
+            None = 0,
+            Vertical = 1,
+            Horizontal = 2,
+            Both = 3
+        }
+
         public class RawMoments
         {
             public double M00;
@@ -65,6 +73,23 @@ namespace Bonsai.TailTracking
             }
         }
 
+        public class DrawParameters
+        {
+            public double XOffset { get; set; }
+            public double YOffset { get; set; }
+            public double XRange { get; set; }
+            public double YRange { get; set; }
+            public Scalar Fill { get; set; }
+            public DrawParameters(double xOffset, double yOffset, double xRange, double yRange, Scalar fill)
+            {
+                XOffset = xOffset;
+                YOffset = yOffset;
+                XRange = xRange;
+                YRange = yRange;
+                Fill = fill;
+            }
+        }
+
         private static double[] LinSpace(double a, double b, int length)
         {
 
@@ -81,7 +106,25 @@ namespace Bonsai.TailTracking
             return linSpace;
 
         }
+        public static Point2f CalculateNextPoint(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        {
 
+            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found with the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+
+            Point2f point = new Point2f(0, 0);
+
+            for (int i = 0; i < nIterations; i++)
+            {
+                int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
+                float potentialX = Math.Min(Math.Max(potentialPoints[index].X, 0), frameWidth - 1);
+                float potentialY = Math.Min(Math.Max(potentialPoints[index].Y, 0), frameHeight - 1);
+                point = i == 0 || (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X]) ? new Point2f(potentialX, potentialY) : point;
+            }
+
+            return point;
+        }
         public static Point CalculateNextPoint(double angle, double rangeAngles, int nAngles, Point initPoint, int radius, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
@@ -167,7 +210,31 @@ namespace Bonsai.TailTracking
 
             return point;
         }
+        public static Point2f FindCenterOfMassAlongArc(int startIteration, int nIterations, Point2f[] potentialPoints, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
+        {
 
+            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found with the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+
+            Point2f point = new Point2f(0, 0);
+            double M00 = 0, M01 = 0, M10 = 0;
+
+            for (int i = 0; i < nIterations; i++)
+            {
+                int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
+                double potentialX = Math.Min(Math.Max(potentialPoints[index].X, 0), frameWidth - 1);
+                double potentialY = Math.Min(Math.Max(potentialPoints[index].Y, 0), frameHeight - 1);
+                double pixelValue = (thresholdType == ThresholdType.Binary && byteArray[(int)potentialY * frameWidth + (int)potentialX] > thresholdValue) || (thresholdType == ThresholdType.BinaryInvert && byteArray[(int)potentialY * frameWidth + (int)potentialX] < thresholdValue) ? 255 : 0;
+                M00 += pixelValue;
+                M01 += pixelValue * potentialY;
+                M10 += pixelValue * potentialX;
+            }
+
+            point = M00 > 0 ? new Point2f((float)(M10 / M00), (float)(M01 / M00)) : point;
+
+            return point;
+        }
         public static Point2f FindCenterOfMassAlongArc(double angle, double rangeAngles, Point2f[] potentialPoints, int radius, Point2f initPoint, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
         {
 

@@ -53,32 +53,51 @@ namespace Bonsai.TailTracking
             });
 
         }
-        public IObservable<double[]> Process(IObservable<Point2f[]> source)
+        //public IObservable<double[]> Process(IObservable<Point2f[]> source)
+        //{
+        //    double[] prevTailCurvature = new double[0];
+        //    return source.Select(value =>
+        //    {
+        //        Point2f[] points = new Point2f[value.Length];
+        //        double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);
+        //        for (int i = 0; i < points.Length; i++)
+        //        {
+        //            points[i] = Utilities.RotatePoint(value[i], value[0], rotationAngle);
+        //        }
+        //        double[] tailCurvature = new double[points.Length - 1];
+        //        for (int i = 0; i < value.Length - 1; i++)
+        //        {
+        //            tailCurvature[i] = Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X) * 180 / Math.PI;
+        //            if (prevTailCurvature.Length > 0)
+        //            {
+        //                tailCurvature[i] = tailCurvature[i] - prevTailCurvature[i] > Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i] - prevTailCurvature[i]  < -Math.PI ? tailCurvature[i] + Math.PI * 2 : tailCurvature[i];
+        //            }
+        //        }
+        //        prevTailCurvature = tailCurvature;
+        //        return tailCurvature;
+        //    });
+        //}
+        public IObservable<double> Process(IObservable<Point2f[]> source)
         {
-            double[] prevTailCurvature = new double[0];
+            double? prevTailCurvature = null;
             return source.Select(value =>
             {
-                Point2f[] points = new Point2f[value.Length];
                 double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);
-                for (int i = 0; i < points.Length; i++)
+                Point2f[] points = Utilities.RotatePoints(value, value[0], rotationAngle);
+                double tailCurvature = 0;
+                for (int i = value.Length - 3; i < value.Length; i++)
                 {
-                    points[i] = Utilities.RotatePoint(value[i], value[0], rotationAngle);
+                    tailCurvature += Math.Atan2(points[i].Y - points[0].Y, points[i].X - points[0].X) * 180 / Math.PI;
                 }
-                double[] tailCurvature = new double[points.Length - 1];
-                for (int i = 0; i < value.Length - 1; i++)
+                double avgTailCurvature = tailCurvature / 3;
+                if (prevTailCurvature != null)
                 {
-                    tailCurvature[i] = Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X) * 180 / Math.PI;
-                    if (prevTailCurvature.Length > 0)
-                    {
-                        tailCurvature[i] = tailCurvature[i] - prevTailCurvature[i] > Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i] - prevTailCurvature[i]  < -Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i];
-                    }
+                    avgTailCurvature = avgTailCurvature - prevTailCurvature > Math.PI ? avgTailCurvature - Math.PI * 2 : avgTailCurvature - prevTailCurvature < -Math.PI ? avgTailCurvature + Math.PI * 2 : avgTailCurvature;
                 }
-                prevTailCurvature = tailCurvature;
-                return tailCurvature;
+                prevTailCurvature = avgTailCurvature;
+                return avgTailCurvature;
             });
-
         }
-
     }
 
 }

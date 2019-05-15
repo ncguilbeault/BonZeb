@@ -66,6 +66,8 @@
     <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
+    <Compile Include="DrawRectangle.cs" />
+    <Compile Include="MapDrawParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />
     <Compile Include="ExtractRawImageData.cs" />
     <Compile Include="ExtractTailCurvature.cs" />

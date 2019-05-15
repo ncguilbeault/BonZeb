@@ -77,27 +77,58 @@ namespace Bonsai.TailTracking
 
             });
         }
+        //public IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, Utilities.RawImageData>> source)
+        //{
+        //    Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialTailBasePoints(DistTailBase);
+        //    Point2f[] potentialTailPoints = Utilities.GeneratePotentialTailPoints(DistTailPoints, RangeTailPointAngles * Math.PI / 180);
+        //    return source.Select(value =>
+        //    {
+
+        //        Point2f[] points = new Point2f[NumTailPoints + 1];
+        //        points[0] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+
+        //        for (int i = 0; i < NumTailPoints; i++)
+        //        {
+        //            double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X);
+        //            //points[i + 1] = Utilities.CalculateTailPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+        //            points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+        //            //points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+        //            //points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+        //        }
+        //        points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
+        //        return points;
+
+        //    });
+        //}
         public IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, Utilities.RawImageData>> source)
         {
             Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialTailBasePoints(DistTailBase);
-            Point2f[] potentialTailPoints = Utilities.GeneratePotentialTailPoints(DistTailPoints, RangeTailPointAngles * Math.PI / 180);
+            Point2f[] potentialTailPoints = Utilities.GeneratePotentialTailBasePoints(DistTailPoints);
+            int nIterations = (int)(RangeTailPointAngles * potentialTailPoints.Length / 360);
+            double rangeAngles = RangeTailPointAngles * Math.PI / 360;
+            double twoPi = Math.PI * 2;
+            Point2f[] previousPoints = new Point2f[0];
             return source.Select(value =>
             {
-
                 Point2f[] points = new Point2f[NumTailPoints + 1];
                 points[0] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
 
                 for (int i = 0; i < NumTailPoints; i++)
                 {
-                    double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X);
-                    //points[i + 1] = Utilities.CalculateTailPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, potentialTailPoints, DistTailPoints, points[i], ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    //points[i + 1] = Utilities.FindCenterOfMassAlongArc(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    //points[i + 1] = Utilities.CalculateNextPoint(tailAngle, RangeTailPointAngles * Math.PI / 180, NumTailPointAngles, points[i], DistTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X) - rangeAngles;
+                    int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                    Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
+                    points[i + 1] = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    //points[i + 1] = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                 }
                 points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
-                return points;
 
+                for (int i = 0; i < previousPoints.Length; i++)
+                {
+                    points[i] = points[i].X - previousPoints[i].X > -1 && points[i].X - previousPoints[i].X < 1 && points[i].Y - previousPoints[i].Y > -1 && points[i].Y - previousPoints[i].Y < 1 ? previousPoints[i] : points[i];
+                }
+                previousPoints = points;
+                return points;
             });
         }
     }
