@@ -85,17 +85,17 @@ namespace Bonsai.TailTracking
                 double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);
                 Point2f[] points = Utilities.RotatePoints(value, value[0], rotationAngle);
                 double tailCurvature = 0;
-                for (int i = value.Length - 3; i < value.Length; i++)
+                for (int i = value.Length - 4; i < value.Length - 1; i++)
                 {
-                    tailCurvature += Math.Atan2(points[i].Y - points[0].Y, points[i].X - points[0].X) * 180 / Math.PI;
+                    tailCurvature = points[i + 1].Equals(points[i]) ? tailCurvature : tailCurvature + Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X) * 180 / Math.PI;
                 }
-                double avgTailCurvature = tailCurvature / 3;
+                tailCurvature /= 3;
                 if (prevTailCurvature != null)
                 {
-                    avgTailCurvature = avgTailCurvature - prevTailCurvature > Math.PI ? avgTailCurvature - Math.PI * 2 : avgTailCurvature - prevTailCurvature < -Math.PI ? avgTailCurvature + Math.PI * 2 : avgTailCurvature;
+                    tailCurvature = tailCurvature - prevTailCurvature > Math.PI ? tailCurvature - Math.PI * 2 : tailCurvature - prevTailCurvature < -Math.PI ? tailCurvature + Math.PI * 2 : tailCurvature;
                 }
-                prevTailCurvature = avgTailCurvature;
-                return avgTailCurvature;
+                prevTailCurvature = tailCurvature;
+                return tailCurvature;
             });
         }
     }
