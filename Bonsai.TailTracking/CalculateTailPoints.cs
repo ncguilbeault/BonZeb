@@ -123,10 +123,11 @@ namespace Bonsai.TailTracking
                 points[1] = Utilities.CalculateTailBasePoint(potentialTailBasePoints, DistTailBase, value.Item1, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                 for (int i = 1; i < NumTailPoints + 1; i++)
                 {
-                    double tailAngle = i > 0 ? Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles : Math.Atan2(points[i].Y - value.Item1.Y, points[i].X - value.Item1.X) - rangeAngles;
+                    double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
                     int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
                     Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
-                    Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    //Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, ThresholdType, ThresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, PixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                     if (nextPoint.Equals(new Point2f(0, 0)))
                     {
                         for (int j = i + 1; j < points.Length; j++)

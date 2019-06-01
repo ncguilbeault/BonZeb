@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="CalculateBackground.cs" />
     <Compile Include="CalculateCentroid.cs" />
+    <Compile Include="CalculateHeadingDirection.cs" />
     <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="CreatePoint2f.cs" />
     <Compile Include="CropImageAroundFish.cs" />
