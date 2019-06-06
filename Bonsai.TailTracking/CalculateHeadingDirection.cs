@@ -14,7 +14,8 @@ namespace Bonsai.TailTracking
             int count = 0;
             double? prevHeadingAngle = null;
             double? initHeadingAngle = null;
-            return source.Select(value => {
+            return source.Select(value => 
+            {
                 double headingAngle = Math.Atan2(value[0].Y - value[1].Y, value[0].X - value[1].X);
                 count = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? count - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? count + 1 : count;
                 initHeadingAngle = initHeadingAngle == null ? headingAngle : initHeadingAngle;

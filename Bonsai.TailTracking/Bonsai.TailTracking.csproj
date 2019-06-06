@@ -75,7 +75,6 @@
     <Compile Include="DrawTailPoints.cs" />
     <Compile Include="ExtractRawImageData.cs" />
     <Compile Include="ExtractTailCurvature.cs" />
-    <Compile Include="TrackTail.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -7,8 +7,6 @@ namespace Bonsai.TailTracking
 {
     public class MapDrawParameters : Transform<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>, Utilities.DrawParameters>
     {
-        [Description("Specifies how to flip the image.")]
-        public Utilities.Flip Flip { get; set; }
 
         public override IObservable<Utilities.DrawParameters> Process(IObservable<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>> source)
         {
