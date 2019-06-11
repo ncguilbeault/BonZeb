@@ -8,26 +8,18 @@ using OpenCV.Net;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Calculates the ongoing background of a video using the pixel search method.")]
+    [Description("Calculates the pixel-wise extrema over time using the pixel search method.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public unsafe class CalculateBackground : Transform<IplImage, IplImage>
+    public unsafe class CalculatePixelWiseExtrema : Transform<IplImage, IplImage>
     {
 
-        [Description("Method to use when calculating background. Darkest searches for the darkest pixels in the image whereas brightest searches for the brightest pixels.")]
+        [Description("Method to use when calculating pixel-wise extrema. Darkest maintains the darkest values for each pixel over time. Brightest maintains the brightest values for each pixel over time.")]
         public Utilities.PixelSearch PixelSearch { get; set; }
-
-        [Description("Resets the background when the workflow has started.")]
-        public bool ResetBackground { get; set; }
-
-        private byte[] background = new byte[0];
 
         public override IObservable<IplImage> Process(IObservable<IplImage> source)
         {
-            if (ResetBackground)
-            {
-                background = new byte[0];
-            }        
+            byte[] background = new byte[0];
             return source.Select(value =>
             {
                 Utilities.PixelSearch pixelSearch = PixelSearch;

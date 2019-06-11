@@ -7,7 +7,11 @@ using OpenCV.Net;
 
 namespace Bonsai.TailTracking
 {
-    public class CalculateHeadingDirection : Transform<Point2f[], double>
+
+    [Description("Calculates the continuous heading angle using the first two elements in an array of points.")]
+    [WorkflowElementCategory(ElementCategory.Transform)]
+
+    public class CalculateHeadingAngle : Transform<Point2f[], double>
     {
         public override IObservable<double> Process(IObservable<Point2f[]> source)
         {

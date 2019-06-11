@@ -7,15 +7,20 @@ using OpenCV.Net;
 
 namespace Bonsai.TailTracking
 {
+
+    [Description("Draws a rectangle and creates draw parameters.")]
+    [WorkflowElementCategory(ElementCategory.Transform)]
+
     public class DrawRectangle : Transform<IplImage, Utilities.DrawParameters>
     {
         [Editor("Bonsai.Vision.Design.IplImageInputRectangleEditor, Bonsai.Vision.Design", typeof(UITypeEditor))]
+        [Description("Region in the input image used for drawing rectangular region of interest.")]
         public Rect RegionOfInterest { get; set; }
 
         [Range(0, 255)]
         [Precision(0, 1)]
         [Editor(DesignTypes.SliderEditor, typeof(UITypeEditor))]
-        [Description("Colour used for drawing rectangular region of interest in shader.")]
+        [Description("Colour used for drawing rectangular region of interest.")]
         public Scalar Colour { get; set; }
 
         public override IObservable<Utilities.DrawParameters> Process(IObservable<IplImage> source)

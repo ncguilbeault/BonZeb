@@ -5,7 +5,11 @@ using System.Reactive.Linq;
 
 namespace Bonsai.TailTracking
 {
-    public class MapDrawParameters : Transform<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>, Utilities.DrawParameters>
+
+    [Description("Calibrates one set of draw parameters onto another set of draw parameters.")]
+    [WorkflowElementCategory(ElementCategory.Transform)]
+
+    public class CalibrateDrawParameters : Transform<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>, Utilities.DrawParameters>
     {
 
         public override IObservable<Utilities.DrawParameters> Process(IObservable<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>> source)

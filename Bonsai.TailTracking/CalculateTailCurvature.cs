@@ -7,20 +7,14 @@ using OpenCV.Net;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Extracts tail curvature from tail tracking.")]
+    [Description("Calculates the tail curvature by rotating an array of points around the angle between the first two points and calculating the angle between each pair of remaining points.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class ExtractTailCurvature : Transform<Point2f[], double[]>
+    public class CalculateTailCurvature : Transform<Point2f[], double[]>
     {
-        public ExtractTailCurvature()
-        {
-            prevTailCurvature = new double[0];
-        }
-
-        private double[] prevTailCurvature { get; set; }
-
         public override IObservable<double[]> Process(IObservable<Point2f[]> source)
         {
+            double[] prevTailCurvature = new double[0];
             return source.Select(value =>
             {
                 double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);

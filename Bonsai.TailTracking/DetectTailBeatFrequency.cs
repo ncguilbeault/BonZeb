@@ -6,19 +6,19 @@ using System.Reactive.Linq;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Detects tail beat frequency from tail curvature.")]
+    [Description("Detects tail beat frequency from tail curvature using a peak signal detection method to determine the time between successive positive peaks.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class DetectTailBeatFrequency : Transform<double, double>
     {
 
-        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in the tail angle.")]
+        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
         public double Delta { get; set; }
 
-        [Description("FrameRate is used to determine frequency by converting number of frames into seconds.")]
+        [Description("Frame rate of the camera or video. Used to determine the frequency.")]
         public double FrameRate { get; set; }
 
-        [Description("FrameWindow is used to determine the window in terms of number of frames for calculating frequency.")]
+        [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
         public int FrameWindow { get; set; }
 
         private int i = 0;

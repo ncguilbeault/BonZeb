@@ -6,16 +6,16 @@ using System.Reactive.Linq;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Detects tail beat frequency from tail curvature.")]
+    [Description("Detects bouts from tail curvature using a peak signal detection method.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class DetectBout : Transform<double, int>
     {
 
-        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in the tail angle.")]
+        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
         public double Delta { get; set; }
 
-        [Description("FrameWindow is used to determine the window in terms of number of frames for calculating frequency.")]
+        [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
         public int FrameWindow { get; set; }
 
         private int i = 0;
@@ -30,12 +30,9 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value =>
             {
-
                 double delta = Delta;
                 int frameWindow = FrameWindow;
-
                 i++;
-
                 if ((peaks.Length == 1 && (i - peaks[0]) > frameWindow) || (peaks.Length == 2 && (i - peaks[1]) > frameWindow))
                 {
                     Array.Clear(peaks, 0, peaks.Length);
@@ -46,18 +43,15 @@ namespace Bonsai.TailTracking
                     pos = 0;
                     i = 0;
                 }
-
                 if (value > maxVal)
                 {
                     maxVal = value;
                     pos = i;
                 }
-
                 if (value < minVal)
                 {
                     minVal = value;
                 }
-
                 if (findMax)
                 {
                     if (value < (maxVal - delta))
@@ -89,18 +83,12 @@ namespace Bonsai.TailTracking
                         findMax = true;
                     }
                 }
-
                 if (frequency == double.PositiveInfinity || frequency == double.NegativeInfinity)
                 {
                     frequency = 0;
                 }
-
                 return frequency;
-
             });
-
         }
-
     }
-
 }

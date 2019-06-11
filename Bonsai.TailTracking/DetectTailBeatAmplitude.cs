@@ -6,13 +6,13 @@ using System.Reactive.Linq;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Detects tail beat amplitude from tail curvature.")]
+    [Description("Detects extrema in tail beat amplitude from tail curvature using a peak signal detection method.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class DetectTailBeatAmplitude : Transform<double, double>
     {
 
-        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in the tail angle.")]
+        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
         public double Delta { get; set; }
 
         private bool findMax = true;
@@ -24,20 +24,16 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => 
             {
-
                 double delta = Delta;
                 amplitude = 0;
-
                 if (value > maxVal)
                 {
                     maxVal = value;
                 }
-
                 if (value < minVal)
                 {
                     minVal = value;
                 }
-
                 if (findMax)
                 {
                     if (value < (maxVal - delta))
@@ -56,13 +52,8 @@ namespace Bonsai.TailTracking
                         amplitude = maxVal;
                     }
                 }
-
                 return amplitude;
-
             });
-
         }
-
     }
-
 }

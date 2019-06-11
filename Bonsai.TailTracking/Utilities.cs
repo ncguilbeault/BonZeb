@@ -7,57 +7,33 @@ namespace Bonsai.TailTracking
 
     public sealed class Utilities
     {
-        public enum TailTrackingMethod
-        {
-            EyeTracking = 0,
-            SeededTailBasePoint = 1,
-            Centroid = 2
-        }
+
+        // A set of commonly used enum types, classes, and functions.
 
         public enum PixelSearch
         {
+            // Enum type used for searching pixel-wise extrema
             Darkest = 0,
             Brightest = 1
         }
 
-        public enum LocationOfTailCurvature
-        {
-            StartOfTail = 0,
-            MiddleOfTail = 1,
-            EndOfTail = 2
-        }
-
         public enum ThresholdType
         {
+            // Enum type used for determining threshold direction.
             Binary = 0,
             BinaryInvert = 1
         }
 
         public enum TailCalculationMethod
         {
+            // Enum type used for tail calculation method.
             CenterOfMass = 0,
             PixelSearch = 1,
         }
 
-        public class RawMoments
-        {
-            public double M00;
-            public double M01;
-            public double M10;
-            public RawMoments()
-            {
-
-            }
-            public void Initialize()
-            {
-                M00 = 0;
-                M01 = 0;
-                M10 = 0;
-            }
-        }
-
         public class RawImageData
         {
+            // Class used for creating a raw image data type.
             public byte[] ImageData { get; set; }
             public int Width { get; set; }
             public int Height { get; set; }
@@ -73,6 +49,7 @@ namespace Bonsai.TailTracking
 
         public class DrawParameters
         {
+            // Class used for creating a draw parameters type.
             public double XOffset { get; set; }
             public double YOffset { get; set; }
             public double XRange { get; set; }
@@ -88,28 +65,12 @@ namespace Bonsai.TailTracking
             }
         }
 
-        private static double[] LinSpace(double a, double b, int length)
-        {
-
-            /* Function that returns an array of values with known length linearly interspaced between values a and b. */
-            double[] linSpace = new double[length];
-            double range = b - a;
-            double step = range / length;
-
-            for (int i = 0; i < length; i++)
-            {
-                linSpace[i] = a + (step * i);
-            }
-
-            return linSpace;
-
-        }
         public static Point2f CalculateNextPoint(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
-            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            /*Function that returns a point that exists along an arc of known length from an initial point in an image.
             Point is found with the pixel search method.
-            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
 
             Point2f point = new Point2f(0, 0);
 
@@ -127,9 +88,9 @@ namespace Bonsai.TailTracking
         public static Point2f FindCenterOfMassAlongArc(int startIteration, int nIterations, Point2f[] potentialPoints, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
-            /* Function that returns a point that exists along an arc of known length from an initial point in an image.
+            /*Function that returns a point that exists along an arc of known length from an initial point in an image.
             Point is found with the pixel search method.
-            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array. */
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
 
             Point2f point = new Point2f(0, 0);
             double M00 = 0, M01 = 0, M10 = 0;
@@ -152,6 +113,7 @@ namespace Bonsai.TailTracking
 
         public static Point2f[] GeneratePotentialPoints(int radius)
         {
+            // Function that generates an array of points that lie on the circumference of a circle with a given radius and an origin at 0,0 using the midpoint circle algorithm.
             List<Point2f> points = new List<Point2f>();
             int X = radius;
             int Y = 0;
@@ -180,13 +142,9 @@ namespace Bonsai.TailTracking
             return points.ToArray();
         }
 
-        public static Point2f AddOffsetToPoint(Point2f point, int offsetX, int offsetY)
-        {
-            return new Point2f(point.X + offsetX, point.Y + offsetY);
-        }
-
         public static Point2f[] AddOffsetToPoints(Point2f[] points, int offsetX, int offsetY)
         {
+            // Function that applies an offset to an array of points.
             Point2f[] newPoints = new Point2f[points.Length];
             for (int i = 0; i < newPoints.Length; i++)
             {
@@ -195,13 +153,9 @@ namespace Bonsai.TailTracking
             return newPoints;
         }
 
-        public static Point2f RotatePoint(Point2f point, Point2f origin, double angle)
-        {
-            return new Point2f((float)((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)), (float)((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)));
-        }
-
         public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
         {
+            // Function that rotates a set of points around an origin by a given angle.
             Point2f[] newPoints = new Point2f[points.Length];
             for (int i = 0; i < newPoints.Length; i++)
             {
