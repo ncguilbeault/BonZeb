@@ -19,7 +19,9 @@ namespace Bonsai.TailTracking
 
         public override IObservable<Point2f> Generate()
         {
-            return Observable.Defer(() => Observable.Return(new Point2f(X, Y)));
+            float x = X;
+            float y = Y;
+            return Observable.Defer(() => Observable.Return(new Point2f(x, y)));
         }
     }
 }

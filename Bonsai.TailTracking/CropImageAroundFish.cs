@@ -27,9 +27,9 @@ namespace Bonsai.TailTracking
 
         public override IObservable<IplImage> Process(IObservable<IplImage> source)
         {
+            Rect rect = new Rect(X, Y, Width, Height);
             return source.Select(input =>
             {
-                Rect rect = new Rect(X, Y, Width, Height);
                 if (rect.Width > 0 && rect.Height > 0)
                 {
                     return input.GetSubRect(rect);

@@ -28,10 +28,10 @@ namespace Bonsai.TailTracking
 
         public override IObservable<int> Process(IObservable<double> source)
         {
+            double delta = Delta;
+            int frameWindow = FrameWindow;
             return source.Select(value =>
             {
-                double delta = Delta;
-                int frameWindow = FrameWindow;
                 i++;
                 if ((peaks.Length == 1 && (i - peaks[0]) > frameWindow) || (peaks.Length == 2 && (i - peaks[1]) > frameWindow))
                 {

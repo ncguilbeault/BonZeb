@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalculatePixelWiseExtrema.cs" />
+    <Compile Include="CalculateBackground.cs" />
     <Compile Include="CalculateCentroid.cs" />
     <Compile Include="CalculateHeadingAngle.cs" />
     <Compile Include="CalculateTailPoints.cs" />
@@ -73,7 +73,7 @@
     <Compile Include="DrawRectangle.cs" />
     <Compile Include="CalibrateDrawParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />
-    <Compile Include="ConvertImageData.cs" />
+    <Compile Include="ConvertToRawImageData.cs" />
     <Compile Include="CalculateTailCurvature.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

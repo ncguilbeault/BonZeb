@@ -21,25 +21,23 @@ namespace Bonsai.TailTracking
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
         public int FrameWindow { get; set; }
 
-        private int i = 0;
-        private double[] peaks = new double[2];
-        private bool findMax = true;
-        private double minVal = double.PositiveInfinity;
-        private double maxVal = double.NegativeInfinity;
-        private int pos = 0;
-        private double frequency = 0;
-
         public override IObservable<double> Process(IObservable<double> source)
         {
+            double delta = Delta;
+            double frameRate = FrameRate;
+            int frameWindow = FrameWindow;
+
+            int i = 0;
+            double[] peaks = new double[2];
+            bool findMax = true;
+            double minVal = double.PositiveInfinity;
+            double maxVal = double.NegativeInfinity;
+            int pos = 0;
+            double frequency = 0;
+
             return source.Select(value => 
             {
-
-                double delta = Delta;
-                double frameRate = FrameRate;
-                int frameWindow = FrameWindow;
-
                 i++;
-
                 if ((peaks.Length == 1 && (i - peaks[0]) > frameWindow) || (peaks.Length == 2 && (i - peaks[1]) > frameWindow))
                 {
                     Array.Clear(peaks, 0, peaks.Length);

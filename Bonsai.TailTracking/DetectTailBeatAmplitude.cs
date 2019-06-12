@@ -15,17 +15,15 @@ namespace Bonsai.TailTracking
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
         public double Delta { get; set; }
 
-        private bool findMax = true;
-        private double minVal = double.PositiveInfinity;
-        private double maxVal = double.NegativeInfinity;
-        private double amplitude = 0;
-
         public override IObservable<double> Process(IObservable<double> source)
         {
+            bool findMax = true;
+            double minVal = double.PositiveInfinity;
+            double maxVal = double.NegativeInfinity;
+            double delta = Delta;
             return source.Select(value => 
             {
-                double delta = Delta;
-                amplitude = 0;
+                double amplitude = 0;
                 if (value > maxVal)
                 {
                     maxVal = value;

@@ -12,7 +12,7 @@ namespace Bonsai.TailTracking
     [Description("Converts image data into byte array.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class ConvertImageData : Transform<IplImage, Utilities.RawImageData>
+    public class ConvertToRawImageData : Transform<IplImage, Utilities.RawImageData>
     {
         public override IObservable<Utilities.RawImageData> Process(IObservable<IplImage> source)
         {
