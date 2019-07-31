@@ -8,7 +8,9 @@ namespace Bonsai.TailTracking
     public sealed class Utilities
     {
 
-        // A set of commonly used enum types, classes, and functions.
+        // Represents the set of enum types, classes, and functions commonly used throughout the Bonsai.TailTracking package.
+
+        public const double twoPi = Math.PI * 2;
 
         public enum PixelSearch
         {
@@ -88,7 +90,7 @@ namespace Bonsai.TailTracking
         public static Point2f FindCenterOfMassAlongArc(int startIteration, int nIterations, Point2f[] potentialPoints, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
-            /*Function that returns a point that exists along an arc of known length from an initial point in an image.
+            /*Function that returns the center of mass along an arc of known length from an initial point in an image.
             Point is found with the pixel search method.
             Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
 

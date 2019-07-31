@@ -12,21 +12,20 @@ namespace Bonsai.TailTracking
     public class DetectTailBeatFrequency : Transform<double, double>
     {
 
+        private double delta;
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
-        public double Delta { get; set; }
+        public double Delta { get { return delta; } set { delta = value; } }
 
+        private double frameRate;
         [Description("Frame rate of the camera or video. Used to determine the frequency.")]
-        public double FrameRate { get; set; }
+        public double FrameRate { get { return frameRate; } set { frameRate = value; } }
 
+        private int frameWindow;
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
-        public int FrameWindow { get; set; }
+        public int FrameWindow { get { return frameWindow; } set { frameWindow = value; } }
 
         public override IObservable<double> Process(IObservable<double> source)
         {
-            double delta = Delta;
-            double frameRate = FrameRate;
-            int frameWindow = FrameWindow;
-
             int i = 0;
             double[] peaks = new double[2];
             bool findMax = true;
@@ -34,7 +33,6 @@ namespace Bonsai.TailTracking
             double maxVal = double.NegativeInfinity;
             int pos = 0;
             double frequency = 0;
-
             return source.Select(value => 
             {
                 i++;

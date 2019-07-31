@@ -19,85 +19,65 @@ namespace Bonsai.TailTracking
         {
             PixelSearch = Utilities.PixelSearch.Brightest;
             DistTailBase = 12;
-            NumTailBaseAngles = 20;
             NumTailPoints = 7;
             DistTailPoints = 6;
             RangeTailPointAngles = 120;
-            NumTailPointAngles = 10;
             OffsetX = 0;
             OffsetY = 0;
             ThresholdValue = 128;
             ThresholdType = Utilities.ThresholdType.Binary;
-            NoiseThreshold = 0;
             TailCalculationMethod = Utilities.TailCalculationMethod.PixelSearch;
         }
 
+        private int distTailBase;
+        private Point2f[] potentialTailBasePoints;
         [Description("Distance between the eyes and the tail trunk in number of pixels. Only used for the EyeTracking method and Centroid method.")]
-        public int DistTailBase { get; set; }
+        public int DistTailBase { get { return distTailBase; } set { distTailBase = value; potentialTailBasePoints = Utilities.GeneratePotentialPoints(value); } }
 
-        [Description("Number of angles to use for searching for the tail trunk. Only used for the EyeTracking method and Centroid method.")]
-        public int NumTailBaseAngles { get; set; }
-
+        private int numTailPoints;
         [Description("Number of tail points to draw.")]
-        public int NumTailPoints { get; set; }
+        public int NumTailPoints { get { return numTailPoints; } set { numTailPoints = value; } }
 
+        private int distTailPoints;
+        private Point2f[] potentialTailPoints;
         [Description("Distance between tail points in number of pixels.")]
-        public int DistTailPoints { get; set; }
+        public int DistTailPoints { get { return distTailPoints; } set { distTailPoints = value; potentialTailPoints = Utilities.GeneratePotentialPoints(value); } }
 
+        private double rangeTailPointAngles;
+        private double rangeAngles;
+        private int nIterations;
         [Description("Range of angles in degrees for searching for points along the arc of the previous point and radius of the distance between tail points.")]
-        public double RangeTailPointAngles { get; set; }
+        public double RangeTailPointAngles { get { return rangeTailPointAngles; } set { rangeTailPointAngles = value; nIterations = (int)(value * potentialTailPoints.Length / 360); rangeAngles = value * Math.PI / 360; } }
 
-        [Description("Number of angles to use for searching for pixels along the arc.")]
-        public int NumTailPointAngles { get; set; }
-
+        private Utilities.PixelSearch pixelSearch;
         [Description("Method to use when searching for Pixels. Darkest searches for darkest pixels in image whereas brightest searches for brightest pixels. Only used for the PixelSearch tail calculation method.")]
-        public Utilities.PixelSearch PixelSearch { get; set; }
+        public Utilities.PixelSearch PixelSearch { get { return pixelSearch; } set { pixelSearch = value; } }
 
+        private int offsetX;
         [Description("Offset to apply to X values of tail points.")]
-        public int OffsetX { get; set; }
+        public int OffsetX { get { return offsetX; } set { offsetX = value; } }
 
+        private int offsetY;
         [Description("Offset to apply to Y values of tail points.")]
-        public int OffsetY { get; set; }
+        public int OffsetY { get { return offsetY; } set { offsetY = value; } }
 
+        private double thresholdValue;
         [Description("Threshold value to use for finding the centroid. Only used for the CenterOfMass tail calculation method.")]
         [Range(0, 255)]
         [Precision(0, 1)]
         [Editor(DesignTypes.SliderEditor, typeof(UITypeEditor))]
-        public double ThresholdValue { get; set; }
+        public double ThresholdValue { get { return thresholdValue; } set { thresholdValue = value; } }
 
+        private Utilities.ThresholdType thresholdType;
         [Description("The type of threshold to apply to individual pixels. Only used for the CenterOfMass tail calculation method.")]
-        public Utilities.ThresholdType ThresholdType { get; set; }
+        public Utilities.ThresholdType ThresholdType { get { return thresholdType; } set { thresholdType = value; } }
 
-        [Description("Noise threshold that is used to check if the potential next point is within a certain radius of the previous point. Uses the previous point if it is within this redius. Value of 0 will always use the new point.")]
-        public double NoiseThreshold { get; set; }
-
+        private Utilities.TailCalculationMethod tailCalculationMethod;
         [Description("The method used for calculating tail points.")]
-        public Utilities.TailCalculationMethod TailCalculationMethod { get; set; }
+        public Utilities.TailCalculationMethod TailCalculationMethod { get { return tailCalculationMethod; } set { tailCalculationMethod = value; } }
 
         public override IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, Utilities.RawImageData>> source)
         {
-            int distTailBase = DistTailBase;
-            int numTailBaseAngles = NumTailBaseAngles;
-            int numTailPoints = NumTailPoints;
-            int distTailPoints = DistTailPoints;
-            double rangeTailPointAngles = RangeTailPointAngles;
-            int numTailPointAngles = NumTailPointAngles;
-            Utilities.PixelSearch pixelSearch = PixelSearch;
-            int offsetX = OffsetX;
-            int offsetY = OffsetY;
-            double thresholdValue = ThresholdValue;
-            Utilities.ThresholdType thresholdType = ThresholdType;
-            double noiseThreshold = NoiseThreshold;
-
-            Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialPoints(distTailBase);
-            Point2f[] potentialTailPoints = Utilities.GeneratePotentialPoints(distTailPoints);
-            int nIterations = (int)(rangeTailPointAngles * potentialTailPoints.Length / 360);
-            double rangeAngles = rangeTailPointAngles * Math.PI / 360;
-            double twoPi = Math.PI * 2;
-            Point2f[] previousPoints = new Point2f[0];
-
-            Utilities.TailCalculationMethod tailCalculationMethod = TailCalculationMethod;
-
             if (tailCalculationMethod == Utilities.TailCalculationMethod.PixelSearch)
             {
                 return source.Select(value =>
@@ -114,21 +94,15 @@ namespace Bonsai.TailTracking
                     points[0] = value.Item1;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
                     points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -148,21 +122,15 @@ namespace Bonsai.TailTracking
                     points[0] = value.Item1;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
                     points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -171,28 +139,7 @@ namespace Bonsai.TailTracking
 
         public IObservable<Point2f[]> Process(IObservable<Tuple<Utilities.RawImageData, Point2f>> source)
         {
-            int distTailBase = DistTailBase;
-            int numTailBaseAngles = NumTailBaseAngles;
-            int numTailPoints = NumTailPoints;
-            int distTailPoints = DistTailPoints;
-            double rangeTailPointAngles = RangeTailPointAngles;
-            int numTailPointAngles = NumTailPointAngles;
-            Utilities.PixelSearch pixelSearch = PixelSearch;
-            int offsetX = OffsetX;
-            int offsetY = OffsetY;
-            double thresholdValue = ThresholdValue;
-            Utilities.ThresholdType thresholdType = ThresholdType;
-            double noiseThreshold = NoiseThreshold;
-
-            Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialPoints(distTailBase);
-            Point2f[] potentialTailPoints = Utilities.GeneratePotentialPoints(distTailPoints);
-            int nIterations = (int)(rangeTailPointAngles * potentialTailPoints.Length / 360);
-            double rangeAngles = rangeTailPointAngles * Math.PI / 360;
-            double twoPi = Math.PI * 2;
             Point2f[] previousPoints = new Point2f[0];
-
-            Utilities.TailCalculationMethod tailCalculationMethod = TailCalculationMethod;
-
             if (tailCalculationMethod == Utilities.TailCalculationMethod.PixelSearch)
             {
                 return source.Select(value =>
@@ -209,21 +156,15 @@ namespace Bonsai.TailTracking
                     points[0] = value.Item2;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
                     points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -243,21 +184,15 @@ namespace Bonsai.TailTracking
                     points[0] = value.Item2;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
                     points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -265,28 +200,7 @@ namespace Bonsai.TailTracking
         }
         public IObservable<Point2f[]> Process(IObservable<Tuple<Point2f, IplImage>> source)
         {
-            int distTailBase = DistTailBase;
-            int numTailBaseAngles = NumTailBaseAngles;
-            int numTailPoints = NumTailPoints;
-            int distTailPoints = DistTailPoints;
-            double rangeTailPointAngles = RangeTailPointAngles;
-            int numTailPointAngles = NumTailPointAngles;
-            Utilities.PixelSearch pixelSearch = PixelSearch;
-            int offsetX = OffsetX;
-            int offsetY = OffsetY;
-            double thresholdValue = ThresholdValue;
-            Utilities.ThresholdType thresholdType = ThresholdType;
-            double noiseThreshold = NoiseThreshold;
-
-            Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialPoints(distTailBase);
-            Point2f[] potentialTailPoints = Utilities.GeneratePotentialPoints(distTailPoints);
-            int nIterations = (int)(rangeTailPointAngles * potentialTailPoints.Length / 360);
-            double rangeAngles = rangeTailPointAngles * Math.PI / 360;
-            double twoPi = Math.PI * 2;
             Point2f[] previousPoints = new Point2f[0];
-
-            Utilities.TailCalculationMethod tailCalculationMethod = TailCalculationMethod;
-
             if (tailCalculationMethod == Utilities.TailCalculationMethod.PixelSearch)
             {
                 return source.Select(value =>
@@ -305,21 +219,15 @@ namespace Bonsai.TailTracking
                     byte[] imageData = new byte[value.Item2.WidthStep * value.Item2.Height];
                     Marshal.Copy(value.Item2.ImageData, imageData, 0, value.Item2.WidthStep * value.Item2.Height);
                     points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -341,21 +249,15 @@ namespace Bonsai.TailTracking
                     byte[] imageData = new byte[value.Item2.WidthStep * value.Item2.Height];
                     Marshal.Copy(value.Item2.ImageData, imageData, 0, value.Item2.WidthStep * value.Item2.Height);
                     points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, imageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, imageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -364,28 +266,7 @@ namespace Bonsai.TailTracking
 
         public IObservable<Point2f[]> Process(IObservable<Tuple<IplImage, Point2f>> source)
         {
-            int distTailBase = DistTailBase;
-            int numTailBaseAngles = NumTailBaseAngles;
-            int numTailPoints = NumTailPoints;
-            int distTailPoints = DistTailPoints;
-            double rangeTailPointAngles = RangeTailPointAngles;
-            int numTailPointAngles = NumTailPointAngles;
-            Utilities.PixelSearch pixelSearch = PixelSearch;
-            int offsetX = OffsetX;
-            int offsetY = OffsetY;
-            double thresholdValue = ThresholdValue;
-            Utilities.ThresholdType thresholdType = ThresholdType;
-            double noiseThreshold = NoiseThreshold;
-
-            Point2f[] potentialTailBasePoints = Utilities.GeneratePotentialPoints(distTailBase);
-            Point2f[] potentialTailPoints = Utilities.GeneratePotentialPoints(distTailPoints);
-            int nIterations = (int)(rangeTailPointAngles * potentialTailPoints.Length / 360);
-            double rangeAngles = rangeTailPointAngles * Math.PI / 360;
-            double twoPi = Math.PI * 2;
             Point2f[] previousPoints = new Point2f[0];
-
-            Utilities.TailCalculationMethod tailCalculationMethod = TailCalculationMethod;
-
             if (tailCalculationMethod == Utilities.TailCalculationMethod.PixelSearch)
             {
                 return source.Select(value =>
@@ -404,21 +285,15 @@ namespace Bonsai.TailTracking
                     byte[] imageData = new byte[value.Item1.WidthStep * value.Item1.Height];
                     Marshal.Copy(value.Item1.ImageData, imageData, 0, value.Item1.WidthStep * value.Item1.Height);
                     points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }
@@ -440,21 +315,15 @@ namespace Bonsai.TailTracking
                     byte[] imageData = new byte[value.Item1.WidthStep * value.Item1.Height];
                     Marshal.Copy(value.Item1.ImageData, imageData, 0, value.Item1.WidthStep * value.Item1.Height);
                     points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, imageData);
-                    for (int i = 1; i < NumTailPoints + 1; i++)
+                    for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
-                        int startIteration = tailAngle < 0 ? (int)((tailAngle + twoPi) * potentialTailPoints.Length / twoPi) : (int)(tailAngle * potentialTailPoints.Length / twoPi);
+                        int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                         Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                         Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, imageData);
                         points[i + 1] = nextPoint;
                     }
-
                     points = offsetX != 0 || offsetY != 0 ? Utilities.AddOffsetToPoints(points, offsetX, offsetY) : points;
-                    for (int i = 0; i < previousPoints.Length; i++)
-                    {
-                        points[i] = points[i].X - previousPoints[i].X > -(noiseThreshold / 2) && points[i].X - previousPoints[i].X < (noiseThreshold / 2) && points[i].Y - previousPoints[i].Y > -(noiseThreshold / 2) && points[i].Y - previousPoints[i].Y < (noiseThreshold / 2) ? previousPoints[i] : points[i];
-                    }
-                    previousPoints = points;
                     return points;
                 });
             }

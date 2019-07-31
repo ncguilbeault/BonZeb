@@ -12,11 +12,13 @@ namespace Bonsai.TailTracking
     public class DetectBout : Transform<double, int>
     {
 
+        private double delta;
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
-        public double Delta { get; set; }
+        public double Delta { get { return delta; } set { delta = value; } }
 
+        private int frameWindow;
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
-        public int FrameWindow { get; set; }
+        public int FrameWindow { get { return frameWindow; } set { frameWindow = value; } }
 
         private int i = 0;
         private double[] peaks = new double[2];
@@ -28,8 +30,6 @@ namespace Bonsai.TailTracking
 
         public override IObservable<int> Process(IObservable<double> source)
         {
-            double delta = Delta;
-            int frameWindow = FrameWindow;
             return source.Select(value =>
             {
                 i++;

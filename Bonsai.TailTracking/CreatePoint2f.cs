@@ -11,16 +11,16 @@ namespace Bonsai.TailTracking
 
     public class CreatePoint2f : Source<Point2f>
     {
+        private float x;
         [Description("X value to use for the point2f variable.")]
-        public float X { get; set; }
+        public float X { get { return x; } set { x = value; } }
 
+        private float y;
         [Description("Y value to use for the point2f variable.")]
-        public float Y { get; set; }
+        public float Y { get { return y; } set { y = value; } }
 
         public override IObservable<Point2f> Generate()
         {
-            float x = X;
-            float y = Y;
             return Observable.Defer(() => Observable.Return(new Point2f(x, y)));
         }
     }
