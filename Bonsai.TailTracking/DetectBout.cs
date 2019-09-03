@@ -12,13 +12,11 @@ namespace Bonsai.TailTracking
     public class DetectBout : Transform<double, int>
     {
 
-        private double delta;
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
-        public double Delta { get { return delta; } set { delta = value; } }
+        public double Delta { get; set; }
 
-        private int frameWindow;
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset.")]
-        public int FrameWindow { get { return frameWindow; } set { frameWindow = value; } }
+        public int FrameWindow { get; set; }
 
         private int i = 0;
         private double[] peaks = new double[2];
@@ -33,7 +31,7 @@ namespace Bonsai.TailTracking
             return source.Select(value =>
             {
                 i++;
-                if ((peaks.Length == 1 && (i - peaks[0]) > frameWindow) || (peaks.Length == 2 && (i - peaks[1]) > frameWindow))
+                if ((peaks.Length == 1 && (i - peaks[0]) > FrameWindow) || (peaks.Length == 2 && (i - peaks[1]) > FrameWindow))
                 {
                     Array.Clear(peaks, 0, peaks.Length);
                     findMax = true;
@@ -54,7 +52,7 @@ namespace Bonsai.TailTracking
                 }
                 if (findMax)
                 {
-                    if (value < (maxVal - delta))
+                    if (value < (maxVal - Delta))
                     {
                         if (peaks.Length == 0)
                         {
@@ -77,7 +75,7 @@ namespace Bonsai.TailTracking
                 }
                 else
                 {
-                    if (value > (minVal + delta))
+                    if (value > (minVal + Delta))
                     {
                         maxVal = value;
                         findMax = true;

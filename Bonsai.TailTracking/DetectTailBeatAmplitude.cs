@@ -12,9 +12,8 @@ namespace Bonsai.TailTracking
     public class DetectTailBeatAmplitude : Transform<double, double>
     {
 
-        private double delta;
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal.")]
-        public double Delta { get { return delta; } set { delta = value; } }
+        public double Delta { get; set; }
 
         public override IObservable<double> Process(IObservable<double> source)
         {
@@ -34,7 +33,7 @@ namespace Bonsai.TailTracking
                 }
                 if (findMax)
                 {
-                    if (value < (maxVal - delta))
+                    if (value < (maxVal - Delta))
                     {
                         minVal = value;
                         findMax = false;
@@ -43,7 +42,7 @@ namespace Bonsai.TailTracking
                 }
                 else
                 {
-                    if (value > (minVal + delta))
+                    if (value > (minVal + Delta))
                     {
                         maxVal = value;
                         findMax = true;

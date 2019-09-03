@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Drawing.Design;
 using OpenCV.Net;
 
 namespace Bonsai.TailTracking
@@ -13,10 +12,8 @@ namespace Bonsai.TailTracking
 
     public class CalculateHeadingAngle : Transform<Point2f[], double>
     {
-
-        private bool initZeroAngle;
         [Description("Number of tail segments to calculate.")]
-        public bool InitializeZeroAngle { get { return initZeroAngle; } set { initZeroAngle = value; } }
+        public bool InitializeZeroAngle { get; set; }
 
         public override IObservable<double> Process(IObservable<Point2f[]> source)
         {
@@ -26,10 +23,10 @@ namespace Bonsai.TailTracking
             return source.Select(value => 
             {
                 double headingAngle = Math.Atan2(value[0].Y - value[1].Y, value[0].X - value[1].X);
-                initHeadingAngle = initHeadingAngle == null && initZeroAngle ? headingAngle : 0;
+                initHeadingAngle = initHeadingAngle == null && InitializeZeroAngle ? headingAngle : 0;
                 count = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? count - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? count + 1 : count;
                 prevHeadingAngle = headingAngle;
-                return (headingAngle - (double)initHeadingAngle + count * 2 * Math.PI) * 180 / Math.PI;
+                return Utilities.ToDegrees(headingAngle - (double)initHeadingAngle + count * Utilities.twoPi);
             });
         }
     }

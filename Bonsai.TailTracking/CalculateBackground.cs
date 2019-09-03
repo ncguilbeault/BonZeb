@@ -12,19 +12,19 @@ namespace Bonsai.TailTracking
 
     public class CalculateBackground : Transform<IplImage, IplImage>
     {
-        private Utilities.PixelSearch pixelSearch;
+
         [Description("Method to use for comparing pixels. Darkest maintains the darkest values for each pixel are maintained. Brightest maintains the brightest values for each pixel are maintained.")]
-        public Utilities.PixelSearch PixelSearch { get { return pixelSearch; } set { pixelSearch = value; } }
+        public Utilities.PixelSearch PixelSearch { get; set; }
 
         private int noiseThreshold;
         [Description("Noise threshold that is used to check if the current pixel value is sufficiently different from the background value.")]
-        public int NoiseThreshold { get { return noiseThreshold; } set { noiseThreshold = value; } }
+        public int NoiseThreshold { get => noiseThreshold; set => noiseThreshold = value > 0 ? value : 0; }
 
         public override IObservable<IplImage> Process(IObservable<IplImage> source)
         {
             IplImage background = null;
 
-            if (pixelSearch == Utilities.PixelSearch.Brightest)
+            if (PixelSearch == Utilities.PixelSearch.Brightest)
             {
                 return source.Select(value =>
                 {
@@ -48,7 +48,7 @@ namespace Bonsai.TailTracking
                     return background;
                 });
             }
-            else if (pixelSearch == Utilities.PixelSearch.Darkest)
+            else if (PixelSearch == Utilities.PixelSearch.Darkest)
             {
                 return source.Select(value =>
                 {

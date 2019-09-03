@@ -74,6 +74,7 @@
     <Compile Include="DetectBout.cs" />
     <Compile Include="DetectTailBeatAmplitude.cs" />
     <Compile Include="DetectTailBeatFrequency.cs" />
+    <Compile Include="DrawEyeAngles.cs" />
     <Compile Include="DrawRectangle.cs" />
     <Compile Include="CalibrateDrawParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />

@@ -13,27 +13,23 @@ namespace Bonsai.TailTracking
     public class CropImageAroundFish : Transform<IplImage, IplImage>
     {
 
-        private int x;
         [Description("X value to use for the offset of the crop.")]
-        public int X { get { return x; } set { x = value; } }
+        public int X { get; set; }
 
-        private int y;
         [Description("Y value to use for the offset of the crop.")]
-        public int Y { get { return y; } set { y = value; } }
+        public int Y { get; set; }
 
-        private int width;
         [Description("Width of the crop.")]
-        public int Width { get { return width; } set { width = value; } }
+        public int Width { get; set; }
 
-        private int height;
         [Description("Height of the crop.")]
-        public int Height { get { return height; } set { height = value; } }
+        public int Height { get; set; }
 
         public override IObservable<IplImage> Process(IObservable<IplImage> source)
         {
             return source.Select(input =>
             {
-                Rect rect = new Rect(x, y, width, height);
+                Rect rect = new Rect(X, Y, Width, Height);
                 if (rect.Width > 0 && rect.Height > 0)
                 {
                     return input.GetSubRect(rect);
