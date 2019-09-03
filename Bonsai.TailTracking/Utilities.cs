@@ -165,5 +165,11 @@ namespace Bonsai.TailTracking
             }
             return newPoints;
         }
+
+        public static Point2f RotatePoint(Point2f point, Point2f origin, double angle)
+        {
+            // Function that rotates a single point around an origin by a given angle.
+            return new Point2f((float)((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)), (float)((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)));
+        }
     }
 }

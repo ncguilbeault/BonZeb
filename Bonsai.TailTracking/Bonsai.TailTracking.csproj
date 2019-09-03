@@ -35,6 +35,9 @@
       <HintPath>..\packages\Bonsai.Core.2.3.0\lib\net45\Bonsai.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Bonsai.Vision">
+      <HintPath>..\packages\Bonsai.Vision.2.3.0\lib\net45\Bonsai.Vision.dll</HintPath>
+    </Reference>
     <Reference Include="OpenCV.Net">
       <HintPath>..\packages\OpenCV.Net.3.3.1\lib\net40\OpenCV.Net.dll</HintPath>
     </Reference>
@@ -63,6 +66,7 @@
   <ItemGroup>
     <Compile Include="CalculateBackground.cs" />
     <Compile Include="CalculateCentroid.cs" />
+    <Compile Include="CalculateEyeAngles.cs" />
     <Compile Include="CalculateHeadingAngle.cs" />
     <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="CreatePoint2f.cs" />

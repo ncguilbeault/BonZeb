@@ -19,7 +19,8 @@ namespace Bonsai.TailTracking
         {
             PixelSearch = Utilities.PixelSearch.Brightest;
             DistTailBase = 12;
-            NumTailPoints = 7;
+            HeadingDirection = -1;
+            NumTailSegments = 7;
             DistTailPoints = 6;
             RangeTailPointAngles = 120;
             OffsetX = 0;
@@ -32,22 +33,26 @@ namespace Bonsai.TailTracking
         private int distTailBase;
         private Point2f[] potentialTailBasePoints;
         [Description("Distance between the eyes and the tail trunk in number of pixels. Only used for the EyeTracking method and Centroid method.")]
-        public int DistTailBase { get { return distTailBase; } set { distTailBase = value; potentialTailBasePoints = Utilities.GeneratePotentialPoints(value); } }
+        public int DistTailBase { get { return distTailBase; } set { distTailBase = value > 0 ? value : 0; potentialTailBasePoints = Utilities.GeneratePotentialPoints(value); } }
 
-        private int numTailPoints;
-        [Description("Number of tail points to draw.")]
-        public int NumTailPoints { get { return numTailPoints; } set { numTailPoints = value; } }
+        private int headingDirection;
+        [Description("Angle of heading direction. If value is -1, no heading direction will be used. Otherwise, the heading direction supplied will seed the tail tracking search algorithm.")]
+        public int HeadingDirection { get { return headingDirection; } set { headingDirection = value < 0 ? -1 : value > 360 ? 360 : value ; } }
+
+        private int numTailSegments;
+        [Description("Number of tail segments to calculate.")]
+        public int NumTailSegments { get { return numTailSegments; } set { numTailSegments = value > 0 ? value : 0; } }
 
         private int distTailPoints;
         private Point2f[] potentialTailPoints;
         [Description("Distance between tail points in number of pixels.")]
-        public int DistTailPoints { get { return distTailPoints; } set { distTailPoints = value; potentialTailPoints = Utilities.GeneratePotentialPoints(value); } }
+        public int DistTailPoints { get { return distTailPoints; } set { distTailPoints = value > 0 ? value : 0; potentialTailPoints = Utilities.GeneratePotentialPoints(value); } }
 
         private double rangeTailPointAngles;
         private double rangeAngles;
         private int nIterations;
         [Description("Range of angles in degrees for searching for points along the arc of the previous point and radius of the distance between tail points.")]
-        public double RangeTailPointAngles { get { return rangeTailPointAngles; } set { rangeTailPointAngles = value; nIterations = (int)(value * potentialTailPoints.Length / 360); rangeAngles = value * Math.PI / 360; } }
+        public double RangeTailPointAngles { get { return rangeTailPointAngles; } set { rangeTailPointAngles = value < 0 ? 0 : value > 360 ? 360 : value; nIterations = (int)(value * potentialTailPoints.Length / 360); rangeAngles = value * Math.PI / 360; } }
 
         private Utilities.PixelSearch pixelSearch;
         [Description("Method to use when searching for Pixels. Darkest searches for darkest pixels in image whereas brightest searches for brightest pixels. Only used for the PixelSearch tail calculation method.")]
@@ -82,7 +87,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item1.X.Equals(float.NaN) || value.Item1.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -93,7 +98,7 @@ namespace Bonsai.TailTracking
                     }
                     points[0] = value.Item1;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
-                    points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -110,7 +115,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item1.X.Equals(float.NaN) || value.Item1.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -121,7 +126,7 @@ namespace Bonsai.TailTracking
                     }
                     points[0] = value.Item1;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
-                    points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, value.Item2.ImageData);
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -144,7 +149,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item2.X.Equals(float.NaN) || value.Item2.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -155,7 +160,7 @@ namespace Bonsai.TailTracking
                     }
                     points[0] = value.Item2;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
-                    points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -172,7 +177,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item2.X.Equals(float.NaN) || value.Item2.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -183,7 +188,7 @@ namespace Bonsai.TailTracking
                     }
                     points[0] = value.Item2;
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
-                    points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, value.Item1.ImageData);
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -205,7 +210,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item1.X.Equals(float.NaN) || value.Item1.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -218,7 +223,7 @@ namespace Bonsai.TailTracking
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
                     byte[] imageData = new byte[value.Item2.WidthStep * value.Item2.Height];
                     Marshal.Copy(value.Item2.ImageData, imageData, 0, value.Item2.WidthStep * value.Item2.Height);
-                    points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData); 
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -235,7 +240,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item1.X.Equals(float.NaN) || value.Item1.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -248,7 +253,7 @@ namespace Bonsai.TailTracking
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item1.X, (int)value.Item1.Y);
                     byte[] imageData = new byte[value.Item2.WidthStep * value.Item2.Height];
                     Marshal.Copy(value.Item2.ImageData, imageData, 0, value.Item2.WidthStep * value.Item2.Height);
-                    points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item2.WidthStep, value.Item2.Height, imageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item2.WidthStep, value.Item2.Height, imageData); 
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -271,7 +276,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item2.X.Equals(float.NaN) || value.Item2.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -284,7 +289,7 @@ namespace Bonsai.TailTracking
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
                     byte[] imageData = new byte[value.Item1.WidthStep * value.Item1.Height];
                     Marshal.Copy(value.Item1.ImageData, imageData, 0, value.Item1.WidthStep * value.Item1.Height);
-                    points[1] = Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData); 
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -301,7 +306,7 @@ namespace Bonsai.TailTracking
             {
                 return source.Select(value =>
                 {
-                    Point2f[] points = new Point2f[numTailPoints + 2];
+                    Point2f[] points = new Point2f[numTailSegments + 2];
                     if (value.Item2.X.Equals(float.NaN) || value.Item2.Y.Equals(float.NaN))
                     {
                         for (int i = 0; i < points.Length; i++)
@@ -314,7 +319,7 @@ namespace Bonsai.TailTracking
                     Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)value.Item2.X, (int)value.Item2.Y);
                     byte[] imageData = new byte[value.Item1.WidthStep * value.Item1.Height];
                     Marshal.Copy(value.Item1.ImageData, imageData, 0, value.Item1.WidthStep * value.Item1.Height);
-                    points[1] = Utilities.FindCenterOfMassAlongArc(0, potentialTailBasePoints.Length, newPotentialTailBasePoints, thresholdType, thresholdValue, value.Item1.WidthStep, value.Item1.Height, imageData);
+                    points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, pixelSearch, value.Item1.WidthStep, value.Item1.Height, imageData); 
                     for (int i = 1; i < points.Length - 1; i++)
                     {
                         double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
