@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using OpenCV.Net;
 
 namespace Bonsai.TailTracking
@@ -8,7 +9,7 @@ namespace Bonsai.TailTracking
     public sealed class Utilities
     {
 
-        // Represents the set of enum types, classes, and functions commonly used throughout the Bonsai.TailTracking package.
+        // Contains useful enum types, classes, and functions that are repeatedly used throughout the Bonsai.TailTracking package.
 
         public const double twoPi = Math.PI * 2;
 
@@ -175,6 +176,13 @@ namespace Bonsai.TailTracking
         public static double ToDegrees(double radians)
         {
             return radians * 180 / Math.PI;
+        }
+
+        public static byte[] ConvertIplImageToByteArray(IplImage image)
+        {
+            byte[] imageData = new byte[image.WidthStep * image.Height];
+            Marshal.Copy(image.ImageData, imageData, 0, image.WidthStep * image.Height);
+            return imageData;
         }
     }
 }

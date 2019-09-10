@@ -9,7 +9,7 @@ using Bonsai.Vision;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Draws tracking points onto image.")]
+    [Description("Draws eye angles onto eyes in image.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class DrawEyeAngles : Transform<Tuple<IplImage, ConnectedComponentCollection>, IplImage>
@@ -32,50 +32,34 @@ namespace Bonsai.TailTracking
         public int Thickness { get => thickness; set => thickness = value < 1 ? 1 : value; }
 
         private int lineLength;
-        [Description("Thickness of tracking lines.")]
+        [Description("Langth of tracking lines.")]
         public int LineLength { get => lineLength; set => lineLength = value < 1 ? 1 : value; }
 
         public override IObservable<IplImage> Process(IObservable<Tuple<IplImage, ConnectedComponentCollection>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                foreach (ConnectedComponent connectedComponent in value.Item2)
-                {
-                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.Y)), new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation) + connectedComponent.Centroid.Y)), Colour, thickness);
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawEyeAnglesFunc(value.Item2, value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<ConnectedComponentCollection, IplImage>> source)
         {
-            return source.Select(value =>
+            return source.Select(value => DrawEyeAnglesFunc(value.Item1, value.Item2));
+        }
+        IplImage DrawEyeAnglesFunc(ConnectedComponentCollection eyes, IplImage image)
+        {
+            IplImage newImage;
+            if (image.Channels == 1)
             {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                foreach (ConnectedComponent connectedComponent in value.Item1)
-                {
-                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.Y)), new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation) + connectedComponent.Centroid.Y)), Colour, thickness);
-                }
-                return newImage;
-            });
+                newImage = new IplImage(new Size(image.Width, image.Height), image.Depth, 3);
+                CV.CvtColor(image, newImage, ColorConversion.Gray2Bgr);
+            }
+            else
+            {
+                newImage = image.Clone();
+            }
+            foreach (ConnectedComponent eye in eyes)
+            {
+                CV.Line(newImage, new Point((int)(lineLength * Math.Cos(eye.Orientation + Math.PI) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation + Math.PI) + eye.Centroid.Y)), new Point((int)(lineLength * Math.Cos(eye.Orientation) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation) + eye.Centroid.Y)), Colour, thickness);
+            }
+            return newImage;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Bonsai.TailTracking
                 initHeadingAngle = initHeadingAngle == null && InitializeZeroAngle ? headingAngle : 0;
                 count = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? count - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? count + 1 : count;
                 prevHeadingAngle = headingAngle;
-                return Utilities.ToDegrees(headingAngle - (double)initHeadingAngle + count * Utilities.twoPi);
+                return headingAngle - (double)initHeadingAngle + (count * Utilities.twoPi);
             });
         }
     }

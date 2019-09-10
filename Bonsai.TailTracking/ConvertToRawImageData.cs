@@ -18,8 +18,7 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value =>
             {
-                byte[] imageData = new byte[value.WidthStep * value.Size.Height];
-                Marshal.Copy(value.ImageData, imageData, 0, value.WidthStep * value.Size.Height);
+                byte[] imageData = Utilities.ConvertIplImageToByteArray(value);
                 return new Utilities.RawImageData(imageData, value.Size.Width, value.Size.Height, value.WidthStep);
             });
         }

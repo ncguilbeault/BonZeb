@@ -12,9 +12,10 @@ namespace Bonsai.TailTracking
 
     public class CalculateTailCurvature : Transform<Point2f[], double[]>
     {
+        private double[] prevTailCurvature = new double[0];
         public override IObservable<double[]> Process(IObservable<Point2f[]> source)
         {
-            double[] prevTailCurvature = new double[0];
+            prevTailCurvature = new double[0];
             return source.Select(value =>
             {
                 double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);

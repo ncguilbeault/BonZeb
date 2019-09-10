@@ -54,9 +54,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                foreach (Point2f tailPoint in value.Item2)
+                foreach (Point2f point in value.Item2)
                 {
-                    CV.Circle(newImage, new Point((int)tailPoint.X, (int)tailPoint.Y), radius, Colour, thickness);
+                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -76,9 +76,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                foreach (Point2f tailPoint in value.Item1)
+                foreach (Point2f point in value.Item1)
                 {
-                    CV.Circle(newImage, new Point((int)tailPoint.X, (int)tailPoint.Y), radius, Colour, thickness);
+                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -117,14 +117,7 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                if (!Fill)
-                {
-                    CV.Circle(newImage, new Point((int)value.Item2.X, (int)value.Item2.Y), radius, Colour, thickness);
-                }
-                else
-                {
-                    CV.Circle(newImage, new Point((int)value.Item2.X, (int)value.Item2.Y), radius, Colour, -1);
-                }
+                CV.Circle(newImage, new Point((int)value.Item2.X, (int)value.Item2.Y), radius, Colour, thickness);
                 return newImage;
             });
         }
@@ -143,18 +136,11 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                for (int i = 0; i < value.Item1.Length; i++)
+                foreach (Point2f[] points in value.Item1)
                 {
-                    for (int j = 0; j < value.Item1[i].Length; j++)
+                    foreach (Point2f point in points)
                     {
-                        if (!Fill)
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item1[i][j].X, (int)value.Item1[i][j].Y), radius, Colour, thickness);
-                        }
-                        else
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item1[i][j].X, (int)value.Item1[i][j].Y), radius, Colour, -1);
-                        }
+                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                     }
                 }
                 return newImage;
@@ -175,18 +161,11 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                for (int i = 0; i < value.Item2.Length; i++)
+                foreach (Point2f[] points in value.Item2)
                 {
-                    for (int j = 0; j < value.Item2[i].Length; j++)
+                    foreach (Point2f point in points)
                     {
-                        if (!Fill)
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item2[i][j].X, (int)value.Item2[i][j].Y), radius, Colour, thickness);
-                        }
-                        else
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item2[i][j].X, (int)value.Item2[i][j].Y), radius, Colour, -1);
-                        }
+                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                     }
                 }
                 return newImage;
@@ -207,16 +186,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                for (int i = 0; i < value.Item2.Count; i++)
+                foreach (Point2f point in value.Item2)
                 {
-                    if (!Fill)
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item2[i].X, (int)value.Item2[i].Y), radius, Colour, thickness);
-                    }
-                    else
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item2[i].X, (int)value.Item2[i].Y), radius, Colour, -1);
-                    }
+                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -236,16 +208,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                for (int i = 0; i < value.Item1.Count; i++)
+                foreach (Point2f point in value.Item1)
                 {
-                    if (!Fill)
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item1[i].X, (int)value.Item1[i].Y), radius, Colour, thickness);
-                    }
-                    else
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item1[i].X, (int)value.Item1[i].Y), radius, Colour, -1);
-                    }
+                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -265,18 +230,11 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                for (int i = 0; i < value.Item2.Count; i++)
+                foreach (Point2f[] points in value.Item2)
                 {
-                    for (int j = 0; j < value.Item2[i].Length; j++)
+                    foreach (Point2f point in points)
                     {
-                        if (!Fill)
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item2[i][j].X, (int)value.Item2[i][j].Y), radius, Colour, thickness);
-                        }
-                        else
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item2[i][j].X, (int)value.Item2[i][j].Y), radius, Colour, -1);
-                        }
+                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                     }
                 }
                 return newImage;
@@ -297,18 +255,11 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                for (int i = 0; i < value.Item1.Count; i++)
+                foreach (Point2f[] points in value.Item1)
                 {
-                    for (int j = 0; j < value.Item1[i].Length; j++)
+                    foreach (Point2f point in points)
                     {
-                        if (!Fill)
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item1[i][j].X, (int)value.Item1[i][j].Y), radius, Colour, thickness);
-                        }
-                        else
-                        {
-                            CV.Circle(newImage, new Point((int)value.Item1[i][j].X, (int)value.Item1[i][j].Y), radius, Colour, -1);
-                        }
+                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                     }
                 }
                 return newImage;
