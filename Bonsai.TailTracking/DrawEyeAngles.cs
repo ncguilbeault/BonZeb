@@ -49,9 +49,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                for (int i = 0; i < value.Item2.Count; i++)
+                foreach (ConnectedComponent connectedComponent in value.Item2)
                 {
-                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(value.Item2[i].Orientation + Math.PI) + value.Item2[i].Centroid.X), (int)(lineLength * Math.Sin(value.Item2[i].Orientation + Math.PI) + value.Item2[i].Centroid.Y)), new Point((int)(lineLength * Math.Cos(value.Item2[i].Orientation) + value.Item2[i].Centroid.X), (int)(lineLength * Math.Sin(value.Item2[i].Orientation) + value.Item2[i].Centroid.Y)), Colour, thickness);
+                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.Y)), new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation) + connectedComponent.Centroid.Y)), Colour, thickness);
                 }
                 return newImage;
             });
@@ -70,9 +70,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                for (int i = 0; i < value.Item1.Count; i++)
+                foreach (ConnectedComponent connectedComponent in value.Item1)
                 {
-                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(value.Item1[i].Orientation + Math.PI) + value.Item1[i].Centroid.X), (int)(lineLength * Math.Sin(value.Item1[i].Orientation + Math.PI) + value.Item1[i].Centroid.Y)), new Point((int)(lineLength * Math.Cos(value.Item1[i].Orientation) + value.Item1[i].Centroid.X), (int)(lineLength * Math.Sin(value.Item1[i].Orientation) + value.Item1[i].Centroid.Y)), Colour, thickness);
+                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation + Math.PI) + connectedComponent.Centroid.Y)), new Point((int)(lineLength * Math.Cos(connectedComponent.Orientation) + connectedComponent.Centroid.X), (int)(lineLength * Math.Sin(connectedComponent.Orientation) + connectedComponent.Centroid.Y)), Colour, thickness);
                 }
                 return newImage;
             });

@@ -34,10 +34,11 @@ namespace Bonsai.TailTracking
 
         private int thickness;
         [Description("Thickness of tracking point border.")]
-        public int Thickness { get => thickness; set => thickness = value < 1 ? 1 : value; }
+        public int Thickness { get => thickness; set => thickness = fill ? -1 : value < 1 ? 1 : value; }
 
+        private bool fill;
         [Description("Fills tracking points with colour.")]
-        public bool Fill { get; set; }
+        public bool Fill { get => fill; set {fill = value; thickness = value ? -1 : 1;} }
 
         public override IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[]>> source)
         {
@@ -53,16 +54,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item1.Clone();
                 }
-                for (int i = 0; i < value.Item2.Length; i++)
+                foreach (Point2f tailPoint in value.Item2)
                 {
-                    if (!Fill)
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item2[i].X, (int)value.Item2[i].Y), radius, Colour, thickness);
-                    }
-                    else
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item2[i].X, (int)value.Item2[i].Y), radius, Colour, -1);
-                    }
+                    CV.Circle(newImage, new Point((int)tailPoint.X, (int)tailPoint.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -82,16 +76,9 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                for (int i = 0; i < value.Item1.Length; i++)
+                foreach (Point2f tailPoint in value.Item1)
                 {
-                    if (!Fill)
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item1[i].X, (int)value.Item1[i].Y), radius, Colour, thickness);
-                    }
-                    else
-                    {
-                        CV.Circle(newImage, new Point((int)value.Item1[i].X, (int)value.Item1[i].Y), radius, Colour, -1);
-                    }
+                    CV.Circle(newImage, new Point((int)tailPoint.X, (int)tailPoint.Y), radius, Colour, thickness);
                 }
                 return newImage;
             });
@@ -111,14 +98,7 @@ namespace Bonsai.TailTracking
                 {
                     newImage = value.Item2.Clone();
                 }
-                if (!Fill)
-                {
-                    CV.Circle(newImage, new Point((int)value.Item1.X, (int)value.Item1.Y), radius, Colour, thickness);
-                }
-                else
-                {
-                    CV.Circle(newImage, new Point((int)value.Item1.X, (int)value.Item1.Y), radius, Colour, -1);
-                }
+                CV.Circle(newImage, new Point((int)value.Item1.X, (int)value.Item1.Y), radius, Colour, thickness);
                 return newImage;
             });
         }

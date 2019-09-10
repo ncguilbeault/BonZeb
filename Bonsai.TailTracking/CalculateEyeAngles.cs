@@ -41,5 +41,28 @@ namespace Bonsai.TailTracking
                 return new ConnectedComponentCollection(eyeContours, value.Item2.ImageSize);
             });
         }
+        public IObservable<ConnectedComponentCollection> Process(IObservable<Tuple<ConnectedComponentCollection, Point2f[]>> source)
+        {
+            double[] prevEyeOrientations = { 0, 0 };
+            return source.Select(value =>
+            {
+                if (value.Item1.Count < 2)
+                {
+                    return value.Item1;
+                }
+                double headingAngle = Math.Atan2(value.Item2[0].Y - value.Item2[1].Y, value.Item2[0].X - value.Item2[1].X);
+                List<ConnectedComponent> sortedContours = value.Item1.OrderBy(contour => Math.Abs(headingAngle - Math.Atan2(contour.Centroid.Y - value.Item2[0].Y, contour.Centroid.X - value.Item2[0].X))).ThenBy(contour => Math.Abs(distEyes - (Math.Pow(contour.Centroid.X - value.Item2[0].X, 2) + Math.Pow(contour.Centroid.Y - value.Item2[0].Y, 2)))).ThenBy(contour => Math.Atan2(contour.Centroid.Y - value.Item2[0].Y, contour.Centroid.X - value.Item2[0].X)).ToList();
+                List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(contour.Centroid.Y - value.Item2[0].Y, contour.Centroid.X - value.Item2[0].X) - headingAngle).ToList();
+                for (int i = 0; i < 2; i++)
+                {
+                    double eyeOrientation = eyeContours[i].Orientation;
+                    eyeOrientation = eyeOrientation - prevEyeOrientations[i] >= 0.8 * Math.PI ? eyeOrientation - Math.PI : eyeOrientation - prevEyeOrientations[i] <= -0.8 * Math.PI ? eyeOrientation + Math.PI : eyeOrientation;
+                    eyeContours[i].Orientation = eyeOrientation;
+                    prevEyeOrientations[i] = eyeOrientation;
+                }
+
+                return new ConnectedComponentCollection(eyeContours, value.Item1.ImageSize);
+            });
+        }
     }
 }
