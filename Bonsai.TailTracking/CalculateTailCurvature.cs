@@ -18,12 +18,12 @@ namespace Bonsai.TailTracking
             prevTailCurvature = new double[0];
             return source.Select(value =>
             {
-                double rotationAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);
-                Point2f[] points = Utilities.RotatePoints(value, value[0], rotationAngle);
+                double headingAngle = -Math.Atan2(value[1].Y - value[0].Y, value[1].X - value[0].X);
+                Point2f[] points = Utilities.RotatePoints(value, value[0], headingAngle);
                 double[] tailCurvature = new double[points.Length - 1];
                 for (int i = 0; i < value.Length - 1; i++)
                 {
-                    tailCurvature[i] = Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X) * 180 / Math.PI;
+                    tailCurvature[i] = Math.Atan2(points[i + 1].Y - points[i].Y, points[i + 1].X - points[i].X);
                     if (prevTailCurvature.Length > 0)
                     {
                         tailCurvature[i] = tailCurvature[i] - prevTailCurvature[i] > Math.PI ? tailCurvature[i] - Math.PI * 2 : tailCurvature[i] - prevTailCurvature[i] < -Math.PI ? tailCurvature[i] + Math.PI * 2 : tailCurvature[i];

@@ -81,6 +81,7 @@
     <Compile Include="DrawTailPoints.cs" />
     <Compile Include="ConvertToRawImageData.cs" />
     <Compile Include="CalculateTailCurvature.cs" />
+    <Compile Include="FindEyeContours.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace Bonsai.TailTracking
 
     public class CalculateHeadingAngle : Transform<Point2f[], double>
     {
-        [Description("Number of tail segments to calculate.")]
+        [Description("Determines whether or not to initialize the heading angle to zero.")]
         public bool InitializeZeroAngle { get; set; }
 
         public override IObservable<double> Process(IObservable<Point2f[]> source)

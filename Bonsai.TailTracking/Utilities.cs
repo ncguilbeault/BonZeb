@@ -116,7 +116,7 @@ namespace Bonsai.TailTracking
 
         public static Point2f[] GeneratePotentialPoints(int radius)
         {
-            // Function that generates an array of points that lie on the circumference of a circle with a given radius and an origin at 0,0 using the midpoint circle algorithm.
+            // Function that generates an array of points that lie on the circumference of a circle with a given radius and an origin at 0,0.
             List<Point2f> points = new List<Point2f>();
             int X = radius;
             int Y = 0;
@@ -145,7 +145,7 @@ namespace Bonsai.TailTracking
             return points.ToArray();
         }
 
-        public static Point2f[] OffsetPoints(Point2f[] points, int offsetX, int offsetY)
+        public static Point2f[] OffsetPoints(Point2f[] points, float offsetX, float offsetY)
         {
             // Function that applies an offset to an array of points.
             Point2f[] newPoints = new Point2f[points.Length];
@@ -156,36 +156,60 @@ namespace Bonsai.TailTracking
             return newPoints;
         }
 
-        public static Point2f OffsetPoint(Point2f point, int offsetX, int offsetY)
+        public static Point2f OffsetPoint(Point2f point, float offsetX, float offsetY)
         {
             // Function that applies an offset to a point.
             return new Point2f(point.X + offsetX, point.Y + offsetY);
         }
 
-            public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
+        public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
         {
             // Function that rotates a set of points around an origin by a given angle.
             Point2f[] newPoints = new Point2f[points.Length];
             for (int i = 0; i < newPoints.Length; i++)
             {
-                newPoints[i] = new Point2f((float)((points[i].X - origin.X) * Math.Cos(angle) - (points[i].Y - origin.Y) * Math.Sin(angle)), (float)((points[i].X - origin.X) * Math.Sin(angle) + (points[i].Y - origin.Y) * Math.Cos(angle)));
+                newPoints[i] = new Point2f((float)(((points[i].X - origin.X) * Math.Cos(angle) - (points[i].Y - origin.Y) * Math.Sin(angle)) + origin.X), (float)(((points[i].X - origin.X) * Math.Sin(angle) + (points[i].Y - origin.Y) * Math.Cos(angle)) + origin.Y));
             }
             return newPoints;
         }
 
+        public static Point2f[] RotatePoints(Point2f[] points, double angle)
+        {
+            // Function that rotates a set of points by a given angle.
+            Point2f[] newPoints = new Point2f[points.Length];
+            for (int i = 0; i < newPoints.Length; i++)
+            {
+                newPoints[i] = new Point2f((float)(points[i].X * Math.Cos(angle) - points[i].Y * Math.Sin(angle)), (float)(points[i].X * Math.Sin(angle) + points[i].Y * Math.Cos(angle)));
+            }
+            return newPoints;
+        }
         public static Point2f RotatePoint(Point2f point, Point2f origin, double angle)
         {
             // Function that rotates a single point around an origin by a given angle.
-            return new Point2f((float)((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)), (float)((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)));
+            return new Point2f((float)(((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)) + origin.X), (float)(((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)) + origin.Y));
         }
 
-        public static double ToDegrees(double radians)
+        public static Point2f RotatePoint(Point2f point, double angle)
         {
+            // Function that rotates a single point by a given angle.
+            return new Point2f((float)(point.X * Math.Cos(angle) - point.Y * Math.Sin(angle)), (float)(point.X * Math.Sin(angle) + point.Y * Math.Cos(angle)));
+        }
+
+        public static double ConvertRadiansToDegrees(double radians)
+        {
+            // Function that converts radians into degreees.
             return radians * 180 / Math.PI;
+        }
+
+        public static double ConvertDegreesToRadians(double degrees)
+        {
+            // Function that converts degrees into radians.
+            return degrees * Math.PI / 180;
         }
 
         public static byte[] ConvertIplImageToByteArray(IplImage image)
         {
+            // Function that converts an IplImage into a byte array.
             byte[] imageData = new byte[image.WidthStep * image.Height];
             Marshal.Copy(image.ImageData, imageData, 0, image.WidthStep * image.Height);
             return imageData;

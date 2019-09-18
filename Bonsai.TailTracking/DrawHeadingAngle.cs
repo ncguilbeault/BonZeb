@@ -10,6 +10,16 @@ namespace Bonsai.TailTracking
 {
     public class DrawHeadingAngle : Transform<Tuple<IplImage, Point2f[]>, IplImage>
     {
+
+        public DrawHeadingAngle()
+        {
+            Colour = new Scalar(255, 0, 0, 255);
+            Thickness = 1;
+            LineLength = 5;
+            CapSize = 2;
+            LineOffset = 1;
+        }
+
         [Range(0, 255)]
         [Precision(0, 1)]
         [Editor(DesignTypes.SliderEditor, typeof(UITypeEditor))]
@@ -23,6 +33,13 @@ namespace Bonsai.TailTracking
         private int lineLength;
         [Description("Length of line.")]
         public int LineLength { get => lineLength; set => lineLength = value < 1 ? 1 : value; }
+
+        private int capSize;
+        [Description("Size of the cap.")]
+        public int CapSize { get => capSize; set => capSize = value < 1 ? 1 : value; }
+
+        [Description("Distance to offset the line from the centroid.")]
+        public double LineOffset { get; set; }
 
         public override IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[]>> source)
         { 
@@ -51,7 +68,13 @@ namespace Bonsai.TailTracking
                 newImage = image.Clone();
             }
             double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
-            CV.Line(newImage, new Point((int)(0.5 * lineLength * Math.Cos(headingAngle) + points[0].X), (int)(0.5 * lineLength * Math.Sin(headingAngle) + points[0].Y)), new Point((int)(1.5 * lineLength * Math.Cos(headingAngle) + points[0].X), (int)(1.5 * lineLength * Math.Sin(headingAngle) + points[0].Y)), Colour, thickness);
+            Point startPoint = new Point((int)(LineOffset * Math.Cos(headingAngle) + points[0].X), (int)(LineOffset * Math.Sin(headingAngle) + points[0].Y));
+            Point endPoint = new Point((int)(lineLength * Math.Cos(headingAngle) + startPoint.X), (int)(lineLength * Math.Sin(headingAngle) + startPoint.Y));
+            Point firstCapPoint = new Point((int)(capSize * Math.Cos(headingAngle + 3 * Math.PI / 4) + endPoint.X), (int)(capSize * Math.Sin(headingAngle + 3 * Math.PI / 4) + endPoint.Y));
+            Point secondCapPoint = new Point((int)(capSize * Math.Cos(headingAngle + 5 * Math.PI / 4) + endPoint.X), (int)(capSize * Math.Sin(headingAngle + 5 * Math.PI / 4) + endPoint.Y));
+            CV.Line(newImage, startPoint, endPoint, Colour, thickness);
+            CV.Line(newImage, endPoint, firstCapPoint, Colour, thickness);
+            CV.Line(newImage, endPoint, secondCapPoint, Colour, thickness);
             return newImage;
         }
     }

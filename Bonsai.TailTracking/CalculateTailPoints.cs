@@ -35,9 +35,9 @@ namespace Bonsai.TailTracking
         [Description("Distance between the eyes and the tail trunk in number of pixels. Only used for the EyeTracking method and Centroid method.")]
         public int DistTailBase { get => distTailBase; set { distTailBase = value > 0 ? value : 0; potentialTailBasePoints = Utilities.GeneratePotentialPoints(value); } }
 
-        private int headingDirection;
-        [Description("Angle of heading direction. If value is -1, no heading direction will be used. Otherwise, the heading direction supplied will seed the tail tracking search algorithm.")]
-        public int HeadingDirection { get => headingDirection; set => headingDirection = value < 0 ? -1 : value > 360 ? 360 : value; }
+        private double headingDirection;
+        [Description("Angle of heading direction in degrees. If value is -1, no heading direction will be used. Otherwise, the heading direction supplied will seed the tail tracking search algorithm.")]
+        public double HeadingDirection { get => headingDirection; set => headingDirection = value < 0 ? -1 : value > 360 ? 360 : value; }
 
         private int numTailSegments;
         [Description("Number of tail segments to calculate.")]
@@ -141,6 +141,7 @@ namespace Bonsai.TailTracking
             }
             return null;
         }
+
         Point2f[] CalculateTailPointsByPixelSearchFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
         {
             Point2f[] points = new Point2f[numTailSegments + 2];
@@ -154,7 +155,7 @@ namespace Bonsai.TailTracking
             }
             points[0] = centroid;
             Point2f[] newPotentialTailBasePoints = Utilities.OffsetPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
-            points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData);
+            points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData) : Utilities.CalculateNextPoint((int)(Utilities.ConvertDegreesToRadians(headingDirection) * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData);
             for (int i = 1; i < points.Length - 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
@@ -166,6 +167,7 @@ namespace Bonsai.TailTracking
             points = OffsetX != 0 || OffsetY != 0 ? Utilities.OffsetPoints(points, OffsetX, OffsetY) : points;
             return points;
         }
+
         Point2f[] CalculateTailPointsByCenterOfMassFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
         {
             Point2f[] points = new Point2f[numTailSegments + 2];
