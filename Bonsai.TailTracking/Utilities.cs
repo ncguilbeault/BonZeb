@@ -145,7 +145,7 @@ namespace Bonsai.TailTracking
             return points.ToArray();
         }
 
-        public static Point2f[] AddOffsetToPoints(Point2f[] points, int offsetX, int offsetY)
+        public static Point2f[] OffsetPoints(Point2f[] points, int offsetX, int offsetY)
         {
             // Function that applies an offset to an array of points.
             Point2f[] newPoints = new Point2f[points.Length];
@@ -156,7 +156,13 @@ namespace Bonsai.TailTracking
             return newPoints;
         }
 
-        public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
+        public static Point2f OffsetPoint(Point2f point, int offsetX, int offsetY)
+        {
+            // Function that applies an offset to a point.
+            return new Point2f(point.X + offsetX, point.Y + offsetY);
+        }
+
+            public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
         {
             // Function that rotates a set of points around an origin by a given angle.
             Point2f[] newPoints = new Point2f[points.Length];

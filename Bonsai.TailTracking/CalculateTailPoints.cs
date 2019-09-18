@@ -63,7 +63,7 @@ namespace Bonsai.TailTracking
         [Description("Offset to apply to Y values of tail points.")]
         public int OffsetY { get; set; }
 
-        [Description("Threshold value to use for finding the centroid. Only used for the CenterOfMass tail calculation method.")]
+        [Description("Threshold value to use for finding the center of mass. Only used for the CenterOfMass tail calculation method.")]
         [Range(0, 255)]
         [Precision(0, 1)]
         [Editor(DesignTypes.SliderEditor, typeof(UITypeEditor))]
@@ -153,17 +153,17 @@ namespace Bonsai.TailTracking
                 return points;
             }
             points[0] = centroid;
-            Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
+            Point2f[] newPotentialTailBasePoints = Utilities.OffsetPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
             points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData);
             for (int i = 1; i < points.Length - 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
                 int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
-                Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
+                Point2f[] newPotentialTailPoints = Utilities.OffsetPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                 Point2f nextPoint = Utilities.CalculateNextPoint(startIteration, nIterations, newPotentialTailPoints, PixelSearch, imageWidthStep, imageHeight, imageData);
                 points[i + 1] = nextPoint;
             }
-            points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
+            points = OffsetX != 0 || OffsetY != 0 ? Utilities.OffsetPoints(points, OffsetX, OffsetY) : points;
             return points;
         }
         Point2f[] CalculateTailPointsByCenterOfMassFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
@@ -178,17 +178,17 @@ namespace Bonsai.TailTracking
                 return points;
             }
             points[0] = centroid;
-            Point2f[] newPotentialTailBasePoints = Utilities.AddOffsetToPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
+            Point2f[] newPotentialTailBasePoints = Utilities.OffsetPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
             points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData) : Utilities.CalculateNextPoint((int)(headingDirection * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData);
             for (int i = 1; i < points.Length - 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
                 int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
-                Point2f[] newPotentialTailPoints = Utilities.AddOffsetToPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
+                Point2f[] newPotentialTailPoints = Utilities.OffsetPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                 Point2f nextPoint = Utilities.FindCenterOfMassAlongArc(startIteration, nIterations, newPotentialTailPoints, ThresholdType, ThresholdValue, imageWidthStep, imageHeight, imageData);
                 points[i + 1] = nextPoint;
             }
-            points = OffsetX != 0 || OffsetY != 0 ? Utilities.AddOffsetToPoints(points, OffsetX, OffsetY) : points;
+            points = OffsetX != 0 || OffsetY != 0 ? Utilities.OffsetPoints(points, OffsetX, OffsetY) : points;
             return points;
         }
     }
