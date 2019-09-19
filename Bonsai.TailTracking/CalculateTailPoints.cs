@@ -147,7 +147,7 @@ namespace Bonsai.TailTracking
             Point2f[] points = new Point2f[numTailSegments + 2];
             if (centroid.X.Equals(float.NaN) || centroid.Y.Equals(float.NaN))
             {
-                for (int i = 0; i < points.Length; i++)
+                for (int i = 0; i < numTailSegments + 2; i++)
                 {
                     points[i] = centroid;
                 }
@@ -156,7 +156,7 @@ namespace Bonsai.TailTracking
             points[0] = centroid;
             Point2f[] newPotentialTailBasePoints = Utilities.OffsetPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
             points[1] = headingDirection == -1 ? Utilities.CalculateNextPoint(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData) : Utilities.CalculateNextPoint((int)(Utilities.ConvertDegreesToRadians(headingDirection) * newPotentialTailBasePoints.Length / Utilities.twoPi), 1, newPotentialTailBasePoints, PixelSearch, imageWidthStep, imageHeight, imageData);
-            for (int i = 1; i < points.Length - 1; i++)
+            for (int i = 1; i < numTailSegments + 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
                 int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
