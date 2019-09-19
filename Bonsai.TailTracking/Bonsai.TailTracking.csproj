@@ -69,6 +69,8 @@
     <Compile Include="CalculateEyeAngles.cs" />
     <Compile Include="CalculateHeadingAngle.cs" />
     <Compile Include="CalculateTailPoints.cs" />
+    <Compile Include="ConvertDegreesToRadians.cs" />
+    <Compile Include="ConvertRadiansToDegrees.cs" />
     <Compile Include="CreatePoint2f.cs" />
     <Compile Include="CropImageAroundFish.cs" />
     <Compile Include="DetectBout.cs" />
