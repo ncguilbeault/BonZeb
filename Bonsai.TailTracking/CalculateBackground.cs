@@ -24,55 +24,47 @@ namespace Bonsai.TailTracking
         {
             IplImage background = null;
 
-            if (PixelSearch == Utilities.PixelSearch.Brightest)
+            return source.Select(value =>
             {
-                return source.Select(value =>
+                if (background == null)
                 {
-                    if (background == null)
+                    background = value.Clone();
+                }
+                else
+                {
+                    IplImage temp = new IplImage(value.Size, value.Depth, value.Channels);
+                    if (PixelSearch == Utilities.PixelSearch.Brightest)
                     {
-                        background = value.Clone();
-                    }
-                    else
-                    {
-                        for (int i = 0; i < value.Height; i++)
+                        CV.Sub(value, background, temp);
+                        if (noiseThreshold != 0)
                         {
-                            for (int j = 0; j < value.Width; j++)
-                            {
-                                if (value[j, i].Val0 > background[j, i].Val0 + noiseThreshold)
-                                {
-                                    background[j, i] = value[j, i];
-                                }
-                            }
+                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
+                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
+                            CV.Add(temp, background, background, mask);
+                        }
+                        else
+                        {
+                            CV.Add(temp, background, background, temp);
                         }
                     }
-                    return background;
-                });
-            }
-            else if (PixelSearch == Utilities.PixelSearch.Darkest)
-            {
-                return source.Select(value =>
-                {
-                    if (background == null)
+                    else if (PixelSearch == Utilities.PixelSearch.Darkest)
                     {
-                        background = value.Clone();
-                    }
-                    else
-                    {
-                        for (int i = 0; i < value.Height; i++)
+                        CV.Sub(background, value, temp);
+                        if (noiseThreshold != 0)
                         {
-                            for (int j = 0; j < value.Width; j++)
-                            {
-                                if (value[j, i].Val0 < background[j, i].Val0 - noiseThreshold)
-                                {
-                                    background[j, i] = value[j, i];
-                                }
-                            }
+                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
+                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
+                            CV.Sub(background, temp, background, mask);
+                        }
+                        else
+                        {
+                            CV.Sub(background, temp, background, temp);
                         }
                     }
-                    return background;
-                });
-            }
-            return null;
+                }
+                return background;
+            });
+
         }
     }
 }
