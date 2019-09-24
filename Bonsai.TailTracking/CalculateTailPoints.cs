@@ -142,7 +142,7 @@ namespace Bonsai.TailTracking
             return null;
         }
 
-        Point2f[] CalculateTailPointsByPixelSearchFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
+        private Point2f[] CalculateTailPointsByPixelSearchFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
         {
             Point2f[] points = new Point2f[numTailSegments + 2];
             if (centroid.X.Equals(float.NaN) || centroid.Y.Equals(float.NaN))
@@ -168,7 +168,7 @@ namespace Bonsai.TailTracking
             return points;
         }
 
-        Point2f[] CalculateTailPointsByCenterOfMassFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
+        private Point2f[] CalculateTailPointsByCenterOfMassFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
         {
             Point2f[] points = new Point2f[numTailSegments + 2];
             if (centroid.X.Equals(float.NaN) || centroid.Y.Equals(float.NaN))

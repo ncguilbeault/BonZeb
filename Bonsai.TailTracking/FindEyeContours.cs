@@ -57,7 +57,7 @@ namespace Bonsai.TailTracking
             return source.Select(value => FindEyeContoursFromImageFunc(value.Item1, value.Item2));
         }
 
-        ConnectedComponentCollection FindEyeContoursFunc(ConnectedComponentCollection contours, Point2f[] points)
+        private ConnectedComponentCollection FindEyeContoursFunc(ConnectedComponentCollection contours, Point2f[] points)
         {
             if (contours.Count < 2)
             {
@@ -69,7 +69,7 @@ namespace Bonsai.TailTracking
             return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
         }
 
-        ConnectedComponentCollection FindEyeContoursFromImageFunc(IplImage image, Point2f[] points)
+        private ConnectedComponentCollection FindEyeContoursFromImageFunc(IplImage image, Point2f[] points)
         {
             MemStorage memStorage = new MemStorage();
             int contourCount = CV.FindContours(image, memStorage, out Seq seqContours);

@@ -23,7 +23,7 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => CalculateEyeAnglesFunc(value.Item1, value.Item2));
         }
-        double[] CalculateEyeAnglesFunc(ConnectedComponentCollection contours, Point2f[] points)
+        private double[] CalculateEyeAnglesFunc(ConnectedComponentCollection contours, Point2f[] points)
         {
             double[] eyeAngles = { 0, 0 };
             if (contours.Count < 2)

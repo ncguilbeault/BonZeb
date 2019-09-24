@@ -43,7 +43,7 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => DrawEyeAnglesFunc(value.Item1, value.Item2));
         }
-        IplImage DrawEyeAnglesFunc(ConnectedComponentCollection eyes, IplImage image)
+        private IplImage DrawEyeAnglesFunc(ConnectedComponentCollection eyes, IplImage image)
         {
             IplImage newImage;
             if (image.Channels == 1)

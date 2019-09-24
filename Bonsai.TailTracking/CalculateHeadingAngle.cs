@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
+using Bonsai.Vision;
 
 namespace Bonsai.TailTracking
 {
@@ -13,21 +14,73 @@ namespace Bonsai.TailTracking
     public class CalculateHeadingAngle : Transform<Point2f[], double>
     {
         [Description("Determines whether or not to initialize the heading angle to zero.")]
-        public bool InitializeZeroAngle { get; set; }
+        public bool InitializeHeadingAngleToZero { get; set; }
+
+        private int turnCount;
+        private double? prevHeadingAngle;
+        private double? initHeadingAngle;
 
         public override IObservable<double> Process(IObservable<Point2f[]> source)
         {
-            int count = 0;
-            double? prevHeadingAngle = null;
-            double? initHeadingAngle = null;
+            turnCount = 0;
+            prevHeadingAngle = null;
+            initHeadingAngle = null;
             return source.Select(value => 
             {
-                double headingAngle = Math.Atan2(value[0].Y - value[1].Y, value[0].X - value[1].X);
-                initHeadingAngle = initHeadingAngle == null && InitializeZeroAngle ? headingAngle : 0;
-                count = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? count - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? count + 1 : count;
-                prevHeadingAngle = headingAngle;
-                return headingAngle - (double)initHeadingAngle + (count * Utilities.twoPi);
+                return CalculateHeadingAngleWithPointsFunc(value[0], value[1]);
             });
+        }
+
+        public IObservable<double> Process(IObservable<Tuple<ConnectedComponentCollection, Point2f[]>> source)
+        {
+            turnCount = 0;
+            prevHeadingAngle = null;
+            initHeadingAngle = null;
+            return source.Select(value =>
+            {
+                return CalculateHeadingAngleWithEyesFunc(value.Item1, value.Item2[0]);
+            });
+        }
+
+        public IObservable<double> Process(IObservable<Tuple<Point2f[], ConnectedComponentCollection>> source)
+        {
+            turnCount = 0;
+            prevHeadingAngle = null;
+            initHeadingAngle = null;
+            return source.Select(value =>
+            {
+                return CalculateHeadingAngleWithEyesFunc(value.Item2, value.Item1[0]);
+            });
+        }
+
+        public IObservable<double> Process(IObservable<Tuple<Point2f, Point2f>> source)
+        {
+            turnCount = 0;
+            prevHeadingAngle = null;
+            initHeadingAngle = null;
+            return source.Select(value =>
+            {
+                return CalculateHeadingAngleWithPointsFunc(value.Item1, value.Item2);
+            });
+        }
+
+        private double CalculateHeadingAngleWithPointsFunc(Point2f headingPoint, Point2f centroid)
+        {
+            double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
+            initHeadingAngle = initHeadingAngle == null && InitializeHeadingAngleToZero ? headingAngle : 0;
+            turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
+            prevHeadingAngle = headingAngle;
+            return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
+        }
+
+        private double CalculateHeadingAngleWithEyesFunc(ConnectedComponentCollection eyes, Point2f centroid)
+        {
+            Point2f headingPoint = new Point2f((eyes[0].Centroid.X + eyes[1].Centroid.X) / 2, (eyes[0].Centroid.Y + eyes[1].Centroid.Y) / 2);
+            double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
+            initHeadingAngle = initHeadingAngle == null && InitializeHeadingAngleToZero ? headingAngle : 0;
+            turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
+            prevHeadingAngle = headingAngle;
+            return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
         }
     }
 }
