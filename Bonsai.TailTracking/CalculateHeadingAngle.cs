@@ -67,7 +67,10 @@ namespace Bonsai.TailTracking
         private double CalculateHeadingAngleWithPointsFunc(Point2f headingPoint, Point2f centroid)
         {
             double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
-            initHeadingAngle = initHeadingAngle == null && InitializeHeadingAngleToZero ? headingAngle : 0;
+            if (initHeadingAngle == null)
+            {
+                initHeadingAngle = InitializeHeadingAngleToZero ? headingAngle : 0;
+            }
             turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
             prevHeadingAngle = headingAngle;
             return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
@@ -77,7 +80,10 @@ namespace Bonsai.TailTracking
         {
             Point2f headingPoint = new Point2f((eyes[0].Centroid.X + eyes[1].Centroid.X) / 2, (eyes[0].Centroid.Y + eyes[1].Centroid.Y) / 2);
             double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
-            initHeadingAngle = initHeadingAngle == null && InitializeHeadingAngleToZero ? headingAngle : 0;
+            if (initHeadingAngle == null)
+            {
+                initHeadingAngle = InitializeHeadingAngleToZero ? headingAngle : 0;
+            }         
             turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
             prevHeadingAngle = headingAngle;
             return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
