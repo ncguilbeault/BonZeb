@@ -43,6 +43,29 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => DrawEyeAnglesFunc(value.Item1, value.Item2));
         }
+        public IObservable<IplImage> Process(IObservable<Tuple<IplImage, ConnectedComponent>> source)
+        {
+            return source.Select(value => DrawEyeAngleFunc(value.Item2, value.Item1));
+        }
+        public IObservable<IplImage> Process(IObservable<Tuple<ConnectedComponent, IplImage>> source)
+        {
+            return source.Select(value => DrawEyeAngleFunc(value.Item1, value.Item2));
+        }
+        private IplImage DrawEyeAngleFunc(ConnectedComponent eye, IplImage image)
+        {
+            IplImage newImage;
+            if (image.Channels == 1)
+            {
+                newImage = new IplImage(new Size(image.Width, image.Height), image.Depth, 3);
+                CV.CvtColor(image, newImage, ColorConversion.Gray2Bgr);
+            }
+            else
+            {
+                newImage = image.Clone();
+            }
+            CV.Line(newImage, new Point((int)(lineLength * Math.Cos(eye.Orientation + Math.PI) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation + Math.PI) + eye.Centroid.Y)), new Point((int)(lineLength * Math.Cos(eye.Orientation) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation) + eye.Centroid.Y)), Colour, thickness);
+            return newImage;
+        }
         private IplImage DrawEyeAnglesFunc(ConnectedComponentCollection eyes, IplImage image)
         {
             IplImage newImage;
