@@ -23,8 +23,9 @@ namespace Bonsai.TailTracking
         private bool findMax = true;
         private double minVal = double.PositiveInfinity;
         private double maxVal = double.NegativeInfinity;
-        private int pos = 0;
-        private int frequency = 0;
+        private int maxPos = 0;
+        private int minPos = 0;
+        private int detection = 0;
 
         public override IObservable<int> Process(IObservable<double> source)
         {
@@ -37,18 +38,20 @@ namespace Bonsai.TailTracking
                     findMax = true;
                     minVal = double.PositiveInfinity;
                     maxVal = double.NegativeInfinity;
-                    frequency = 0;
-                    pos = 0;
+                    detection = 0;
+                    maxPos = 0;
+                    minPos = 0;
                     i = 0;
                 }
                 if (value > maxVal)
                 {
                     maxVal = value;
-                    pos = i;
+                    maxPos = i;
                 }
                 if (value < minVal)
                 {
                     minVal = value;
+                    minPos = i;
                 }
                 if (findMax)
                 {
@@ -56,20 +59,21 @@ namespace Bonsai.TailTracking
                     {
                         if (peaks.Length == 0)
                         {
-                            peaks[0] = pos;
+                            peaks[0] = maxPos;
                         }
                         else if (peaks.Length == 1)
                         {
-                            peaks[1] = pos;
-                            frequency = 1;
+                            peaks[1] = maxPos;
+                            detection = 1;
                         }
                         else
                         {
                             peaks[0] = peaks[1];
-                            peaks[1] = pos;
-                            frequency = 1;
+                            peaks[1] = maxPos;
+                            detection = 1;
                         }
                         minVal = value;
+                        minPos = i;
                         findMax = false;
                     }
                 }
@@ -77,15 +81,31 @@ namespace Bonsai.TailTracking
                 {
                     if (value > (minVal + Delta))
                     {
+                        if (peaks.Length == 0)
+                        {
+                            peaks[0] = minPos;
+                        }
+                        else if (peaks.Length == 1)
+                        {
+                            peaks[1] = minPos;
+                            detection = 1;
+                        }
+                        else
+                        {
+                            peaks[0] = peaks[1];
+                            peaks[1] = minPos;
+                            detection = 1;
+                        }
                         maxVal = value;
+                        maxPos = i;
                         findMax = true;
                     }
                 }
-                if (frequency == double.PositiveInfinity || frequency == double.NegativeInfinity)
+                if (detection == double.PositiveInfinity || detection == double.NegativeInfinity)
                 {
-                    frequency = 0;
+                    detection = 0;
                 }
-                return frequency;
+                return detection;
             });
         }
     }

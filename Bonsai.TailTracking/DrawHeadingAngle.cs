@@ -43,104 +43,66 @@ namespace Bonsai.TailTracking
 
         public override IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[]>> source)
         { 
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithPointsFunc(value.Item1, value.Item2);
-            });
+            return source.Select(value => DrawHeadingAngleWithPointsFunc(value.Item1, value.Item2));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f[], IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithPointsFunc(value.Item2, value.Item1);
-            });
+            return source.Select(value => DrawHeadingAngleWithPointsFunc(value.Item2, value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f[], IplImage, double>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item2, value.Item1[0], value.Item3);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item2, value.Item1[0], value.Item3));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f[], double, IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item3, value.Item1[0], value.Item2);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item3, value.Item1[0], value.Item2));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<double, IplImage, Point2f[]>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item2, value.Item3[0], value.Item1);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item2, value.Item3[0], value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<double, Point2f[], IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item3, value.Item2[0], value.Item1);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item3, value.Item2[0], value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, double, Point2f[]>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item1, value.Item3[0], value.Item2);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item1, value.Item3[0], value.Item2));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[], double>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item1, value.Item2[0], value.Item3);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item1, value.Item2[0], value.Item3));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f, IplImage, double>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item2, value.Item1, value.Item3);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item2, value.Item1, value.Item3));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f, double, IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item3, value.Item1, value.Item2);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item3, value.Item1, value.Item2));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<double, IplImage, Point2f>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item2, value.Item3, value.Item1);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item2, value.Item3, value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<double, Point2f, IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item3, value.Item2, value.Item1);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item3, value.Item2, value.Item1));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, double, Point2f>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item1, value.Item3, value.Item2);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item1, value.Item3, value.Item2));
         }
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f, double>> source)
         {
-            return source.Select(value =>
-            {
-                return DrawHeadingAngleWithAngleFunc(value.Item1, value.Item2, value.Item3);
-            });
+            return source.Select(value => DrawHeadingAngleWithAngleFunc(value.Item1, value.Item2, value.Item3));
         }
         private IplImage DrawHeadingAngleWithPointsFunc(IplImage image, Point2f[] points)
         {
+            if (points.Length <= 0)
+            {
+                return image;
+            }
             IplImage newImage;
             if (image.Channels == 1)
             {

@@ -63,8 +63,10 @@ namespace Bonsai.TailTracking
             {
                 return contours;
             }
+            ConnectedComponent[] tempContours = null;
+            contours.CopyTo(tempContours, 0);
             double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
-            List<ConnectedComponent> sortedContours = contours.OrderBy(contour => Math.Abs(Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X))).ToList();
+            List<ConnectedComponent> sortedContours = tempContours.OrderBy(contour => Math.Abs(Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X))).ToList();
             List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
             return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
         }

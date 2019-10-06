@@ -28,10 +28,10 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value =>
             {
-                double xRange = RegionOfInterest.Width > 0 ? RegionOfInterest.Width / value.Width : 1;
-                double xOffset = xRange < 1 ? (RegionOfInterest.X - ((value.Width - RegionOfInterest.Width) / 2)) * 2 / value.Width : 0;
-                double yRange = RegionOfInterest.Height > 0 ? RegionOfInterest.Height / value.Height : 1;
-                double yOffset = yRange < 1 ? (((value.Height - RegionOfInterest.Height) / 2) - RegionOfInterest.Y) * 2 / value.Height : 0;
+                double xRange = RegionOfInterest.Width > 0 ? (double)RegionOfInterest.Width / (double)value.Width : 1.0;
+                double xOffset = xRange < 1 ? ((double)RegionOfInterest.X - (((double)value.Width - (double)RegionOfInterest.Width) / 2.0)) * 2.0 / (double)value.Width : 0.0;
+                double yRange = RegionOfInterest.Height > 0 ? (double)RegionOfInterest.Height / (double)value.Height : 1.0;
+                double yOffset = yRange < 1 ? ((((double)value.Height - (double)RegionOfInterest.Height) / 2.0) - (double)RegionOfInterest.Y) * 2.0 / (double)value.Height : 0.0;
                 return new Utilities.DrawParameters(xOffset, yOffset, xRange, yRange, Colour);
             });
         }

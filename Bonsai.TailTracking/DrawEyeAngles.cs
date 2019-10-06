@@ -78,9 +78,12 @@ namespace Bonsai.TailTracking
             {
                 newImage = image.Clone();
             }
-            foreach (ConnectedComponent eye in eyes)
+            if (eyes.Count == 2)
             {
-                CV.Line(newImage, new Point((int)(lineLength * Math.Cos(eye.Orientation + Math.PI) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation + Math.PI) + eye.Centroid.Y)), new Point((int)(lineLength * Math.Cos(eye.Orientation) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation) + eye.Centroid.Y)), Colour, thickness);
+                foreach (ConnectedComponent eye in eyes)
+                {
+                    CV.Line(newImage, new Point((int)(lineLength * Math.Cos(eye.Orientation + Math.PI) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation + Math.PI) + eye.Centroid.Y)), new Point((int)(lineLength * Math.Cos(eye.Orientation) + eye.Centroid.X), (int)(lineLength * Math.Sin(eye.Orientation) + eye.Centroid.Y)), Colour, thickness);
+                }
             }
             return newImage;
         }

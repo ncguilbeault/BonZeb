@@ -42,228 +42,121 @@ namespace Bonsai.TailTracking
 
         public override IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[]>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                foreach (Point2f point in value.Item2)
-                {
-                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsFunc(value.Item1, value.Item2));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<Point2f[], IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                foreach (Point2f point in value.Item1)
-                {
-                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                }
-                return newImage;
-            });
-        }
-
-        public IObservable<IplImage> Process(IObservable<Tuple<Point2f, IplImage>> source)
-        {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                CV.Circle(newImage, new Point((int)value.Item1.X, (int)value.Item1.Y), radius, Colour, thickness);
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsFunc(value.Item2, value.Item1));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                CV.Circle(newImage, new Point((int)value.Item2.X, (int)value.Item2.Y), radius, Colour, thickness);
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointFunc(value.Item1, value.Item2));
         }
 
-        public IObservable<IplImage> Process(IObservable<Tuple<Point2f[][], IplImage>> source)
+        public IObservable<IplImage> Process(IObservable<Tuple<Point2f, IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                foreach (Point2f[] points in value.Item1)
-                {
-                    foreach (Point2f point in points)
-                    {
-                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                    }
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointFunc(value.Item2, value.Item1));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, Point2f[][]>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                foreach (Point2f[] points in value.Item2)
-                {
-                    foreach (Point2f point in points)
-                    {
-                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                    }
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsArrayFunc(value.Item1, value.Item2));
+        }
+
+        public IObservable<IplImage> Process(IObservable<Tuple<Point2f[][], IplImage>> source)
+        {
+            return source.Select(value => DrawTailPointsArrayFunc(value.Item2, value.Item1));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, IList<Point2f>>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                foreach (Point2f point in value.Item2)
-                {
-                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsFunc(value.Item1, value.Item2.ToArray()));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IList<Point2f>, IplImage>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                foreach (Point2f point in value.Item1)
-                {
-                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsFunc(value.Item2, value.Item1.ToArray()));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IplImage, IList<Point2f[]>>> source)
         {
-            return source.Select(value =>
-            {
-                IplImage newImage;
-                if (value.Item1.Channels == 1)
-                {
-                    newImage = new IplImage(new Size(value.Item1.Size.Width, value.Item1.Size.Height), value.Item1.Depth, 3);
-                    CV.CvtColor(value.Item1, newImage, ColorConversion.Gray2Bgr);
-                }
-                else
-                {
-                    newImage = value.Item1.Clone();
-                }
-                foreach (Point2f[] points in value.Item2)
-                {
-                    foreach (Point2f point in points)
-                    {
-                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                    }
-                }
-                return newImage;
-            });
+            return source.Select(value => DrawTailPointsArrayFunc(value.Item1, value.Item2.ToArray()));
         }
 
         public IObservable<IplImage> Process(IObservable<Tuple<IList<Point2f[]>, IplImage>> source)
         {
-            return source.Select(value =>
+            return source.Select(value => DrawTailPointsArrayFunc(value.Item2, value.Item1.ToArray()));
+        }
+
+        private IplImage DrawTailPointFunc(IplImage image, Point2f point)
+        {
+            IplImage newImage;
+            if (image.Channels == 1)
             {
-                IplImage newImage;
-                if (value.Item2.Channels == 1)
+                newImage = new IplImage(new Size(image.Size.Width, image.Size.Height), image.Depth, 3);
+                CV.CvtColor(image, newImage, ColorConversion.Gray2Bgr);
+            }
+            else
+            {
+                newImage = image.Clone();
+            }
+            CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
+            return newImage;
+        }
+
+        private IplImage DrawTailPointsFunc(IplImage image, Point2f[] points)
+        {
+            if (points.Length == 0)
+            {
+                return image;
+            }
+            IplImage newImage;
+            if (image.Channels == 1)
+            {
+                newImage = new IplImage(new Size(image.Size.Width, image.Size.Height), image.Depth, 3);
+                CV.CvtColor(image, newImage, ColorConversion.Gray2Bgr);
+            }
+            else
+            {
+                newImage = image.Clone();
+            }
+            foreach (Point2f point in points)
+            {
+                CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
+            }
+            return newImage;
+        }
+
+        private IplImage DrawTailPointsArrayFunc(IplImage image, Point2f[][] pointsArray)
+        {
+            if (pointsArray.Length == 0)
+            {
+                return image;
+            }
+            else if (pointsArray.Length == 1)
+            {
+                return DrawTailPointsFunc(image, pointsArray[0]);
+            }
+            IplImage newImage;
+            if (image.Channels == 1)
+            {
+                newImage = new IplImage(new Size(image.Size.Width, image.Size.Height), image.Depth, 3);
+                CV.CvtColor(image, newImage, ColorConversion.Gray2Bgr);
+            }
+            else
+            {
+                newImage = image.Clone();
+            }
+            foreach (Point2f[] points in pointsArray)
+            {
+                foreach (Point2f point in points)
                 {
-                    newImage = new IplImage(new Size(value.Item2.Size.Width, value.Item2.Size.Height), value.Item2.Depth, 3);
-                    CV.CvtColor(value.Item2, newImage, ColorConversion.Gray2Bgr);
+                    CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
                 }
-                else
-                {
-                    newImage = value.Item2.Clone();
-                }
-                foreach (Point2f[] points in value.Item1)
-                {
-                    foreach (Point2f point in points)
-                    {
-                        CV.Circle(newImage, new Point((int)point.X, (int)point.Y), radius, Colour, thickness);
-                    }
-                }
-                return newImage;
-            });
+            }
+            return newImage;
         }
     }
 }
