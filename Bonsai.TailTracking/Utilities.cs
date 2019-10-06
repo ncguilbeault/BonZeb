@@ -40,8 +40,7 @@ namespace Bonsai.TailTracking
             Cumulative = 0,
             Mean = 1,
             EndOfTail = 2,
-            StartOfTail = 3,
-            None = 4
+            StartOfTail = 3
         }
 
         public class RawImageData
