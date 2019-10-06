@@ -63,19 +63,18 @@ namespace Bonsai.TailTracking
             {
                 return contours;
             }
-            ConnectedComponent[] tempContours = null;
-            contours.CopyTo(tempContours, 0);
             double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
-            List<ConnectedComponent> sortedContours = tempContours.OrderBy(contour => Math.Abs(Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X))).ToList();
+            List<ConnectedComponent> sortedContours = contours.OrderBy(contour => Math.Abs(Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X))).ToList();
             List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
             return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
         }
 
         private ConnectedComponentCollection FindEyeContoursFromImageFunc(IplImage image, Point2f[] points)
         {
+            IplImage temp = image.Clone();
             MemStorage memStorage = new MemStorage();
-            int contourCount = CV.FindContours(image, memStorage, out Seq seqContours);
-            Contours contours = new Contours(seqContours, image.Size);
+            int contourCount = CV.FindContours(temp, memStorage, out Seq seqContours);
+            Contours contours = new Contours(seqContours, temp.Size);
             Seq currentContour = contours.FirstContour;
             ConnectedComponentCollection connectedComponents = new ConnectedComponentCollection(contours.ImageSize);
             while (currentContour != null)
