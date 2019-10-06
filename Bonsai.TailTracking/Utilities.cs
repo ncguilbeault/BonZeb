@@ -31,7 +31,14 @@ namespace Bonsai.TailTracking
         {
             // Enum type used for tail calculation method.
             CenterOfMass = 0,
-            PixelSearch = 1,
+            PixelSearch = 1
+        }
+
+        public enum TailCurvatureDetectionMethod
+        {
+            // Enum type used for tail curvature detection method. Only used if an array of tail curvatures is provided.
+            Cumulative = 0,
+            Mean = 1
         }
 
         public class RawImageData
@@ -48,6 +55,20 @@ namespace Bonsai.TailTracking
                 Height = height;
                 WidthStep = widthStep;
             }
+        }
+
+        public class TailBeatKinematics
+        {
+            // Class used for creating a data type which contains the amplitudes, frequency, and instances of bouts in tail curvature data.
+            public double Frequency { get; set; }
+            public double Amplitude { get; set; }
+            public bool Instance { get; set; }
+            public TailBeatKinematics(double freuency, double amplitude, bool instance)
+            {
+                Frequency = Frequency;
+                Amplitude = amplitude;
+                Instance = instance;
+            } 
         }
 
         public class DrawParameters
@@ -197,8 +218,19 @@ namespace Bonsai.TailTracking
 
         public static double ConvertRadiansToDegrees(double radians)
         {
-            // Function that converts radians into degreees.
+            // Function that converts radians into degrees.
             return radians * 180 / Math.PI;
+        }
+
+        public static double[] ConvertRadiansToDegrees(double[] values)
+        {
+            // Function that converts array of values in radians into array of values in degrees.
+            double[] output = new double[values.Length];
+            for (int i = 0; i < output.Length; i++)
+            {
+                output[i] = values[i] * 180 / Math.PI;
+            }
+            return output;
         }
 
         public static double ConvertDegreesToRadians(double degrees)
@@ -207,12 +239,40 @@ namespace Bonsai.TailTracking
             return degrees * Math.PI / 180;
         }
 
+        public static double[] ConvertDegreesToRadians(double[] values)
+        {
+            // Function that converts array of values in radians into array of values in degrees.
+            double[] output = new double[values.Length];
+            for (int i = 0; i < output.Length; i++)
+            {
+                output[i] = values[i] * Math.PI / 180;
+            }
+            return output;
+        }
+
         public static byte[] ConvertIplImageToByteArray(IplImage image)
         {
             // Function that converts an IplImage into a byte array.
             byte[] imageData = new byte[image.WidthStep * image.Height];
             Marshal.Copy(image.ImageData, imageData, 0, image.WidthStep * image.Height);
             return imageData;
+        }
+
+        public static double CalculateSum(double[] values)
+        {
+            // Function that takes an array of doubles and calculates the sum of the values.
+            double sum = 0;
+            foreach (double value in values)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+
+        public static double CalculateMean(double[] values)
+        {
+            // Function that takes an array of doublas and calcualtes the mean of the values.
+            return CalculateSum(values) / values.Length;
         }
     }
 }

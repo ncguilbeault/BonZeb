@@ -15,5 +15,9 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => Utilities.ConvertRadiansToDegrees(value));
         }
+        public IObservable<double[]> Process(IObservable<double[]> source)
+        {
+            return source.Select(value => Utilities.ConvertRadiansToDegrees(value));
+        }
     }
 }
