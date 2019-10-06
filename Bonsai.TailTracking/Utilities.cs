@@ -38,7 +38,10 @@ namespace Bonsai.TailTracking
         {
             // Enum type used for tail curvature detection method. Only used if an array of tail curvatures is provided.
             Cumulative = 0,
-            Mean = 1
+            Mean = 1,
+            EndOfTail = 2,
+            StartOfTail = 3,
+            None = 4
         }
 
         public class RawImageData

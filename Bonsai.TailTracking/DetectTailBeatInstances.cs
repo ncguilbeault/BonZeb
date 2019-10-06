@@ -51,7 +51,7 @@ namespace Bonsai.TailTracking
             maxVal = double.NegativeInfinity;
             return source.Select(value =>
             {
-                double tailCurvature = TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.Cumulative ? Utilities.CalculateSum(value) : Utilities.CalculateMean(value);
+                double tailCurvature = TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.Cumulative ? Utilities.CalculateSum(value) : TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.Mean ? Utilities.CalculateMean(value) : TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.EndOfTail ? value[value.Length - 1] : value[1];
                 return DetectTailBeatInstancesFunc(tailCurvature);
             });
         }
