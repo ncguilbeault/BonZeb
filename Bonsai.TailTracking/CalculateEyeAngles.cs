@@ -17,20 +17,32 @@ namespace Bonsai.TailTracking
 
         public override IObservable<double[]> Process(IObservable<Tuple<Point2f[], ConnectedComponentCollection>> source)
         {
-            return source.Select(value => CalculateEyeAnglesFunc(value.Item2, value.Item1));
+            return source.Select(value => CalculateEyeAnglesWithTailPointsFunc(value.Item2, value.Item1));
         }
         public IObservable<double[]> Process(IObservable<Tuple<ConnectedComponentCollection, Point2f[]>> source)
         {
-            return source.Select(value => CalculateEyeAnglesFunc(value.Item1, value.Item2));
+            return source.Select(value => CalculateEyeAnglesWithTailPointsFunc(value.Item1, value.Item2));
         }
-        private double[] CalculateEyeAnglesFunc(ConnectedComponentCollection contours, Point2f[] points)
+        public IObservable<double[]> Process(IObservable<Tuple<double, ConnectedComponentCollection>> source)
         {
-            double[] eyeAngles = { 0, 0 };
+            return source.Select(value => CalculateEyeAnglesWithHeadingAngleFunc(value.Item2, value.Item1));
+        }
+        public IObservable<double[]> Process(IObservable<Tuple<ConnectedComponentCollection, double>> source)
+        {
+            return source.Select(value => CalculateEyeAnglesWithHeadingAngleFunc(value.Item1, value.Item2));
+        }
+        private double[] CalculateEyeAnglesWithTailPointsFunc(ConnectedComponentCollection contours, Point2f[] points)
+        {
+            double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
+            return CalculateEyeAnglesWithHeadingAngleFunc(contours, headingAngle);
+        }
+        private double[] CalculateEyeAnglesWithHeadingAngleFunc(ConnectedComponentCollection contours, double headingAngle)
+        {
+            double[] eyeAngles = { Double.NaN, Double.NaN };
             if (contours.Count < 2)
             {
                 return eyeAngles;
             }
-            double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
             for (int i = 0; i < contours.Count; i++)
             {
                 Point2f newPoint = Utilities.RotatePoint(new Point2f((float)(contours[i].MajorAxisLength * Math.Cos(contours[i].Orientation)), (float)(contours[i].MajorAxisLength * Math.Sin(contours[i].Orientation))), -headingAngle);
