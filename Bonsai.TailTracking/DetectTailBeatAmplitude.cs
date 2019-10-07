@@ -12,6 +12,12 @@ namespace Bonsai.TailTracking
     public class DetectTailBeatAmplitude : Transform<double, double>
     {
 
+        public DetectTailBeatAmplitude()
+        {
+            Delta = 10;
+            FrameWindow = 5;
+        }
+
         private double delta;
         [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal. Value must be greater than 0.")]
         public double Delta { get => delta; set => delta = value > 0 ? value : delta; }
@@ -20,24 +26,23 @@ namespace Bonsai.TailTracking
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset more frequently.")]
         public int FrameWindow { get => frameWindow; set => frameWindow = value > 0 ? value : frameWindow; }
 
-        [Description("Method used for the detection method if the input is an array of doubles.")]
-        public Utilities.TailCurvatureDetectionMethod TailCurvatureDetectionMethod { get; set; }
-
         private bool findMax;
         private bool prevFindMax;
         private bool boutDetected;
         private int startCounter;
-        private int prevCounter;
+        private bool firstPeak;
+        private bool morePeaks;
         private double minVal;
         private double maxVal;
 
         public override IObservable<double> Process(IObservable<double> source)
         {
             findMax = true;
-            prevFindMax = findMax;
+            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
-            prevCounter = startCounter;
+            firstPeak = true;
+            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             return source.Select(value => DetectTailBeatAmplitudeFunc(value));
@@ -46,17 +51,14 @@ namespace Bonsai.TailTracking
         public IObservable<double> Process(IObservable<double[]> source)
         {
             findMax = true;
-            prevFindMax = findMax;
+            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
-            prevCounter = startCounter;
+            firstPeak = true;
+            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
-            return source.Select(value =>
-            {
-                double tailCurvature = TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.Cumulative ? Utilities.CalculateSum(value) : TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.Mean ? Utilities.CalculateMean(value) : TailCurvatureDetectionMethod == Utilities.TailCurvatureDetectionMethod.EndOfTail ? value[value.Length - 1] : value[1];
-                return DetectTailBeatAmplitudeFunc(tailCurvature);
-            });
+            return source.Select(value => Utilities.CalculateMean(value));
         }
 
         private double DetectTailBeatAmplitudeFunc(double value)
@@ -64,12 +66,14 @@ namespace Bonsai.TailTracking
             double amplitude = 0;
             maxVal = ((boutDetected || startCounter == 0) && (value > maxVal)) || (findMax && !boutDetected && (value > (minVal + delta))) || (!findMax && (value > (minVal + delta))) ? value : maxVal;
             minVal = ((boutDetected || startCounter == 0) && (value < minVal)) || (findMax && (value < (maxVal - delta))) ? value : minVal;
-            findMax = (findMax && (value < (maxVal - delta))) ? false : ((!findMax && (value > minVal + delta)) || (startCounter > FrameWindow)) ? true : findMax;
-            boutDetected = (findMax && ((!boutDetected && (value > (minVal + delta))) || (value < (maxVal - delta)))) || (!findMax && (value > (minVal + delta))) ? true : (startCounter > frameWindow) ? false : boutDetected;
-            maxVal = (startCounter != 0 && !boutDetected && prevFindMax == findMax) ? 0 : maxVal;
-            minVal = (startCounter != 0 && !boutDetected && prevFindMax == findMax) ? 0 : minVal;
-            startCounter = !boutDetected || (startCounter > frameWindow) || (boutDetected && prevFindMax != findMax) ? 0 : startCounter + 1;
-            amplitude = boutDetected && prevFindMax != findMax && !findMax ? maxVal : boutDetected && prevFindMax != findMax && findMax ? minVal : 0;
+            findMax = (findMax && (value < (maxVal - delta))) ? false : ((!findMax && (value > minVal + delta)) || (startCounter > frameWindow)) ? true : findMax;
+            boutDetected = (startCounter > frameWindow) ? false : (findMax && ((!boutDetected && (value > (minVal + delta))) || (value < (maxVal - delta)))) || (!findMax && (value > (minVal + delta))) ? true : boutDetected;
+            maxVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : maxVal;
+            minVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : minVal;
+            startCounter = (!boutDetected || (startCounter > frameWindow) || (boutDetected && (prevFindMax != findMax))) ? 0 : startCounter + 1;
+            morePeaks = (boutDetected && (prevFindMax == findMax) && !firstPeak) ? true : !boutDetected ? false : morePeaks;
+            firstPeak = (boutDetected && (prevFindMax != findMax) && !findMax) ? false : !boutDetected ? true : firstPeak;
+            amplitude = (morePeaks && boutDetected && (prevFindMax != findMax) && !findMax) ? maxVal : (morePeaks && boutDetected && (prevFindMax != findMax) && findMax) ? minVal : 0;
             prevFindMax = findMax;
             return amplitude;
         }

@@ -68,6 +68,10 @@ namespace Bonsai.TailTracking
         }
         private IplImage DrawEyeAnglesFunc(ConnectedComponentCollection eyes, IplImage image)
         {
+            if (eyes.Count < 2)
+            {
+                return image;
+            }
             IplImage newImage;
             if (image.Channels == 1)
             {

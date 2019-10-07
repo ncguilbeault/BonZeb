@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Linq;
+using OpenCV.Net;
 
 namespace Bonsai.TailTracking
 {
@@ -14,6 +15,11 @@ namespace Bonsai.TailTracking
         public override IObservable<double> Process(IObservable<double[]> source)
         {
             return source.Select(value => Utilities.CalculateMean(value));
+        }
+
+        public IObservable<double> Process(IObservable<Point2f[]> source)
+        {
+            return source.Select(value => Utilities.CalculateMean(Utilities.CalculateTailCurvature(value)));
         }
     }
 }

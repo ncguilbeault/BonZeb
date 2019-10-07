@@ -25,10 +25,7 @@ namespace Bonsai.TailTracking
             turnCount = 0;
             prevHeadingAngle = null;
             initHeadingAngle = null;
-            return source.Select(value => 
-            {
-                return CalculateHeadingAngleWithPointsFunc(value[0], value[1]);
-            });
+            return source.Select(value => CalculateHeadingAngleWithPointsFunc(value[0], value[1]));
         }
 
         public IObservable<double> Process(IObservable<Tuple<ConnectedComponentCollection, Point2f[]>> source)
@@ -38,7 +35,11 @@ namespace Bonsai.TailTracking
             initHeadingAngle = null;
             return source.Select(value =>
             {
-                return CalculateHeadingAngleWithEyesFunc(value.Item1, value.Item2[0]);
+                if (value.Item1.Count == 2)
+                {
+                    return CalculateHeadingAngleWithEyesFunc(value.Item1, value.Item2[0]);
+                }
+                return CalculateHeadingAngleWithPointsFunc(value.Item2[0], value.Item2[1]);
             });
         }
 
@@ -49,7 +50,11 @@ namespace Bonsai.TailTracking
             initHeadingAngle = null;
             return source.Select(value =>
             {
-                return CalculateHeadingAngleWithEyesFunc(value.Item2, value.Item1[0]);
+                if (value.Item2.Count == 2)
+                {
+                    return CalculateHeadingAngleWithEyesFunc(value.Item2, value.Item1[0]);
+                }
+                return CalculateHeadingAngleWithPointsFunc(value.Item1[0], value.Item1[2]);
             });
         }
 

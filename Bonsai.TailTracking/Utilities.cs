@@ -34,15 +34,6 @@ namespace Bonsai.TailTracking
             PixelSearch = 1
         }
 
-        public enum TailCurvatureDetectionMethod
-        {
-            // Enum type used for tail curvature detection method. Only used if an array of tail curvatures is provided.
-            Cumulative = 0,
-            Mean = 1,
-            EndOfTail = 2,
-            StartOfTail = 3
-        }
-
         public class RawImageData
         {
             // Class used for creating a raw image data type.
@@ -65,9 +56,9 @@ namespace Bonsai.TailTracking
             public double Frequency { get; set; }
             public double Amplitude { get; set; }
             public bool Instance { get; set; }
-            public TailBeatKinematics(double freuency, double amplitude, bool instance)
+            public TailBeatKinematics(double frequency, double amplitude, bool instance)
             {
-                Frequency = Frequency;
+                Frequency = frequency;
                 Amplitude = amplitude;
                 Instance = instance;
             } 
@@ -275,6 +266,19 @@ namespace Bonsai.TailTracking
         {
             // Function that takes an array of doublas and calcualtes the mean of the values.
             return CalculateSum(values) / values.Length;
+        }
+
+        public static double[] CalculateTailCurvature(Point2f[] points)
+        {
+            double headingAngle = -Math.Atan2(points[1].Y - points[0].Y, points[1].X - points[0].X);
+            Point2f[] rotatedPoints = RotatePoints(points, points[0], headingAngle);
+            double[] tailCurvature = new double[rotatedPoints.Length - 1];
+            for (int i = 0; i < rotatedPoints.Length - 1; i++)
+            {
+                tailCurvature[i] = Math.Atan2(rotatedPoints[i + 1].Y - rotatedPoints[i].Y, rotatedPoints[i + 1].X - rotatedPoints[i].X);
+                tailCurvature[i] = i > 0 && tailCurvature[i] - tailCurvature[i - 1] > Math.PI ? tailCurvature[i] - Math.PI * 2 : i > 0 && tailCurvature[i] - tailCurvature[i - 1] < -Math.PI ? tailCurvature[i] + Math.PI * 2 : tailCurvature[i];
+            }
+            return tailCurvature;
         }
     }
 }
