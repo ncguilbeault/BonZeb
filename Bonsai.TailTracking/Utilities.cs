@@ -30,8 +30,9 @@ namespace Bonsai.TailTracking
         public enum TailCalculationMethod
         {
             // Enum type used for tail calculation method.
-            CenterOfMass = 0,
-            PixelSearch = 1
+            PixelSearch = 0,
+            CenterOfMass = 1,
+            WeightedMedian = 2
         }
 
         public class RawImageData
@@ -82,50 +83,106 @@ namespace Bonsai.TailTracking
             }
         }
 
-        public static Point2f CalculateNextPoint(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f FindNextPointWithPixelSearch(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /*Function that returns a point that exists along an arc of known length from an initial point in an image.
             Point is found with the pixel search method.
             Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
 
-            Point2f point = new Point2f(0, 0);
+            double XCoord = double.NaN;
+            double YCoord = double.NaN;            
 
             for (int i = 0; i < nIterations; i++)
             {
                 int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
                 float potentialX = Math.Min(Math.Max(potentialPoints[index].X, 0), frameWidth - 1);
                 float potentialY = Math.Min(Math.Max(potentialPoints[index].Y, 0), frameHeight - 1);
-                point = i == 0 || (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)point.Y * frameWidth + (int)point.X]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)point.Y * frameWidth + (int)point.X]) ? new Point2f(potentialX, potentialY) : point;
+                if (double.IsNaN(XCoord) || (method == PixelSearch.Darkest && byteArray[(int)potentialY * frameWidth + (int)potentialX] < byteArray[(int)YCoord * frameWidth + (int)XCoord]) || (method == PixelSearch.Brightest && byteArray[(int)potentialY * frameWidth + (int)potentialX] > byteArray[(int)YCoord * frameWidth + (int)XCoord]))
+                {
+                    XCoord = potentialX;
+                    YCoord = potentialY;
+                }
             }
 
-            return point;
+            return new Point2f((float)XCoord, (float)YCoord);
         }
 
-        public static Point2f FindCenterOfMassAlongArc(int startIteration, int nIterations, Point2f[] potentialPoints, ThresholdType thresholdType, double thresholdValue, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f FindNextPointWithCenterOfMass(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /*Function that returns the center of mass along an arc of known length from an initial point in an image.
             Point is found with the pixel search method.
             Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
 
-            Point2f point = new Point2f(0, 0);
-            double M00 = 0, M01 = 0, M10 = 0;
+            double[] potentialXArray = new double[nIterations];
+            double[] potentialYArray = new double[nIterations];
+            double[] pixelValueArray = new double[nIterations];
 
             for (int i = 0; i < nIterations; i++)
             {
                 int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
                 double potentialX = Math.Min(Math.Max(potentialPoints[index].X, 0), frameWidth - 1);
                 double potentialY = Math.Min(Math.Max(potentialPoints[index].Y, 0), frameHeight - 1);
-                double pixelValue = (thresholdType == ThresholdType.Binary && byteArray[(int)potentialY * frameWidth + (int)potentialX] > thresholdValue) || (thresholdType == ThresholdType.BinaryInvert && byteArray[(int)potentialY * frameWidth + (int)potentialX] < thresholdValue) ? 255 : 0;
-                M00 += pixelValue;
-                M01 += pixelValue * potentialY;
-                M10 += pixelValue * potentialX;
+                double pixelValue = byteArray[(int)potentialY * frameWidth + (int)potentialX];
+                potentialXArray[i] = potentialX;
+                potentialYArray[i] = potentialY;
+                pixelValueArray[i] = pixelValue;
             }
+            double basePixelValue = double.NaN;
+            for (int i = 0; i < pixelValueArray.Length; i++)
+            {
+                basePixelValue = double.IsNaN(basePixelValue) || method == PixelSearch.Darkest && (basePixelValue < pixelValueArray[i]) || method == PixelSearch.Brightest && (basePixelValue > pixelValueArray[i]) ? pixelValueArray[i] : basePixelValue;
+            }
+            double M00 = 0, M01 = 0, M10 = 0;
+            for (int i = 0; i < pixelValueArray.Length; i++)
+            {
+                int weightedPixelValue = (int)Math.Abs(pixelValueArray[i] - basePixelValue);
+                M00 += weightedPixelValue;
+                M10 += weightedPixelValue * potentialXArray[i];
+                M01 += weightedPixelValue * potentialYArray[i];
+            }
+            return M00 > 0 ? new Point2f((float)(M10 / M00), (float)(M01 / M00)) : new Point2f(0, 0);
+        }
 
-            point = M00 > 0 ? new Point2f((float)(M10 / M00), (float)(M01 / M00)) : point;
+        public static Point2f FindNextPointWithWeightedMedian(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        {
 
-            return point;
+            /*Function that returns a point that exists along an arc of known length from an initial point in an image.
+            Point is found by taking the median of the distribution of coordinates weighted by the difference of each coordinate from the value of the pixel with the brightest or darkest value specified by the pixel search method.
+            Requires the initial angle, range of angles, number of angles, initial point, radius, method, frame width, frame height, and frame data in the byte array.*/
+
+            float[] potentialXArray = new float[nIterations];
+            float[] potentialYArray = new float[nIterations];
+            double[] pixelValueArray = new double[nIterations];
+
+            for (int i = 0; i < nIterations; i++)
+            {
+                int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
+                float potentialX = Math.Min(Math.Max(potentialPoints[index].X, 0), frameWidth - 1);
+                float potentialY = Math.Min(Math.Max(potentialPoints[index].Y, 0), frameHeight - 1);
+                double pixelValue = byteArray[(int)potentialY * frameWidth + (int)potentialX];
+                potentialXArray[i] = potentialX;
+                potentialYArray[i] = potentialY;
+                pixelValueArray[i] = pixelValue;
+            }
+            double basePixelValue = double.NaN;
+            for (int i = 0; i < pixelValueArray.Length; i++)
+            {
+                basePixelValue = double.IsNaN(basePixelValue) || method == PixelSearch.Darkest && (basePixelValue < pixelValueArray[i]) || method == PixelSearch.Brightest && (basePixelValue > pixelValueArray[i]) ? pixelValueArray[i] : basePixelValue;
+            }
+            List<float> weightedXList = new List<float>();
+            List<float> weightedYList = new List<float>();
+            for (int i = 0; i < pixelValueArray.Length; i++)
+            {
+                for (int j = 0; j < (int)Math.Abs(pixelValueArray[i] - basePixelValue); j++)
+                {
+                    weightedXList.Add(potentialXArray[i]);
+                    weightedYList.Add(potentialYArray[i]);
+                }
+            }
+            int medianIndex = weightedXList.Count % 2 == 0 ? weightedXList.Count / 2 : (weightedXList.Count / 2) + 1;
+            return weightedXList.Count == 0 ? new Point2f(0, 0) : new Point2f(weightedXList[medianIndex], weightedYList[medianIndex]);
         }
 
         public static Point2f[] GeneratePotentialPoints(int radius)

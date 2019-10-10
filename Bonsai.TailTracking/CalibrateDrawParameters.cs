@@ -14,7 +14,8 @@ namespace Bonsai.TailTracking
 
         public override IObservable<Utilities.DrawParameters> Process(IObservable<Tuple<Utilities.DrawParameters, Utilities.DrawParameters>> source)
         {
-            return source.Select(value => {
+            return source.Select(value => 
+            {
                 Utilities.DrawParameters cameraDrawParameters = value.Item1;
                 Utilities.DrawParameters projectorDrawParameters = value.Item2;
                 double xRange = cameraDrawParameters.XRange * projectorDrawParameters.XRange;
