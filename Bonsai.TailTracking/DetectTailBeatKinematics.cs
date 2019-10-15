@@ -87,7 +87,7 @@ namespace Bonsai.TailTracking
             startCounter = (!boutDetected || (startCounter > frameWindow) || (boutDetected && (prevFindMax != findMax))) ? 0 : startCounter + 1;
             firstPeak = (boutDetected && (prevFindMax != findMax) && !findMax) ? false : !boutDetected ? true : firstPeak;
             morePeaks = (boutDetected && (prevFindMax == findMax) && !firstPeak) ? true : !boutDetected ? false : morePeaks;
-            frequency = (morePeaks && boutDetected && (prevFindMax != findMax) && (startCounter == 0) && (startCounter != prevCounter)) ? frameRate / (2.0 * prevCounter) : !boutDetected ? 0 : frequency;
+            frequency = (boutDetected && (prevFindMax != findMax) && (startCounter == 0) && (startCounter != prevCounter)) ? frameRate / (2.0 * prevCounter) : !boutDetected ? 0 : frequency;
             amplitude = (morePeaks && boutDetected && (prevFindMax == findMax) && !findMax) ? maxVal : (morePeaks && boutDetected && (prevFindMax == findMax) && findMax) ? minVal : 0;
             prevFindMax = findMax;
             prevCounter = startCounter;
