@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 namespace Bonsai.TailTracking
 {
 
-    [Description("Converts radians to degrees.")]
+    [Description("Converts degrees to radians.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class ConvertDegreesToRadians : Transform<double, double>
@@ -15,7 +15,6 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => Utilities.ConvertDegreesToRadians(value));
         }
-
         public IObservable<double[]> Process(IObservable<double[]> source)
         {
             return source.Select(value => Utilities.ConvertDegreesToRadians(value));

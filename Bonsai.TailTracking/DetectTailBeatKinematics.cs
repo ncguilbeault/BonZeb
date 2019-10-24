@@ -37,10 +37,10 @@ namespace Bonsai.TailTracking
         private int startCounter;
         private int prevCounter;
         private bool firstPeak;
-        private bool morePeaks;
         private double minVal;
         private double maxVal;
         private double frequency;
+        private double amplitude;
 
         public override IObservable<Utilities.TailBeatKinematics> Process(IObservable<double> source)
         {
@@ -50,10 +50,10 @@ namespace Bonsai.TailTracking
             startCounter = 0;
             prevCounter = 0;
             firstPeak = true;
-            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
+            amplitude = 0;
             return source.Select(value => DetectTailBeatKinematicsFunc(value));
         }
 
@@ -65,32 +65,92 @@ namespace Bonsai.TailTracking
             startCounter = 0;
             prevCounter = 0;
             firstPeak = true;
-            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
+            amplitude = 0;
             return source.Select(value => DetectTailBeatKinematicsFunc(Utilities.CalculateMean(value)));
         }
 
         private Utilities.TailBeatKinematics DetectTailBeatKinematicsFunc(double value)
         {
-            double amplitude = 0;
-            maxVal = ((boutDetected || startCounter == 0) && (value > maxVal)) || (findMax && !boutDetected && (value > (minVal + delta))) || (!findMax && (value > (minVal + delta))) ? value : maxVal;
-            minVal = ((boutDetected || startCounter == 0) && (value < minVal)) || (findMax && (value < (maxVal - delta))) ? value : minVal;
-            findMax = (findMax && (value < (maxVal - delta))) ? false : ((!findMax && (value > minVal + delta)) || (startCounter > frameWindow)) ? true : findMax;
-            //boutDetected = (startCounter > frameWindow) ? false : (findMax && ((!boutDetected && (value > (minVal + delta))) || (value < (maxVal - delta)))) || (!findMax && (value > (minVal + delta))) ? true : boutDetected;
-            boutDetected = (startCounter > frameWindow) ? false : (value > (minVal + delta)) || (value < (maxVal - delta)) ? true : boutDetected;
-            //maxVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : maxVal;
-            maxVal = ((startCounter != 0) && !boutDetected) ? 0 : maxVal;
-            //minVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : minVal;
-            minVal = ((startCounter != 0) && !boutDetected) ? 0 : minVal;
-            startCounter = (!boutDetected || (startCounter > frameWindow) || (boutDetected && (prevFindMax != findMax))) ? 0 : startCounter + 1;
-            firstPeak = (boutDetected && (prevFindMax != findMax) && !findMax) ? false : !boutDetected ? true : firstPeak;
-            morePeaks = (boutDetected && (prevFindMax == findMax) && !firstPeak) ? true : !boutDetected ? false : morePeaks;
-            frequency = (boutDetected && (prevFindMax != findMax) && (startCounter == 0) && (startCounter != prevCounter)) ? frameRate / (2.0 * prevCounter) : !boutDetected ? 0 : frequency;
-            amplitude = (morePeaks && boutDetected && (prevFindMax == findMax) && !findMax) ? maxVal : (morePeaks && boutDetected && (prevFindMax == findMax) && findMax) ? minVal : 0;
+            if (value > maxVal)
+            {
+                maxVal = value;
+            }
+            if (value < minVal)
+            {
+                minVal = value;
+            }
+            if (boutDetected)
+            {
+                if (!findMax && (value > (minVal + delta)))
+                {
+                    maxVal = value;
+                    if (!findMax)
+                    {
+                        findMax = true;
+                        startCounter = 0;
+                        if (firstPeak)
+                        {
+                            firstPeak = false;
+                        }
+                    }
+                }
+                else if (findMax && (value < (maxVal - delta)))
+                {
+                    minVal = value;
+                    if (findMax)
+                    {
+                        findMax = false;
+                        startCounter = 0;
+                        if (firstPeak)
+                        {
+                            firstPeak = false;
+                        }
+                    }
+                }
+                if (!firstPeak)
+                {
+                    if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
+                    {
+                        frequency = frameRate / (2.0 * prevCounter);
+                    }
+                    if (findMax)
+                    {
+                        amplitude = minVal;
+                    }
+                    else
+                    {
+                        amplitude = maxVal;
+                    }
+                }
+                startCounter++;
+            }
+            else
+            {
+                if ((value > (minVal + delta)) || (value < (maxVal - delta)))
+                {
+                    boutDetected = true;
+                    startCounter = 1;
+                }
+            }
+            if (startCounter > frameWindow)
+            {
+                //Reset values
+                maxVal = double.NegativeInfinity;
+                minVal = double.PositiveInfinity;
+                boutDetected = false;
+                findMax = true;
+                firstPeak = true;
+                startCounter = 0;
+                frequency = 0;
+                amplitude = 0;
+            }
+
             prevFindMax = findMax;
             prevCounter = startCounter;
+
             return new Utilities.TailBeatKinematics(frequency, amplitude, boutDetected);
         }
     }

@@ -129,7 +129,7 @@ namespace Bonsai.TailTracking
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - rangeAngles;
                 int startIteration = tailAngle < 0 ? (int)((tailAngle + Utilities.twoPi) * potentialTailPoints.Length / Utilities.twoPi) : (int)(tailAngle * potentialTailPoints.Length / Utilities.twoPi);
                 Point2f[] newPotentialTailPoints = Utilities.OffsetPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
-                Point2f nextPoint = Utilities.FindNextPointWithCenterOfMass(startIteration, nIterations, newPotentialTailPoints, PixelSearch, imageWidthStep, imageHeight, imageData);
+                Point2f nextPoint = Utilities.FindNextPointWithCenterOfMass(startIteration, nIterations, newPotentialTailPoints, points[i], PixelSearch, imageWidthStep, imageHeight, imageData);
                 points[i + 1] = nextPoint;
             }
             points = OffsetX != 0 || OffsetY != 0 ? Utilities.OffsetPoints(points, OffsetX, OffsetY) : points;

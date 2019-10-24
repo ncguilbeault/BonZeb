@@ -108,7 +108,7 @@ namespace Bonsai.TailTracking
             return new Point2f((float)XCoord, (float)YCoord);
         }
 
-        public static Point2f FindNextPointWithCenterOfMass(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f FindNextPointWithCenterOfMass(int startIteration, int nIterations, Point2f[] potentialPoints, Point2f origin, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /*Function that returns the center of mass along an arc of known length from an initial point in an image.
@@ -142,7 +142,32 @@ namespace Bonsai.TailTracking
                 M10 += weightedPixelValue * potentialXArray[i];
                 M01 += weightedPixelValue * potentialYArray[i];
             }
-            return M00 > 0 ? new Point2f((float)(M10 / M00), (float)(M01 / M00)) : new Point2f(0, 0);
+            Point2f outputPoint = new Point2f(0, 0);
+            if (M00 == 0)
+            {
+                return outputPoint;
+            }
+            double angleCOM = Math.Atan2((M01 / M00) - origin.Y, (M10 / M00) - origin.X);
+            double prevAngleDiff = 0;
+            for (int i = 0; i < nIterations; i++)
+            {
+                int index = (i + startIteration) < potentialPoints.Length ? i + startIteration : i + startIteration - potentialPoints.Length;
+                double currAngleToPoint = Math.Atan2(potentialPoints[index].Y - origin.Y, potentialPoints[index].X - origin.X);
+                if (i == 0)
+                {
+                    outputPoint = new Point2f(potentialPoints[index].X, potentialPoints[index].Y);
+                    prevAngleDiff = Math.Abs(angleCOM - currAngleToPoint);
+                }
+                else
+                {  
+                    if (Math.Abs(angleCOM - currAngleToPoint) < prevAngleDiff)
+                    {
+                        outputPoint = new Point2f(potentialPoints[index].X, potentialPoints[index].Y);
+                        prevAngleDiff = Math.Abs(angleCOM - currAngleToPoint);
+                    }
+                }
+            }
+            return outputPoint;
         }
 
         public static Point2f FindNextPointWithWeightedMedian(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearch method, int frameWidth, int frameHeight, byte[] byteArray)
@@ -181,8 +206,7 @@ namespace Bonsai.TailTracking
                     weightedYList.Add(potentialYArray[i]);
                 }
             }
-            int medianIndex = weightedXList.Count % 2 == 0 ? weightedXList.Count / 2 : (weightedXList.Count / 2) + 1;
-            return weightedXList.Count == 0 ? new Point2f(0, 0) : new Point2f(weightedXList[medianIndex], weightedYList[medianIndex]);
+            return weightedXList.Count == 0 || weightedYList.Count == 0 ? new Point2f(0, 0) : new Point2f(weightedXList[weightedXList.Count / 2], weightedYList[weightedYList.Count / 2]);
         }
 
         public static Point2f[] GeneratePotentialPoints(int radius)
