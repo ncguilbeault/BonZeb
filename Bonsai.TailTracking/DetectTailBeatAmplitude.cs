@@ -27,54 +27,111 @@ namespace Bonsai.TailTracking
         public int FrameWindow { get => frameWindow; set => frameWindow = value > 0 ? value : frameWindow; }
 
         private bool findMax;
-        private bool prevFindMax;
         private bool boutDetected;
         private int startCounter;
         private bool firstPeak;
-        private bool morePeaks;
         private double minVal;
         private double maxVal;
+        private double amplitude;
 
         public override IObservable<double> Process(IObservable<double> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
             firstPeak = true;
-            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
+            amplitude = 0;
             return source.Select(value => DetectTailBeatAmplitudeFunc(value));
         }
 
         public IObservable<double> Process(IObservable<double[]> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
             firstPeak = true;
-            morePeaks = false;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
+            amplitude = 0;
             return source.Select(value => Utilities.CalculateMean(value));
         }
 
         private double DetectTailBeatAmplitudeFunc(double value)
         {
-            double amplitude = 0;
-            maxVal = ((boutDetected || startCounter == 0) && (value > maxVal)) || (findMax && !boutDetected && (value > (minVal + delta))) || (!findMax && (value > (minVal + delta))) ? value : maxVal;
-            minVal = ((boutDetected || startCounter == 0) && (value < minVal)) || (findMax && (value < (maxVal - delta))) ? value : minVal;
-            findMax = (findMax && (value < (maxVal - delta))) ? false : ((!findMax && (value > minVal + delta)) || (startCounter > frameWindow)) ? true : findMax;
-            boutDetected = (startCounter > frameWindow) ? false : (findMax && ((!boutDetected && (value > (minVal + delta))) || (value < (maxVal - delta)))) || (!findMax && (value > (minVal + delta))) ? true : boutDetected;
-            maxVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : maxVal;
-            minVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : minVal;
-            startCounter = (!boutDetected || (startCounter > frameWindow) || (boutDetected && (prevFindMax != findMax))) ? 0 : startCounter + 1;
-            morePeaks = (boutDetected && (prevFindMax == findMax) && !firstPeak) ? true : !boutDetected ? false : morePeaks;
-            firstPeak = (boutDetected && (prevFindMax != findMax) && !findMax) ? false : !boutDetected ? true : firstPeak;
-            amplitude = (morePeaks && boutDetected && (prevFindMax != findMax) && !findMax) ? maxVal : (morePeaks && boutDetected && (prevFindMax != findMax) && findMax) ? minVal : 0;
-            prevFindMax = findMax;
+            if (value > maxVal)
+            {
+                maxVal = value;
+            }
+            if (value < minVal)
+            {
+                minVal = value;
+            }
+            if (boutDetected)
+            {
+                if (!findMax && (value > (minVal + delta)))
+                {
+                    maxVal = value;
+                    if (!findMax)
+                    {
+                        findMax = true;
+                        startCounter = 0;
+                        if (firstPeak)
+                        {
+                            firstPeak = false;
+                        }
+                    }
+                }
+                else if (findMax && (value < (maxVal - delta)))
+                {
+                    minVal = value;
+                    if (findMax)
+                    {
+                        findMax = false;
+                        startCounter = 0;
+                        if (firstPeak)
+                        {
+                            firstPeak = false;
+                        }
+                    }
+                }
+                if (!firstPeak)
+                {
+                    if (findMax)
+                    {
+                        amplitude = minVal;
+                    }
+                    else
+                    {
+                        amplitude = maxVal;
+                    }
+                }
+                startCounter++;
+            }
+            else
+            {
+                if ((value > (minVal + delta)) || (value < (maxVal - delta)))
+                {
+                    boutDetected = true;
+                    startCounter = 1;
+                    if (value < (maxVal - delta))
+                    {
+                        findMax = false;
+                    }
+                }
+            }
+            if (startCounter > frameWindow)
+            {
+                //Reset values
+                maxVal = double.NegativeInfinity;
+                minVal = double.PositiveInfinity;
+                boutDetected = false;
+                findMax = true;
+                firstPeak = true;
+                startCounter = 0;
+                amplitude = 0;
+            }
             return amplitude;
         }
     }

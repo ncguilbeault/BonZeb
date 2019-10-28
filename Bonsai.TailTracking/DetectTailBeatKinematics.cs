@@ -95,6 +95,13 @@ namespace Bonsai.TailTracking
                         {
                             firstPeak = false;
                         }
+                        else
+                        {
+                            if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
+                            {
+                                frequency = frameRate / (2.0 * prevCounter);
+                            }
+                        }
                     }
                 }
                 else if (findMax && (value < (maxVal - delta)))
@@ -108,14 +115,17 @@ namespace Bonsai.TailTracking
                         {
                             firstPeak = false;
                         }
+                        else
+                        {
+                            if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
+                            {
+                                frequency = frameRate / (2.0 * prevCounter);
+                            }
+                        }
                     }
                 }
                 if (!firstPeak)
                 {
-                    if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
-                    {
-                        frequency = frameRate / (2.0 * prevCounter);
-                    }
                     if (findMax)
                     {
                         amplitude = minVal;
@@ -133,6 +143,10 @@ namespace Bonsai.TailTracking
                 {
                     boutDetected = true;
                     startCounter = 1;
+                    if (value < (maxVal - delta))
+                    {
+                        findMax = false;
+                    }
                 }
             }
             if (startCounter > frameWindow)

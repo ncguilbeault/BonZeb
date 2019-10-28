@@ -27,7 +27,6 @@ namespace Bonsai.TailTracking
         public int FrameWindow { get => frameWindow; set => frameWindow = value > 0 ? value : frameWindow; }
 
         private bool findMax;
-        private bool prevFindMax;
         private bool boutDetected;
         private int startCounter;
         private double minVal;
@@ -36,7 +35,6 @@ namespace Bonsai.TailTracking
         public override IObservable<bool> Process(IObservable<double> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
             minVal = double.PositiveInfinity;
@@ -47,7 +45,6 @@ namespace Bonsai.TailTracking
         public IObservable<bool> Process(IObservable<double[]> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
             startCounter = 0;
             minVal = double.PositiveInfinity;
@@ -57,14 +54,58 @@ namespace Bonsai.TailTracking
 
         private bool DetectTailBeatInstancesFunc(double value)
         {
-            maxVal = ((boutDetected || startCounter == 0) && (value > maxVal)) || (findMax && !boutDetected && (value > (minVal + delta))) || (!findMax && (value > (minVal + delta))) ? value : maxVal;
-            minVal = ((boutDetected || startCounter == 0) && (value < minVal)) || (findMax && (value < (maxVal - delta))) ? value : minVal;
-            findMax = (findMax && (value < (maxVal - delta))) ? false : ((!findMax && (value > minVal + delta)) || (startCounter > frameWindow)) ? true : findMax;
-            boutDetected = (startCounter > frameWindow) ? false : (findMax && ((!boutDetected && (value > (minVal + delta))) || (value < (maxVal - delta)))) || (!findMax && (value > (minVal + delta))) ? true : boutDetected;
-            maxVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : maxVal;
-            minVal = ((startCounter != 0) && !boutDetected && (prevFindMax == findMax)) ? 0 : minVal;
-            startCounter = (!boutDetected || (startCounter > frameWindow) || (boutDetected && (prevFindMax != findMax))) ? 0 : startCounter + 1;
-            prevFindMax = findMax;
+            if (value > maxVal)
+            {
+                maxVal = value;
+            }
+            if (value < minVal)
+            {
+                minVal = value;
+            }
+            if (boutDetected)
+            {
+                if (!findMax && (value > (minVal + delta)))
+                {
+                    maxVal = value;
+                    if (!findMax)
+                    {
+                        findMax = true;
+                        startCounter = 0;
+                    }
+                }
+                else if (findMax && (value < (maxVal - delta)))
+                {
+                    minVal = value;
+                    if (findMax)
+                    {
+                        findMax = false;
+                        startCounter = 0;
+                    }
+                }
+                startCounter++;
+            }
+            else
+            {
+                if ((value > (minVal + delta)) || (value < (maxVal - delta)))
+                {
+                    boutDetected = true;
+                    startCounter = 1;
+                    if (value < (maxVal - delta))
+                    {
+                        findMax = false;
+                    }
+                }
+            }
+            if (startCounter > frameWindow)
+            {
+                //Reset values
+                maxVal = double.NegativeInfinity;
+                minVal = double.PositiveInfinity;
+                boutDetected = false;
+                findMax = true;
+                startCounter = 0;
+            }
+
             return boutDetected;
         }
     }
