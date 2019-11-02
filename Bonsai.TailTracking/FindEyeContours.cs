@@ -35,26 +35,26 @@ namespace Bonsai.TailTracking
 
         private double? minArea;
         [Description("The minimum area for individual contours to be accepted.")]
-        public double? MinArea { get => minArea; set => minArea = value == null || value > 1 ? value : 1; }
+        public double? MinArea { get => minArea; set => minArea = value == null || (value > 1 && !maxArea.HasValue) || (maxArea.HasValue && value > 1 && value <= maxArea) ? value : 1; }
 
         private double? maxArea;
         [Description("The maximum area for individual contours to be accepted.")]
-        public double? MaxArea { get => maxArea; set => maxArea = value == null || value >= minArea ? value : minArea; }
+        public double? MaxArea { get => maxArea; set => maxArea = value.HasValue && (!minArea.HasValue || value >= minArea) ? value : minArea; }
 
         private double? minDistance;
         [Description("Minimum distance between centroid of eyes and body centroid.")]
-        public double? MinDistance { get => minDistance; set => minDistance = value == null || value >= 0 ? value : null; }
+        public double? MinDistance { get => minDistance; set => minDistance = value.HasValue && (!maxDistance.HasValue || (value <= maxDistance && value >= 0)) ? value : null; }
 
         private double? maxDistance;
         [Description("Minimum distance between centroid of eyes and body centroid.")]
-        public double? MaxDistance { get => maxDistance; set => maxDistance = value == null || value >= minDistance ? value : null; }
+        public double? MaxDistance { get => maxDistance; set => maxDistance = value.HasValue && (!minDistance.HasValue || value >= minDistance) ? value : null; }
 
         [Description("Determines whether the region containing the centroid will be removed.")]
         public bool DiscardRegionContainingCentroid { get; set; }
 
         private double? angleRangeForEyeSearch;
         [Description("The range of angles in degrees around the expected heading angle for which to search for the eyes.")]
-        public double? AngleRangeForEyeSearch { get => angleRangeForEyeSearch; set => angleRangeForEyeSearch = value == null || value >= 0 ? value : null; }
+        public double? AngleRangeForEyeSearch { get => angleRangeForEyeSearch; set => angleRangeForEyeSearch = value.HasValue && value >= 0 ? value : null; }
 
         public override IObservable<ConnectedComponentCollection> Process(IObservable<Tuple<Point2f[], ConnectedComponentCollection>> source)
         {
