@@ -9,6 +9,13 @@ using System.Runtime.InteropServices;
 namespace Bonsai.TailTracking
 {
 
+    //public enum PixelSearchMethod
+    //{
+        // Enum type used for searching pixel-wise extrema
+    //    Darkest = 0,
+    //    Brightest = 1
+    //}
+
     [Description("Calculates the tail points using the tail calculation method. Distances are measured in number of pixels in the image.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
