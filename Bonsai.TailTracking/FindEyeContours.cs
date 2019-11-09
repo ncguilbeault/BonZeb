@@ -33,13 +33,13 @@ namespace Bonsai.TailTracking
         [Description("The approximation method used to output the contours.")]
         public ContourApproximation Method { get; set; }
 
-        private double? minArea;
+        private double minArea;
         [Description("The minimum area for individual contours to be accepted.")]
-        public double? MinArea { get => minArea; set => minArea = value == null || (value > 1 && !maxArea.HasValue) || (maxArea.HasValue && value > 1 && value <= maxArea) ? value : 1; }
+        public double MinArea { get => minArea; set => minArea = value > 1 && (!maxArea.HasValue || value <= maxArea) ? value : 1; }
 
         private double? maxArea;
         [Description("The maximum area for individual contours to be accepted.")]
-        public double? MaxArea { get => maxArea; set => maxArea = value.HasValue && (!minArea.HasValue || value >= minArea) ? value : minArea; }
+        public double? MaxArea { get => maxArea; set => maxArea = value.HasValue && value >= minArea ? value : null; }
 
         private double? minDistance;
         [Description("Minimum distance between centroid of eyes and body centroid.")]
@@ -115,7 +115,7 @@ namespace Bonsai.TailTracking
                 }
             if (sortedContours.Count < 2)
             {
-                return new ConnectedComponentCollection(sortedContours, contours.ImageSize);
+                return contours;
             }
             List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
             return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
@@ -131,30 +131,19 @@ namespace Bonsai.TailTracking
             ConnectedComponentCollection connectedComponents = new ConnectedComponentCollection(contours.ImageSize);
             while (currentContour != null)
             {
-                if (!minArea.HasValue && !maxArea.HasValue)
+                double contourArea = CV.ContourArea(currentContour, SeqSlice.WholeSeq);
+                if (maxArea == null)
                 {
-                    connectedComponents.Add(ConnectedComponent.FromContour(currentContour));
+                    if (contourArea >= minArea)
+                    {
+                        connectedComponents.Add(ConnectedComponent.FromContour(currentContour));
+                    }                  
                 }
                 else
                 {
-                    double contourArea = CV.ContourArea(currentContour, SeqSlice.WholeSeq);
-                    if (minArea.HasValue && !maxArea.HasValue && contourArea >= minArea)
+                    if (contourArea >= minArea && contourArea <= maxArea)
                     {
                         connectedComponents.Add(ConnectedComponent.FromContour(currentContour));
-                    }
-                    else
-                    {
-                        if (!minArea.HasValue && maxArea.HasValue && contourArea <= maxArea)
-                        {
-                            connectedComponents.Add(ConnectedComponent.FromContour(currentContour));
-                        }
-                        else
-                        {
-                            if (minArea.HasValue && maxArea.HasValue && contourArea >= minArea && contourArea <= maxArea)
-                            {
-                                connectedComponents.Add(ConnectedComponent.FromContour(currentContour));
-                            }
-                        }
                     }
                 }
                 currentContour = currentContour.HNext;

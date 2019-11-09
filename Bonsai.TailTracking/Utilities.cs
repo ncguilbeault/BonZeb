@@ -19,12 +19,10 @@ namespace Bonsai.TailTracking
             return Points;
         }
 
-        public static Point2f OffsetPoints(Point2f point, float offsetX, float offsetY)
+        public static Point2f OffsetPoint(Point2f point, float offsetX, float offsetY)
         {
             // Function that applies an offset to a point.
-            Point2f[] Points = new Point2f[0];
-            Points[0] = new Point2f(point.X + offsetX, point.Y + offsetY);
-            return Points[0];
+            return new Point2f(point.X + offsetX, point.Y + offsetY);
         }
 
         public static Point2f[] RotatePoints(Point2f[] points, Point2f origin, double angle)
@@ -51,17 +49,13 @@ namespace Bonsai.TailTracking
         public static Point2f RotatePoint(Point2f point, Point2f origin, double angle)
         {
             // Function that rotates a single point around an origin by a given angle.
-            Point2f[] Points = new Point2f[0];
-            Points[0] = new Point2f((float)(((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)) + origin.X), (float)(((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)) + origin.Y));
-            return Points[0];
+            return new Point2f((float)(((point.X - origin.X) * Math.Cos(angle) - (point.Y - origin.Y) * Math.Sin(angle)) + origin.X), (float)(((point.X - origin.X) * Math.Sin(angle) + (point.Y - origin.Y) * Math.Cos(angle)) + origin.Y));
         }
 
         public static Point2f RotatePoint(Point2f point, double angle)
         {
             // Function that rotates a single point by a given angle.
-            Point2f[] Points = new Point2f[0];
-            Points[0] = new Point2f((float)(point.X * Math.Cos(angle) - point.Y * Math.Sin(angle)), (float)(point.X * Math.Sin(angle) + point.Y * Math.Cos(angle)));
-            return Points[0];
+            return new Point2f((float)(point.X * Math.Cos(angle) - point.Y * Math.Sin(angle)), (float)(point.X * Math.Sin(angle) + point.Y * Math.Cos(angle)));
         }
 
         public static Point2f[] GeneratePointsArray(int radius)
