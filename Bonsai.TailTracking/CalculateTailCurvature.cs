@@ -12,10 +12,10 @@ namespace Bonsai.TailTracking
 
     public class CalculateTailCurvature : Transform<Point2f[], double[]>
     {
+
         public override IObservable<double[]> Process(IObservable<Point2f[]> source)
         {
             return source.Select(value => Utilities.CalculateTailCurvature(value));
         }
     }
-
 }

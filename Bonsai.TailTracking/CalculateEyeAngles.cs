@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using OpenCV.Net;
@@ -47,7 +46,14 @@ namespace Bonsai.TailTracking
             {
                 Point2f newPoint = Utilities.RotatePoint(new Point2f((float)(contours[i].MajorAxisLength * Math.Cos(contours[i].Orientation)), (float)(contours[i].MajorAxisLength * Math.Sin(contours[i].Orientation))), -headingAngle);
                 eyeAngles[i] = Math.Atan2(newPoint.Y, newPoint.X);
-                eyeAngles[i] = eyeAngles[i] < -Math.PI / 2 ? eyeAngles[i] + Math.PI : eyeAngles[i] > Math.PI / 2 ? eyeAngles[i] - Math.PI : eyeAngles[i];
+                if (eyeAngles[i] < -Math.PI / 2.0)
+                {
+                    eyeAngles[i] += Math.PI;
+                }
+                else if (eyeAngles[i] > Math.PI / 2.0)
+                {
+                    eyeAngles[i] -= Math.PI;
+                }
             }
             return eyeAngles;
         }

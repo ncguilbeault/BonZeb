@@ -11,7 +11,7 @@ namespace Bonsai.TailTracking
     [Description("Draws a rectangle and creates draw parameters.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class DrawRectangle : Transform<IplImage, Utilities.DrawParameters>
+    public class DrawRectangle : Transform<IplImage, CalibrationParameters>
     {
 
         [Editor("Bonsai.Vision.Design.IplImageInputRectangleEditor, Bonsai.Vision.Design", typeof(UITypeEditor))]
@@ -24,7 +24,7 @@ namespace Bonsai.TailTracking
         [Description("Colour used for drawing rectangular region of interest.")]
         public Scalar Colour { get; set; }
 
-        public override IObservable<Utilities.DrawParameters> Process(IObservable<IplImage> source)
+        public override IObservable<CalibrationParameters> Process(IObservable<IplImage> source)
         {
             return source.Select(value =>
             {
@@ -32,7 +32,7 @@ namespace Bonsai.TailTracking
                 double xOffset = xRange < 1 ? ((double)RegionOfInterest.X - (((double)value.Width - (double)RegionOfInterest.Width) / 2.0)) * 2.0 / (double)value.Width : 0.0;
                 double yRange = RegionOfInterest.Height > 0 ? (double)RegionOfInterest.Height / (double)value.Height : 1.0;
                 double yOffset = yRange < 1 ? ((((double)value.Height - (double)RegionOfInterest.Height) / 2.0) - (double)RegionOfInterest.Y) * 2.0 / (double)value.Height : 0.0;
-                return new Utilities.DrawParameters(xOffset, yOffset, xRange, yRange, Colour);
+                return new CalibrationParameters(xOffset, yOffset, xRange, yRange, Colour);
             });
         }
     }

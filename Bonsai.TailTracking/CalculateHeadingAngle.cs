@@ -28,6 +28,17 @@ namespace Bonsai.TailTracking
             return source.Select(value => CalculateHeadingAngleWithPointsFunc(value[0], value[1]));
         }
 
+        public IObservable<double> Process(IObservable<Tuple<Point2f, Point2f>> source)
+        {
+            turnCount = 0;
+            prevHeadingAngle = null;
+            initHeadingAngle = null;
+            return source.Select(value =>
+            {
+                return CalculateHeadingAngleWithPointsFunc(value.Item1, value.Item2);
+            });
+        }
+
         public IObservable<double> Process(IObservable<Tuple<ConnectedComponentCollection, Point2f[]>> source)
         {
             turnCount = 0;
@@ -58,17 +69,6 @@ namespace Bonsai.TailTracking
             });
         }
 
-        public IObservable<double> Process(IObservable<Tuple<Point2f, Point2f>> source)
-        {
-            turnCount = 0;
-            prevHeadingAngle = null;
-            initHeadingAngle = null;
-            return source.Select(value =>
-            {
-                return CalculateHeadingAngleWithPointsFunc(value.Item1, value.Item2);
-            });
-        }
-
         private double CalculateHeadingAngleWithPointsFunc(Point2f headingPoint, Point2f centroid)
         {
             double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
@@ -76,22 +76,25 @@ namespace Bonsai.TailTracking
             {
                 initHeadingAngle = InitializeHeadingAngleToZero ? headingAngle : 0;
             }
-            turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
+            if (prevHeadingAngle != null)
+            {
+                if (headingAngle - prevHeadingAngle > Math.PI)
+                {
+                    turnCount -= 1;
+                }
+                else if (headingAngle - prevHeadingAngle < -Math.PI)
+                {
+                    turnCount += 1;
+                }
+            }
             prevHeadingAngle = headingAngle;
-            return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
+            return headingAngle - (double)initHeadingAngle + (turnCount * Math.PI * 2.0);
         }
 
         private double CalculateHeadingAngleWithEyesFunc(ConnectedComponentCollection eyes, Point2f centroid)
         {
             Point2f headingPoint = new Point2f((eyes[0].Centroid.X + eyes[1].Centroid.X) / 2, (eyes[0].Centroid.Y + eyes[1].Centroid.Y) / 2);
-            double headingAngle = Math.Atan2(headingPoint.Y - centroid.Y, headingPoint.X - centroid.X);
-            if (initHeadingAngle == null)
-            {
-                initHeadingAngle = InitializeHeadingAngleToZero ? headingAngle : 0;
-            }         
-            turnCount = prevHeadingAngle != null && headingAngle - prevHeadingAngle > Math.PI ? turnCount - 1 : prevHeadingAngle != null && headingAngle - prevHeadingAngle < -Math.PI ? turnCount + 1 : turnCount;
-            prevHeadingAngle = headingAngle;
-            return headingAngle - (double)initHeadingAngle + (turnCount * Utilities.twoPi);
+            return CalculateHeadingAngleWithPointsFunc(headingPoint, centroid);
         }
     }
 }

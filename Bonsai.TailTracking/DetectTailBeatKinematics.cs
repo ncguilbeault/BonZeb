@@ -9,7 +9,7 @@ namespace Bonsai.TailTracking
     [Description("Detects tail beat frequency from tail curvature using a peak signal detection method to determine the time between successive positive peaks.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class DetectTailBeatKinematics : Transform<double, Utilities.TailBeatKinematics>
+    public class DetectTailBeatKinematics : Transform<double, TailKinematics>
     {
 
         public DetectTailBeatKinematics()
@@ -42,7 +42,7 @@ namespace Bonsai.TailTracking
         private double frequency;
         private double amplitude;
 
-        public override IObservable<Utilities.TailBeatKinematics> Process(IObservable<double> source)
+        public override IObservable<TailKinematics> Process(IObservable<double> source)
         {
             findMax = true;
             prevFindMax = true;
@@ -54,10 +54,10 @@ namespace Bonsai.TailTracking
             maxVal = double.NegativeInfinity;
             frequency = 0;
             amplitude = 0;
-            return source.Select(value => DetectTailBeatKinematicsFunc(value));
+            return source.Select(value => DetectTailKinematicsFunc(value));
         }
 
-        public IObservable<Utilities.TailBeatKinematics> Process(IObservable<double[]> source)
+        public IObservable<TailKinematics> Process(IObservable<double[]> source)
         {
             findMax = true;
             prevFindMax = true;
@@ -69,10 +69,10 @@ namespace Bonsai.TailTracking
             maxVal = double.NegativeInfinity;
             frequency = 0;
             amplitude = 0;
-            return source.Select(value => DetectTailBeatKinematicsFunc(Utilities.CalculateMean(value)));
+            return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value)));
         }
 
-        private Utilities.TailBeatKinematics DetectTailBeatKinematicsFunc(double value)
+        private TailKinematics DetectTailKinematicsFunc(double value)
         {
             if (value > maxVal)
             {
@@ -165,7 +165,7 @@ namespace Bonsai.TailTracking
             prevFindMax = findMax;
             prevCounter = startCounter;
 
-            return new Utilities.TailBeatKinematics(frequency, amplitude, boutDetected);
+            return new TailKinematics(frequency, amplitude, boutDetected);
         }
     }
 }

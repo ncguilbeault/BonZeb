@@ -71,6 +71,7 @@
     <Compile Include="CalculateHeadingAngle.cs" />
     <Compile Include="CalculateMeanTailCurvature.cs" />
     <Compile Include="CalculateTailPoints.cs" />
+    <Compile Include="CalibrationParameters.cs" />
     <Compile Include="ConvertDegreesToRadians.cs" />
     <Compile Include="ConvertRadiansToDegrees.cs" />
     <Compile Include="CreatePoint2f.cs" />
@@ -82,13 +83,16 @@
     <Compile Include="DrawEyeAngles.cs" />
     <Compile Include="DrawHeadingAngle.cs" />
     <Compile Include="DrawRectangle.cs" />
-    <Compile Include="CalibrateDrawParameters.cs" />
+    <Compile Include="CalculateCalibrationParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />
     <Compile Include="ConvertToRawImageData.cs" />
     <Compile Include="CalculateTailCurvature.cs" />
     <Compile Include="FindEyeContours.cs" />
-    <Compile Include="OffsetPoints.cs" />
+    <Compile Include="PixelSearchMethod.cs" />
+    <Compile Include="TailKinematics.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="RawImageData.cs" />
+    <Compile Include="TailPointCalculationMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
