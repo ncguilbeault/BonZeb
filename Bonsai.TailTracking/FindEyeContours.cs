@@ -56,6 +56,10 @@ namespace Bonsai.TailTracking
         [Description("The range of angles in degrees around the expected heading angle for which to search for the eyes.")]
         public double? AngleRangeForEyeSearch { get => angleRangeForEyeSearch; set => angleRangeForEyeSearch = value.HasValue && value >= 0 ? value : null; }
 
+        [Description("Determines whether or not to do a final step of fitting the eyes with ellipses.")]
+        public bool FitEllipsesToEyes { get; set; }
+
+
         public override IObservable<ConnectedComponentCollection> Process(IObservable<Tuple<Point2f[], ConnectedComponentCollection>> source)
         {
             return source.Select(value => FindEyeContoursFunc(value.Item2, value.Item1));
@@ -76,7 +80,7 @@ namespace Bonsai.TailTracking
             return source.Select(value => FindEyeContoursFromImageFunc(value.Item1, value.Item2));
         }
 
-        private ConnectedComponentCollection FindEyeContoursFunc(ConnectedComponentCollection contours, Point2f[] points)
+        private ConnectedComponentCollection FindEyeContoursFunc(ConnectedComponentCollection contours, Point2f[] points, IplDepth depth = IplDepth.U8, int channels = 1)
         {
             if (contours.Count < 2)
             {
@@ -118,7 +122,36 @@ namespace Bonsai.TailTracking
                 return contours;
             }
             List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
-            return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
+            if (!FitEllipsesToEyes)
+            {
+                return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
+            }
+            //ConnectedComponentCollection ellipseContours = new ConnectedComponentCollection(contours.ImageSize);
+            IplImage ellipseImage = new IplImage(contours.ImageSize, depth, channels);
+            foreach (ConnectedComponent eyeContour in eyeContours)
+            {
+                try
+                {
+                    RotatedRect ellipse = CV.FitEllipse2(eyeContour.Contour);
+                    CV.EllipseBox(ellipseImage, ellipse, new Scalar(255, 255, 255, 255), -1);
+                }
+                catch
+                {
+                    return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
+                }
+            }
+            MemStorage ellipseMemStorage = new MemStorage();
+            int contourCount = CV.FindContours(ellipseImage, ellipseMemStorage, out Seq seqEllipseContours);
+            Contours ellipseContours = new Contours(seqEllipseContours, ellipseImage.Size);
+            Seq currentEllipseContour = ellipseContours.FirstContour;
+            ConnectedComponentCollection ellipseConnectedComponents = new ConnectedComponentCollection(ellipseContours.ImageSize);
+            while (currentEllipseContour != null)
+            {
+                ellipseConnectedComponents.Add(ConnectedComponent.FromContour(currentEllipseContour));
+                currentEllipseContour = currentEllipseContour.HNext;
+            }
+            List<ConnectedComponent> ellipses = ellipseConnectedComponents.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
+            return new ConnectedComponentCollection(ellipses, contours.ImageSize);
         }
 
         private ConnectedComponentCollection FindEyeContoursFromImageFunc(IplImage image, Point2f[] points)
@@ -148,7 +181,7 @@ namespace Bonsai.TailTracking
                 }
                 currentContour = currentContour.HNext;
             }
-            return FindEyeContoursFunc(connectedComponents, points);
+            return FindEyeContoursFunc(connectedComponents, points, image.Depth, image.Channels);
         }
     }
 }

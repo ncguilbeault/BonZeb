@@ -38,7 +38,7 @@ namespace Bonsai.TailTracking
         private double[] CalculateEyeAnglesWithHeadingAngleFunc(ConnectedComponentCollection contours, double headingAngle)
         {
             double[] eyeAngles = { double.NaN, double.NaN };
-            if (contours.Count < 2)
+            if (contours.Count != 2)
             {
                 return eyeAngles;
             }
