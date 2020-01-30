@@ -30,7 +30,6 @@ C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\System
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojAssemblyReference.cache
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CoreCompileInputs.cache
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CopyComplete
-C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojResolveAssemblyReference.cache
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.dll
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.pdb
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.TailTracking.dll
@@ -79,3 +78,5 @@ C:\Users\Thiele Lab\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\
 C:\Users\Thiele Lab\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.pdb
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Vision.dll
 C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Vision.dll
+C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojAssemblyReference.cache
+C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CopyComplete

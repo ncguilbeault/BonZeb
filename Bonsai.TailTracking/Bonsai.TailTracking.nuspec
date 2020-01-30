@@ -6,10 +6,13 @@
     <title>Bonsai - Tail Tracking Library</title>
     <authors>Nicholas Guilbeault</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://github.com/ncguilbeault/Bonsai.TailTracking/tree/master/Resources/Bonsai.TailTracking-Logo.png</iconUrl>
     <projectUrl>https://github.com/ncguilbeault/Bonsai.TailTracking</projectUrl>
+    <iconUrl>https://github.com/ncguilbeault/Bonsai.TailTracking/raw/master/Resources/Bonsai.TailTracking-Logo.png</iconUrl>
     <description>Bonsai library containing modules for online tail tracking.</description>
-    <copyright>Nicholas Guilbeault © 2018</copyright>
+    <copyright>Nicholas Guilbeault © 2020</copyright>
     <tags>Bonsai Tail Tracking</tags>
   </metadata>
+  <files>
+    <file src="..\Resources\Bonsai.TailTracking-Logo.png" target="" />
+  </files>
 </package>

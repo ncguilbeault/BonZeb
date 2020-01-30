@@ -9,17 +9,19 @@
 	.st3{fill:#807FFF;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st4{fill:#C03FFF;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st5{fill:#FF00FF;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
-	.st6{fill:#9B0000;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st6{fill:#00FFBE;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st7{font-family:'ArialMT';}
-	.st8{font-size:12px;}
+	.st8{font-size:14px;}
 </style>
 <path class="st0" d="M53.7,81.2"/>
-<circle class="st1" cx="29.3" cy="45.1" r="7.8"/>
-<circle class="st2" cx="30.7" cy="61.1" r="6.1"/>
-<circle class="st3" cx="36.8" cy="71.9" r="4.4"/>
-<circle class="st4" cx="45.3" cy="77.1" r="2.4"/>
-<circle class="st5" cx="51.8" cy="75" r="1.7"/>
-<path class="st6" d="M19.4,25.7c5.1-9.2,9.9-18,9.9-18s0,0,0-0.3v0.3l20.4,37.1c-4.1-7.5-11.6-12.6-20.1-12.6
-	c-8.8,0-17,4.8-21.1,12.6C12.3,38.6,15.7,32.1,19.4,25.7z"/>
-<text transform="matrix(1 0 0 1 46.1192 29.0039)"><tspan x="0" y="0" class="st7 st8">Bonsai</tspan><tspan x="8.7" y="14.4" class="st7 st8">Tail</tspan><tspan x="3.3" y="28.8" class="st7 st8">Track</tspan></text>
+<circle class="st1" cx="20.8" cy="42.5" r="9"/>
+<circle class="st2" cx="17.9" cy="57.6" r="6.1"/>
+<circle class="st3" cx="20.8" cy="68.1" r="4.4"/>
+<circle class="st4" cx="26.4" cy="72.4" r="2.4"/>
+<circle class="st5" cx="30" cy="70.7" r="1.7"/>
+<path class="st6" d="M16.9,24.3c8-6.8,15.6-13.4,15.6-13.4s0,0,0.1-0.3l-0.1,0.3l6.1,41.9C37.4,44.4,32.1,37,24.2,34
+	C15.9,30.9,6.6,32.5,0,38.3C5.7,33.9,11.2,29,16.9,24.3z"/>
+<text transform="matrix(1 0 0 1 38.2003 36.9918)" class="st7 st8">Bonsai</text>
+<text transform="matrix(1 0 0 1 47.5002 51.5743)" class="st7 st8">Tail</text>
+<text transform="matrix(1 0 0 1 30.867 65.9581)" class="st7 st8">Tracking</text>
 </svg>

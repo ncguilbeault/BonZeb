@@ -14,14 +14,14 @@ namespace Bonsai.TailTracking
 
         public DetectTailBeatKinematics()
         {
-            Delta = 10;
+            BoutThreshold = 10;
             FrameRate = 30;
             FrameWindow = 5;
         }
 
-        private double delta;
-        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal. Value must be greater than 0.")]
-        public double Delta { get => delta; set => delta = value > 0 ? value : delta; }
+        private double boutThreshold;
+        [Description("BoutThreshold is used to determine how much of a threshold is necessary to determine the start of a bout signal. Value must be greater than 0.")]
+        public double BoutThreshold { get => boutThreshold; set => boutThreshold = value > 0 ? value : boutThreshold; }
 
         private double frameRate;
         [Description("Frame rate of the camera or video. Used to determine the tail beat frequency.")]
@@ -30,6 +30,11 @@ namespace Bonsai.TailTracking
         private int frameWindow;
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset more frequently.")]
         public int FrameWindow { get => frameWindow; set => frameWindow = value > 0 ? value : frameWindow; }
+
+        private double? peakThreshold;
+        private double delta;
+        [Description("PeakThreshold is used to determine how much of a threshold is necessary to detect a new peak in the signal once a bout signal has been detected. If no value is given, peak threshold is set equal to the bout threshold.")]
+        public double? PeakThreshold { get => peakThreshold; set { if (value.HasValue && value > 0) { peakThreshold = value; delta = value.Value; } else { peakThreshold = null; delta = boutThreshold; } } }
 
         private bool findMax;
         private bool prevFindMax;
@@ -139,11 +144,11 @@ namespace Bonsai.TailTracking
             }
             else
             {
-                if ((value > (minVal + delta)) || (value < (maxVal - delta)))
+                if ((value > (minVal + boutThreshold)) || (value < (maxVal - boutThreshold)))
                 {
                     boutDetected = true;
                     startCounter = 1;
-                    if (value < (maxVal - delta))
+                    if (value < (maxVal - boutThreshold))
                     {
                         findMax = false;
                     }
