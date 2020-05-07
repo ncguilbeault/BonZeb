@@ -85,13 +85,12 @@
     <Compile Include="DrawRectangle.cs" />
     <Compile Include="CalculateCalibrationParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />
-    <Compile Include="ConvertToRawImageData.cs" />
     <Compile Include="CalculateTailCurvature.cs" />
     <Compile Include="FindEyeContours.cs" />
     <Compile Include="PixelSearchMethod.cs" />
     <Compile Include="TailKinematics.cs" />
+    <Compile Include="TailPoints.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="RawImageData.cs" />
     <Compile Include="TailPointCalculationMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
