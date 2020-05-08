@@ -36,49 +36,59 @@ namespace Bonsai.TailTracking
         [Description("PeakThreshold is used to determine how much of a threshold is necessary to detect a new peak in the signal once a bout signal has been detected. If no value is given, peak threshold is set equal to the bout threshold.")]
         public double? PeakThreshold { get => peakThreshold; set { if (value.HasValue && value > 0) { peakThreshold = value; delta = value.Value; } else { peakThreshold = null; delta = boutThreshold; } } }
 
+        private double? withinBoutThreshold;
+        private double withinBoutDelta;
+        [Description("WithinBoutThreshold is used to determine how much of a threshold is needed to maintain a bout. If no value is given, within bout threshold is set equal to the bout threshold.")]
+        public double? WithinBoutThreshold { get => withinBoutThreshold; set { if (value.HasValue && value > 0) { withinBoutThreshold = value; withinBoutDelta = value.Value; } else { withinBoutThreshold = null; withinBoutDelta = boutThreshold; } } }
+
         private bool findMax;
-        private bool prevFindMax;
         private bool boutDetected;
-        private int startCounter;
-        private int prevCounter;
+        private int boutCounter;
+        private int startPeakCounter;
+        private int prevPeakCounter;
         private bool firstPeak;
         private double minVal;
         private double maxVal;
         private double frequency;
         private double amplitude;
+        private double[] valWindow;
+        private double sumValDiff;
 
         public override IObservable<TailKinematics> Process(IObservable<double> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
-            startCounter = 0;
-            prevCounter = 0;
+            boutCounter = 0;
+            startPeakCounter = 0;
+            prevPeakCounter = 0;
             firstPeak = true;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
             amplitude = 0;
+            valWindow = new double[frameWindow];
             return source.Select(value => DetectTailKinematicsFunc(value));
         }
 
         public IObservable<TailKinematics> Process(IObservable<double[]> source)
         {
             findMax = true;
-            prevFindMax = true;
             boutDetected = false;
-            startCounter = 0;
-            prevCounter = 0;
+            boutCounter = 0;
+            startPeakCounter = 0;
+            prevPeakCounter = 0;
             firstPeak = true;
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
             amplitude = 0;
+            valWindow = new double[frameWindow];
             return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value)));
         }
 
         private TailKinematics DetectTailKinematicsFunc(double value)
         {
+
             if (value > maxVal)
             {
                 maxVal = value;
@@ -95,17 +105,14 @@ namespace Bonsai.TailTracking
                     if (!findMax)
                     {
                         findMax = true;
-                        startCounter = 0;
+                        startPeakCounter = 0;
                         if (firstPeak)
                         {
                             firstPeak = false;
                         }
                         else
                         {
-                            if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
-                            {
-                                frequency = frameRate / (2.0 * prevCounter);
-                            }
+                            frequency = frameRate / (2.0 * prevPeakCounter);
                         }
                     }
                 }
@@ -115,17 +122,14 @@ namespace Bonsai.TailTracking
                     if (findMax)
                     {
                         findMax = false;
-                        startCounter = 0;
+                        startPeakCounter = 0;
                         if (firstPeak)
                         {
                             firstPeak = false;
                         }
                         else
                         {
-                            if (prevFindMax != findMax && startCounter == 0 && prevCounter != startCounter)
-                            {
-                                frequency = frameRate / (2.0 * prevCounter);
-                            }
+                            frequency = frameRate / (2.0 * prevPeakCounter);
                         }
                     }
                 }
@@ -140,21 +144,39 @@ namespace Bonsai.TailTracking
                         amplitude = maxVal;
                     }
                 }
-                startCounter++;
+                startPeakCounter++;
+                sumValDiff = 0;
+                for (int i = 0; i < valWindow.Length - 1; i++)
+                {
+                    sumValDiff += Math.Abs(valWindow[i + 1] - valWindow[i]);
+                    valWindow[i] = valWindow[i + 1];
+                }
+                sumValDiff += Math.Abs(value - valWindow[valWindow.Length - 1]);
+                valWindow[valWindow.Length - 1] = value;
+
+                if (sumValDiff > withinBoutDelta)
+                {
+                    boutCounter = 0;
+                }
+                else
+                {
+                    boutCounter++;
+                }
             }
             else
             {
                 if ((value > (minVal + boutThreshold)) || (value < (maxVal - boutThreshold)))
                 {
                     boutDetected = true;
-                    startCounter = 1;
+                    boutCounter = 1;
+                    startPeakCounter = 1;
                     if (value < (maxVal - boutThreshold))
                     {
                         findMax = false;
                     }
                 }
             }
-            if (startCounter > frameWindow)
+            if (boutCounter > frameWindow)
             {
                 //Reset values
                 maxVal = double.NegativeInfinity;
@@ -162,13 +184,14 @@ namespace Bonsai.TailTracking
                 boutDetected = false;
                 findMax = true;
                 firstPeak = true;
-                startCounter = 0;
+                boutCounter = 0;
+                startPeakCounter = 0;
                 frequency = 0;
                 amplitude = 0;
+                valWindow = new double[frameWindow];
             }
 
-            prevFindMax = findMax;
-            prevCounter = startCounter;
+            prevPeakCounter = startPeakCounter;
 
             return new TailKinematics(frequency, amplitude, boutDetected);
         }

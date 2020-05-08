@@ -1,4 +1,5 @@
 ﻿using Bonsai;
+using Bonsai.Design;
 using Bonsai.Vision.Design;
 using Bonsai.TailTracking;
 using Bonsai.TailTracking.Design;
@@ -9,19 +10,32 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
-[assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPoints))]
+[assembly: TypeVisualizer(typeof(CentroidVisualizer), Target = typeof(CentroidData))]
 
 namespace Bonsai.TailTracking.Design
 {
-    public class TailPointsVisualizer : IplImageVisualizer
+    public class CentroidVisualizer : IplImageVisualizer
     {
-        TailPoints tailPoints;
+        CentroidData centroidData;
+        ThresholdImageViewer thresholdImageViewer;
         IplImage labelImage;
         IplImageTexture labelTexture;
 
+        public override VisualizerCanvas VisualizerCanvas
+        {
+            get { return thresholdImageViewer?.Canvas; }
+        }
+
         public override void Load(IServiceProvider provider)
         {
+            thresholdImageViewer = new ThresholdImageViewer { Dock = DockStyle.Fill };
+            var visualizerService = (IDialogTypeVisualizerService)provider.GetService(typeof(IDialogTypeVisualizerService));
+            if (visualizerService != null)
+            {
+                visualizerService.AddControl(thresholdImageViewer);
+            }
             base.Load(provider);
             VisualizerCanvas.Load += (sender, e) =>
             {
@@ -34,10 +48,17 @@ namespace Bonsai.TailTracking.Design
 
         public override void Show(object value)
         {
-            tailPoints = (TailPoints)value;
-            if (tailPoints != null && tailPoints.Image != null)
+            centroidData = (CentroidData)value;
+            if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
             {
-                base.Show(tailPoints.Image);
+                if (thresholdImageViewer.ShowThresholdImage)
+                {
+                    base.Show(centroidData.ThresholdImage);
+                }
+                else
+                {
+                    base.Show(centroidData.Image);
+                }
             }
         }
 
@@ -50,13 +71,13 @@ namespace Bonsai.TailTracking.Design
         {
             GL.Color4(Color4.White);
             base.RenderFrame();
-    
-            if (tailPoints != null && tailPoints.Image != null)
+
+            if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
             {
                 GL.PointSize(3 * VisualizerCanvas.Height / 640f);
-                if (labelImage == null || labelImage.Size != tailPoints.Image.Size)
+                if (labelImage == null || labelImage.Size != centroidData.Image.Size)
                 {
-                    labelImage = new IplImage(tailPoints.Image.Size, IplDepth.U8, 4);
+                    labelImage = new IplImage(centroidData.Image.Size, IplDepth.U8, 4);
                 }
 
                 labelImage.SetZero();
@@ -65,20 +86,22 @@ namespace Bonsai.TailTracking.Design
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    GL.Color4(1.0, 0.0, 0.0, 0.5);
                     GL.Begin(PrimitiveType.Points);
-                    for (int i = 0; i < tailPoints.Points.Length; i++)
-                    {
-                        GL.Color4(1.0, 0.0, 0.0, 0.5);
-                        GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
-                    }
+                    GL.Vertex2(NormalizePoint(centroidData.Centroid, centroidData.Image.Size));
                     GL.End();
-
                     GL.Color4(Color4.White);
                     GL.Enable(EnableCap.Texture2D);
                     labelTexture.Update(labelImage);
                     labelTexture.Draw();
                 }
             }
+        }
+        public override void Unload()
+        {
+            base.Unload();
+            thresholdImageViewer.Dispose();
+            thresholdImageViewer = null;
         }
     }
 }
