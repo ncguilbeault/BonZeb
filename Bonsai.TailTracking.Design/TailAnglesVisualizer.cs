@@ -66,11 +66,11 @@ namespace Bonsai.TailTracking.Design
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    GL.LineWidth(2 * VisualizerCanvas.Height / 640f);
+                    GL.LineWidth(3 * VisualizerCanvas.Height / 640f);
                     for (int i = 0; i < tailAngles.Points.Length - 1; i++)
                     {
                         GL.Begin(PrimitiveType.Lines);
-                        GL.Color4(1.0, 0.0, 0.0, 0.5);
+                        GL.Color4(1.0, 0.0, 0.0, 1.0);
                         GL.Vertex2(NormalizePointForTailAngle(tailAngles.Points[i], Math.Atan2(tailAngles.Points[i].Y - tailAngles.Points[i + 1].Y, tailAngles.Points[i].X - tailAngles.Points[i + 1].X), tailAngles.Image.Size));
                         GL.Vertex2(NormalizePointForTailAngle(tailAngles.Points[i + 1], Math.Atan2(tailAngles.Points[i + 1].Y - tailAngles.Points[i].Y, tailAngles.Points[i + 1].X - tailAngles.Points[i].X), tailAngles.Image.Size));
                         GL.End();

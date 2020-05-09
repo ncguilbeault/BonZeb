@@ -76,7 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalculateBackground.cs" />
+    <Compile Include="BackgroundSubtractionData.cs" />
     <Compile Include="CalculateCentroid.cs" />
     <Compile Include="CalculateCumulativeTailAngle.cs" />
     <Compile Include="CalculateEyeAngles.cs" />
@@ -99,6 +99,7 @@
     <Compile Include="FindEyeContours.cs" />
     <Compile Include="PixelSearchMethod.cs" />
     <Compile Include="SaveTailTrackingData.cs" />
+    <Compile Include="SubtractBackground.cs" />
     <Compile Include="TailAngles.cs" />
     <Compile Include="TailTrackingDataDisposable.cs" />
     <Compile Include="TailKinematics.cs" />

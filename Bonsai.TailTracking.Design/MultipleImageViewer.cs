@@ -12,6 +12,14 @@ namespace Bonsai.TailTracking.Design
         ToolStripControlHost host;
         ToolStripStatusLabel statusLabel;
 
+        public bool ShowThresholdImage { get => checkBox.Checked; set => checkBox.CheckState = value ? CheckState.Checked : CheckState.Unchecked; }
+
+        //public event EventHandler ShowThresholdImageChanged
+        //{
+        //    add { checkBox.CheckStateChanged += value; }
+        //    remove { checkBox.CheckStateChanged -= value; }
+        //}
+
         public ThresholdImageViewer()
         {
             InitializeComponent();
@@ -48,14 +56,6 @@ namespace Bonsai.TailTracking.Design
                 }
             };
         }
-
-        public bool ShowThresholdImage { get => checkBox.Checked; set => checkBox.CheckState = value ? CheckState.Checked : CheckState.Unchecked; }
-
-        public VisualizerCanvas Canvas
-        {
-            get { return imageControl; }
-        }
-
         void imageControl_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -63,10 +63,14 @@ namespace Bonsai.TailTracking.Design
                 statusStrip.Visible = !statusStrip.Visible;
             }
         }
-        public void Update(IplImage frame)
+        public VisualizerCanvas Canvas
         {
-            imageControl.Image = frame;
-            if (frame == null) statusLabel.Text = string.Empty;
+            get { return imageControl; }
+        }
+        public void Update(IplImage image)
+        {
+            imageControl.Image = image;
+            if (image == null) statusLabel.Text = string.Empty;
         }
     }
 }

@@ -36,7 +36,6 @@ namespace Bonsai.TailTracking.Design
             {
                 visualizerService.AddControl(thresholdImageViewer);
             }
-            base.Load(provider);
             VisualizerCanvas.Load += (sender, e) =>
             {
                 labelTexture = new IplImageTexture();
@@ -44,6 +43,8 @@ namespace Bonsai.TailTracking.Design
                 GL.Enable(EnableCap.PointSmooth);
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             };
+            VisualizerCanvas.RenderFrame += (sender, e) => RenderFrame();
+            base.Load(provider);
         }
 
         public override void Show(object value)
@@ -53,11 +54,11 @@ namespace Bonsai.TailTracking.Design
             {
                 if (thresholdImageViewer.ShowThresholdImage)
                 {
-                    base.Show(centroidData.ThresholdImage);
+                    thresholdImageViewer.Update(centroidData.ThresholdImage);
                 }
                 else
                 {
-                    base.Show(centroidData.Image);
+                    thresholdImageViewer.Update(centroidData.Image);
                 }
             }
         }
@@ -70,11 +71,10 @@ namespace Bonsai.TailTracking.Design
         protected override void RenderFrame()
         {
             GL.Color4(Color4.White);
-            base.RenderFrame();
 
             if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
             {
-                GL.PointSize(3 * VisualizerCanvas.Height / 640f);
+                GL.PointSize(5 * VisualizerCanvas.Height / 640f);
                 if (labelImage == null || labelImage.Size != centroidData.Image.Size)
                 {
                     labelImage = new IplImage(centroidData.Image.Size, IplDepth.U8, 4);
@@ -86,7 +86,7 @@ namespace Bonsai.TailTracking.Design
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    GL.Color4(1.0, 0.0, 0.0, 0.5);
+                    GL.Color4(1.0, 0.0, 0.0, 1.0);
                     GL.Begin(PrimitiveType.Points);
                     GL.Vertex2(NormalizePoint(centroidData.Centroid, centroidData.Image.Size));
                     GL.End();
