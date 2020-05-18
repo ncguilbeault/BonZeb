@@ -1,28 +1,31 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Drawing;
 using OpenCV.Net;
 using System.Globalization;
 using Bonsai.Vision.Design;
 
 namespace Bonsai.TailTracking.Design
 {
-    public partial class ThresholdImageViewer : MultipleImageViewer
+
+    public partial class CentroidViewer : MultipleImageViewer
     {
         CheckBox checkBox;
         ToolStripControlHost host;
-        ToolStripStatusLabel statusLabel;
+        //ToolStripStatusLabel statusLabel;
+    
+        //public StatusStrip statusStrip { get => this.statusStrip; }
 
-        public ThresholdImageViewer() : base()
+        public CentroidViewer()
         {
-            InitializeComponent();
+            //InitializeComponent();
             checkBox = new CheckBox();
             checkBox.Text = "ShowThresholdImage";
             checkBox.CheckState = CheckState.Unchecked;
-            checkBox.BackColor = statusStrip.BackColor;
             host = new ToolStripControlHost(checkBox);
-            statusLabel = new ToolStripStatusLabel();
+            //statusLabel = new ToolStripStatusLabel();
             //this.statusStrip = base.statusStrip;
-            base.statusStrip.Items.Add(host);
+            statusStrip.Items.Add(host);
             //statusStrip.Items.Add(statusLabel);
             //imageControl.Canvas.MouseClick += new MouseEventHandler(imageControl_MouseClick);
             //imageControl.Canvas.MouseMove += (sender, e) =>

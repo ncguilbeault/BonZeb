@@ -1,5 +1,6 @@
 ﻿using Bonsai;
 using Bonsai.Design;
+using Bonsai.Vision;
 using Bonsai.Vision.Design;
 using Bonsai.TailTracking;
 using Bonsai.TailTracking.Design;
@@ -11,6 +12,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Reactive.Linq;
 
 [assembly: TypeVisualizer(typeof(CentroidVisualizer), Target = typeof(CentroidData))]
 
@@ -19,22 +21,23 @@ namespace Bonsai.TailTracking.Design
     public class CentroidVisualizer : IplImageVisualizer
     {
         CentroidData centroidData;
-        ThresholdImageViewer thresholdImageViewer;
+        MultipleImageViewer centroidViewer;
         IplImage labelImage;
         IplImageTexture labelTexture;
 
         public override VisualizerCanvas VisualizerCanvas
         {
-            get { return thresholdImageViewer?.Canvas; }
+            get { return centroidViewer?.Canvas; }
         }
 
         public override void Load(IServiceProvider provider)
         {
-            thresholdImageViewer = new ThresholdImageViewer { Dock = DockStyle.Fill };
+            centroidViewer = new MultipleImageViewer { Dock = DockStyle.Fill };
+            centroidViewer.PopulateComboBoxItems<CentroidData>();
             var visualizerService = (IDialogTypeVisualizerService)provider.GetService(typeof(IDialogTypeVisualizerService));
             if (visualizerService != null)
             {
-                visualizerService.AddControl(thresholdImageViewer);
+                visualizerService.AddControl(centroidViewer);
             }
             VisualizerCanvas.Load += (sender, e) =>
             {
@@ -50,15 +53,27 @@ namespace Bonsai.TailTracking.Design
         public override void Show(object value)
         {
             centroidData = (CentroidData)value;
-            if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
+            if (centroidData != null)
             {
-                if (thresholdImageViewer.ShowThresholdImage)
+                if (centroidViewer.SelectedImageViewer == nameof(centroidData.BackgroundSubtractedImage) && centroidData.BackgroundSubtractedImage != null)
                 {
-                    thresholdImageViewer.Update(centroidData.ThresholdImage);
+                    centroidViewer.Update(centroidData.BackgroundSubtractedImage);
+                }
+                else if (centroidViewer.SelectedImageViewer == nameof(centroidData.Background) && centroidData.Background != null)
+                {
+                    centroidViewer.Update(centroidData.Background);
+                }
+                else if (centroidViewer.SelectedImageViewer == nameof(centroidData.Contours) && centroidData.Contours != null)
+                {
+                    centroidViewer.Update(centroidData.Contours);
+                }
+                else if (centroidViewer.SelectedImageViewer == nameof(centroidData.ThresholdImage) && centroidData.ThresholdImage != null)
+                {
+                    centroidViewer.Update(centroidData.ThresholdImage);
                 }
                 else
                 {
-                    thresholdImageViewer.Update(centroidData.Image);
+                    centroidViewer.Update(centroidData.Image);
                 }
             }
         }
@@ -100,8 +115,8 @@ namespace Bonsai.TailTracking.Design
         public override void Unload()
         {
             base.Unload();
-            thresholdImageViewer.Dispose();
-            thresholdImageViewer = null;
+            centroidViewer.Dispose();
+            centroidViewer = null;
         }
     }
 }

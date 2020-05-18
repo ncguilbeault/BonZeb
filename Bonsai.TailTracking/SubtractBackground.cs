@@ -26,25 +26,26 @@ namespace Bonsai.TailTracking
 
             return source.Select(value =>
             {
+                IplImage input = new IplImage(value.Size, value.Depth, 1);
                 IplImage temp = new IplImage(value.Size, value.Depth, 1);
                 IplImage mask = new IplImage(value.Size, value.Depth, 1);
                 if (value.Channels != 1)
                 {
-                    CV.CvtColor(value, temp, ColorConversion.Bgr2Gray);
+                    CV.CvtColor(value, input, ColorConversion.Bgr2Gray);
                 }
                 else
                 {
-                    CV.Copy(value, temp);
+                    CV.Copy(value, input);
                 }
                 if (background == null)
                 {
-                    background = value.Clone();
+                    background = input.Clone();
                 }
                 else
                 {
                     if (PixelSearch == PixelSearchMethod.Brightest)
                     {
-                        CV.Sub(value, background, temp);
+                        CV.Sub(input, background, temp);
                         if (noiseThreshold != 0)
                         {
                             CV.SubS(temp, new Scalar(noiseThreshold), mask);
@@ -57,7 +58,7 @@ namespace Bonsai.TailTracking
                     }
                     else
                     {
-                        CV.Sub(background, value, temp);
+                        CV.Sub(background, input, temp);
                         if (noiseThreshold != 0)
                         {
                             CV.SubS(temp, new Scalar(noiseThreshold), mask);
@@ -68,9 +69,9 @@ namespace Bonsai.TailTracking
                             CV.Sub(background, temp, background, temp);
                         }
                     }
-                    CV.AbsDiff(value, background, temp);
+                    CV.AbsDiff(input, background, temp);
                 }
-                return new BackgroundSubtractionData(value, background, temp);
+                return new BackgroundSubtractionData(input, background, temp);
             });
 
         }
