@@ -9,32 +9,27 @@ namespace Bonsai.TailTracking
     [Description("Detects tail beat frequency from tail curvature using a peak signal detection method to determine the time between successive positive peaks.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class DetectTailBeatKinematics : Transform<double, TailKinematics>
+    public class DetectTailBeatFrequency : Transform<double, double>
     {
 
-        public DetectTailBeatKinematics()
+        public DetectTailBeatFrequency()
         {
-            BoutThreshold = 10;
+            Delta = 10;
             FrameRate = 30;
             FrameWindow = 5;
         }
 
-        private double boutThreshold;
-        [Description("BoutThreshold is used to determine how much of a threshold is necessary to determine the start of a bout signal. Value must be greater than 0.")]
-        public double BoutThreshold { get => boutThreshold; set => boutThreshold = value > 0 ? value : boutThreshold; }
+        private double delta;
+        [Description("Delta is used to determine how much of a threshold is necessary to determine a peak in an ongoing signal. Value must be greater than 0.")]
+        public double Delta { get => delta; set => delta = value > 0 ? value : delta; }
 
         private double frameRate;
-        [Description("Frame rate of the camera or video. Used to determine the tail beat frequency.")]
+        [Description("Frame rate of the camera or video. Used to determine the frequency.")]
         public double FrameRate { get => frameRate; set => frameRate = value > 0 ? value : frameRate; }
 
         private int frameWindow;
         [Description("Frame window is used to determine the window in which to continue detecting successive peaks. A shorter frame window causes the peak detection method to reset more frequently.")]
         public int FrameWindow { get => frameWindow; set => frameWindow = value > 0 ? value : frameWindow; }
-
-        private double? peakThreshold;
-        private double delta;
-        [Description("PeakThreshold is used to determine how much of a threshold is necessary to detect a new peak in the signal once a bout signal has been detected. If no value is given, peak threshold is set equal to the bout threshold.")]
-        public double? PeakThreshold { get => peakThreshold; set { if (value.HasValue && value > 0) { peakThreshold = value; delta = value.Value; } else { peakThreshold = null; delta = boutThreshold; } } }
 
         private bool findMax;
         private bool prevFindMax;
@@ -45,9 +40,8 @@ namespace Bonsai.TailTracking
         private double minVal;
         private double maxVal;
         private double frequency;
-        private double amplitude;
 
-        public override IObservable<TailKinematics> Process(IObservable<double> source)
+        public override IObservable<double> Process(IObservable<double> source)
         {
             findMax = true;
             prevFindMax = true;
@@ -58,11 +52,10 @@ namespace Bonsai.TailTracking
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
-            amplitude = 0;
-            return source.Select(value => DetectTailKinematicsFunc(value));
+            return source.Select(value => DetectTailBeatFrequencyFunc(value));
         }
 
-        public IObservable<TailKinematics> Process(IObservable<double[]> source)
+        public IObservable<double> Process(IObservable<double[]> source)
         {
             findMax = true;
             prevFindMax = true;
@@ -73,11 +66,10 @@ namespace Bonsai.TailTracking
             minVal = double.PositiveInfinity;
             maxVal = double.NegativeInfinity;
             frequency = 0;
-            amplitude = 0;
-            return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value)));
+            return source.Select(value => DetectTailBeatFrequencyFunc(Utilities.CalculateMean(value)));
         }
 
-        private TailKinematics DetectTailKinematicsFunc(double value)
+        private double DetectTailBeatFrequencyFunc(double value)
         {
             if (value > maxVal)
             {
@@ -129,26 +121,15 @@ namespace Bonsai.TailTracking
                         }
                     }
                 }
-                if (!firstPeak)
-                {
-                    if (findMax)
-                    {
-                        amplitude = minVal;
-                    }
-                    else
-                    {
-                        amplitude = maxVal;
-                    }
-                }
                 startCounter++;
             }
             else
             {
-                if ((value > (minVal + boutThreshold)) || (value < (maxVal - boutThreshold)))
+                if ((value > (minVal + delta)) || (value < (maxVal - delta)))
                 {
                     boutDetected = true;
                     startCounter = 1;
-                    if (value < (maxVal - boutThreshold))
+                    if (value < (maxVal - delta))
                     {
                         findMax = false;
                     }
@@ -164,13 +145,11 @@ namespace Bonsai.TailTracking
                 firstPeak = true;
                 startCounter = 0;
                 frequency = 0;
-                amplitude = 0;
             }
 
             prevFindMax = findMax;
             prevCounter = startCounter;
-
-            return new TailKinematics(frequency, amplitude, boutDetected);
+            return frequency;
         }
     }
 }

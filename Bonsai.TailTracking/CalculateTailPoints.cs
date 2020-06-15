@@ -12,7 +12,7 @@ namespace Bonsai.TailTracking
     [Description("Calculates the tail points using the tail calculation method. Distances are measured in number of pixels in the image.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class CalculateTailPoints : Transform<CentroidData, TailPoints>
+    public class CalculateTailPoints : Transform<Tuple<Point2f, IplImage>, TailPoints>
     {
 
         public CalculateTailPoints()
@@ -63,12 +63,8 @@ namespace Bonsai.TailTracking
 
         [Description("The method used for calculating tail points.")]
         public TailPointCalculationMethod TailPointCalculationMethod { get; set; }
-        public override IObservable<TailPoints> Process(IObservable<CentroidData> source)
-        {
-            return source.Select(value => CalculateTailPointsFunc(value.Centroid, value.Image));
-        }
 
-        public IObservable<TailPoints> Process(IObservable<Tuple<Point2f, IplImage>> source)
+        public override IObservable<TailPoints> Process(IObservable<Tuple<Point2f, IplImage>> source)
         {
             return source.Select(value => CalculateTailPointsFunc(value.Item1, value.Item2));
         }
@@ -107,7 +103,7 @@ namespace Bonsai.TailTracking
                 }
                 else if (TailPointCalculationMethod == TailPointCalculationMethod.CenterOfMass)
                 {
-                    points[i + 1] = FindNextPointWithCenterOfMass(startIteration, nIterations, newPotentialTailPoints, PixelSearchMethod, imageWidthStep, imageHeight, imageData);
+                    points[i + 1] = FindNextPointWithCenterOfMass(startIteration, nIterations, newPotentialTailPoints, points[i], PixelSearchMethod, imageWidthStep, imageHeight, imageData);
                 }
                 else
                 {
@@ -162,7 +158,7 @@ namespace Bonsai.TailTracking
             return new Point2f((float)XCoord, (float)YCoord);
         }
 
-        public static Point2f FindNextPointWithCenterOfMass(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearchMethod method, int frameWidth, int frameHeight, byte[] byteArray)
+        public static Point2f FindNextPointWithCenterOfMass(int startIteration, int nIterations, Point2f[] potentialPoints, Point2f origin, PixelSearchMethod method, int frameWidth, int frameHeight, byte[] byteArray)
         {
 
             /*Function that returns the center of mass along an arc of known length from an initial point in an image.
