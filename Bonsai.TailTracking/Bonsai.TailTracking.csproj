@@ -74,6 +74,7 @@
     <Compile Include="CalibrationParameters.cs" />
     <Compile Include="ConvertDegreesToRadians.cs" />
     <Compile Include="ConvertRadiansToDegrees.cs" />
+    <Compile Include="ConvertToRawImageData.cs" />
     <Compile Include="CreatePoint2f.cs" />
     <Compile Include="CropImageAroundFish.cs" />
     <Compile Include="DetectTailBeatInstances.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="CalculateTailCurvature.cs" />
     <Compile Include="FindEyeContours.cs" />
     <Compile Include="PixelSearchMethod.cs" />
+    <Compile Include="RawImageData.cs" />
     <Compile Include="TailKinematics.cs" />
     <Compile Include="TailPoints.cs" />
     <Compile Include="Utilities.cs" />

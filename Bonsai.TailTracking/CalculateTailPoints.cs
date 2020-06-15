@@ -66,19 +66,44 @@ namespace Bonsai.TailTracking
 
         public override IObservable<TailPoints> Process(IObservable<Tuple<Point2f, IplImage>> source)
         {
-            return source.Select(value => CalculateTailPointsFunc(value.Item1, value.Item2));
+            return source.Select(value => GetTailPoints(value.Item1, value.Item2));
         }
 
         public IObservable<TailPoints> Process(IObservable<Tuple<IplImage, Point2f>> source)
         {
-            return source.Select(value => CalculateTailPointsFunc(value.Item2, value.Item1));
+            return source.Select(value => GetTailPoints(value.Item2, value.Item1));
         }
 
-        public TailPoints CalculateTailPointsFunc(Point2f centroid, IplImage image)
+        public IObservable<TailPoints> Process(IObservable<Tuple<Point2f, RawImageData>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item1, value.Item2));
+        }
+
+        public IObservable<TailPoints> Process(IObservable<Tuple<RawImageData, Point2f>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item2, value.Item1));
+        }
+
+        public TailPoints GetTailPoints(Point2f centroid, IplImage image)
         {
             int imageWidthStep = image.WidthStep;
             int imageHeight = image.Height;
             byte[] imageData = Utilities.ConvertIplImageToByteArray(image);
+            Point2f[] points = CalculateTailPointsFunc(centroid, imageWidthStep, imageHeight, imageData);
+            return new TailPoints(points, image);
+        }
+
+        public TailPoints GetTailPoints(Point2f centroid, RawImageData image)
+        {
+            int imageWidthStep = image.WidthStep;
+            int imageHeight = image.Height;
+            byte[] imageData = image.ImageData;
+            Point2f[] points = CalculateTailPointsFunc(centroid, imageWidthStep, imageHeight, imageData);
+            return new TailPoints(points, null);
+        }
+
+        public Point2f[] CalculateTailPointsFunc(Point2f centroid, int imageWidthStep, int imageHeight, byte[] imageData)
+        {
 
             Point2f[] points = new Point2f[numTailSegments + 2];
             if (centroid.X.Equals(float.NaN) || centroid.Y.Equals(float.NaN))
@@ -87,7 +112,7 @@ namespace Bonsai.TailTracking
                 {
                     points[i] = centroid;
                 }
-                return new TailPoints(points, image);
+                return points;
             }
             points[0] = centroid;
             Point2f[] newPotentialTailBasePoints = Utilities.OffsetPoints(potentialTailBasePoints, (int)centroid.X, (int)centroid.Y);
@@ -114,7 +139,7 @@ namespace Bonsai.TailTracking
             {
                 points = Utilities.OffsetPoints(points, OffsetX, OffsetY);
             }
-            return new TailPoints(points, image);
+            return points;
         }
 
         public static Point2f FindNextPointWithPixelSearch(int startIteration, int nIterations, Point2f[] potentialPoints, PixelSearchMethod method, int frameWidth, int frameHeight, byte[] byteArray)

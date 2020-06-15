@@ -17,5 +17,9 @@ namespace Bonsai.TailTracking
         {
             return source.Select(value => Utilities.CalculateTailCurvature(value));
         }
+        public IObservable<double[]> Process(IObservable<TailPoints> source)
+        {
+            return source.Select(value => Utilities.CalculateTailCurvature(value.Points));
+        }
     }
 }
