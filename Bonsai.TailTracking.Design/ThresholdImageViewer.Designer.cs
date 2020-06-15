@@ -1,5 +1,4 @@
-﻿using Bonsai.Vision.Design;
-namespace Bonsai.TailTracking.Design
+﻿namespace Bonsai.TailTracking.Design
 {
     partial class ThresholdImageViewer
     {
@@ -31,6 +30,7 @@ namespace Bonsai.TailTracking.Design
         {
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.seekBar = new Bonsai.Design.SeekBar();
             this.imageControl = new ImageBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.tableLayoutPanel.SuspendLayout();
@@ -40,6 +40,7 @@ namespace Bonsai.TailTracking.Design
             // 
             this.tableLayoutPanel.ColumnCount = 1;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.Controls.Add(this.seekBar, 0, 1);
             this.tableLayoutPanel.Controls.Add(this.imageControl, 0, 0);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
@@ -51,6 +52,16 @@ namespace Bonsai.TailTracking.Design
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel.Size = new System.Drawing.Size(320, 218);
             this.tableLayoutPanel.TabIndex = 0;
+            // 
+            // seekBar
+            // 
+            this.seekBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.seekBar.Location = new System.Drawing.Point(0, 201);
+            this.seekBar.Name = "seekBar";
+            this.seekBar.Size = new System.Drawing.Size(320, 17);
+            this.seekBar.TabIndex = 0;
+            this.seekBar.TabStop = true;
             // 
             // imageControl
             // 
@@ -70,13 +81,13 @@ namespace Bonsai.TailTracking.Design
             this.statusStrip.TabIndex = 3;
             this.statusStrip.Text = "statusStrip";
             // 
-            // ThresholdImageViewerControl
+            // VideoPlayerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel);
             this.Controls.Add(this.statusStrip);
-            this.Name = "ThresholdImageViewerControl";
+            this.Name = "VideoPlayerControl";
             this.Size = new System.Drawing.Size(320, 240);
             this.tableLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -87,6 +98,7 @@ namespace Bonsai.TailTracking.Design
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        private Bonsai.Design.SeekBar seekBar;
         private ImageBox imageControl;
         private System.Windows.Forms.StatusStrip statusStrip;
     }

@@ -53,7 +53,7 @@ namespace Bonsai.TailTracking.Design
     
             if (tailPoints != null && tailPoints.Image != null)
             {
-                GL.PointSize(5 * VisualizerCanvas.Height / 640f);
+                GL.PointSize(3 * VisualizerCanvas.Height / 640f);
                 if (labelImage == null || labelImage.Size != tailPoints.Image.Size)
                 {
                     labelImage = new IplImage(tailPoints.Image.Size, IplDepth.U8, 4);
@@ -68,7 +68,7 @@ namespace Bonsai.TailTracking.Design
                     GL.Begin(PrimitiveType.Points);
                     for (int i = 0; i < tailPoints.Points.Length; i++)
                     {
-                        GL.Color4(1.0, 0.0, 0.0, 1.0);
+                        GL.Color4(1.0, 0.0, 0.0, 0.5);
                         GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
                     }
                     GL.End();
