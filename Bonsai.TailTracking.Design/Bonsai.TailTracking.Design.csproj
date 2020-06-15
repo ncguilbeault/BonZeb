@@ -58,8 +58,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="TailPointsVisualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+=======
+    <Compile Include="CentroidVisualizer.cs" />
+    <Compile Include="ImageBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageMashupVisualizer.cs" />
+    <Compile Include="IplImageHelper.cs" />
+    <Compile Include="IplImageTexture.cs" />
+    <Compile Include="IplImageVisualizer.cs" />
+    <Compile Include="ThresholdImageViewer.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ThresholdImageViewer.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TailAnglesVisualizer.cs" />
+    <Compile Include="TailPointsVisualizer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThresholdImageViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VisualizerCanvas.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VisualizerCanvas.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VisualizerCanvas.resx</DependentUpon>
+    </Compile>
+>>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
   </ItemGroup>
   <ItemGroup>
     <None Include="Bonsai.TailTracking.Design.nuspec">
@@ -75,5 +105,18 @@
       <Name>Bonsai.TailTracking</Name>
     </ProjectReference>
   </ItemGroup>
+<<<<<<< HEAD
+=======
+  <ItemGroup>
+    <EmbeddedResource Include="ThresholdImageViewer.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ThresholdImageViewer.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VisualizerCanvas.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VisualizerCanvas.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+>>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
