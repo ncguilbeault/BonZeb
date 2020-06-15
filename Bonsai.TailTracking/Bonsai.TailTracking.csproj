@@ -88,6 +88,12 @@
     <Compile Include="CalculateTailCurvature.cs" />
     <Compile Include="FindEyeContours.cs" />
     <Compile Include="PixelSearchMethod.cs" />
+<<<<<<< HEAD
+=======
+    <Compile Include="SaveTailTrackingData.cs" />
+    <Compile Include="TailAngles.cs" />
+    <Compile Include="TailTrackingDataDisposable.cs" />
+>>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
     <Compile Include="TailKinematics.cs" />
     <Compile Include="TailPoints.cs" />
     <Compile Include="Utilities.cs" />

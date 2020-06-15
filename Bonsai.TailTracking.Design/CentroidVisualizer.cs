@@ -1,4 +1,5 @@
 ﻿using Bonsai;
+using Bonsai.Design;
 using Bonsai.Vision.Design;
 using Bonsai.TailTracking;
 using Bonsai.TailTracking.Design;
@@ -9,20 +10,32 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
+using System.Windows.Forms;
 
-[assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPoints))]
+[assembly: TypeVisualizer(typeof(CentroidVisualizer), Target = typeof(CentroidData))]
 
 namespace Bonsai.TailTracking.Design
 {
-    public class TailPointsVisualizer : IplImageVisualizer
+    public class CentroidVisualizer : IplImageVisualizer
     {
-        TailPoints tailPoints;
+        CentroidData centroidData;
+        ThresholdImageViewer thresholdImageViewer;
         IplImage labelImage;
         IplImageTexture labelTexture;
 
+        public override VisualizerCanvas VisualizerCanvas
+        {
+            get { return thresholdImageViewer?.Canvas; }
+        }
+
         public override void Load(IServiceProvider provider)
         {
+            thresholdImageViewer = new ThresholdImageViewer { Dock = DockStyle.Fill };
+            var visualizerService = (IDialogTypeVisualizerService)provider.GetService(typeof(IDialogTypeVisualizerService));
+            if (visualizerService != null)
+            {
+                visualizerService.AddControl(thresholdImageViewer);
+            }
             base.Load(provider);
             VisualizerCanvas.Load += (sender, e) =>
             {
@@ -35,57 +48,60 @@ namespace Bonsai.TailTracking.Design
 
         public override void Show(object value)
         {
-            tailPoints = (TailPoints)value;
-            if (tailPoints != null)
+            centroidData = (CentroidData)value;
+            if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
             {
-                base.Show(tailPoints.Image);
+                if (thresholdImageViewer.ShowThresholdImage)
+                {
+                    base.Show(centroidData.ThresholdImage);
+                }
+                else
+                {
+                    base.Show(centroidData.Image);
+                }
             }
         }
 
         public static Vector2 NormalizePoint(Point2f point, OpenCV.Net.Size imageSize)
         {
-            return new Vector2(
-                (point.X * 2f / imageSize.Width) - 1,
-                -((point.Y * 2f / imageSize.Height) - 1));
+            return new Vector2((point.X * 2f / imageSize.Width) - 1, -((point.Y * 2f / imageSize.Height) - 1));
         }
 
         protected override void RenderFrame()
         {
             GL.Color4(Color4.White);
             base.RenderFrame();
-    
-            if (tailPoints != null)
+
+            if (centroidData != null && centroidData.Image != null && centroidData.ThresholdImage != null)
             {
                 GL.PointSize(3 * VisualizerCanvas.Height / 640f);
-                if (labelImage == null || labelImage.Size != tailPoints.Image.Size)
+                if (labelImage == null || labelImage.Size != centroidData.Image.Size)
                 {
-                    labelImage = new IplImage(tailPoints.Image.Size, IplDepth.U8, 4);
+                    labelImage = new IplImage(centroidData.Image.Size, IplDepth.U8, 4);
                 }
 
                 labelImage.SetZero();
                 GL.Disable(EnableCap.Texture2D);
-                GL.Begin(PrimitiveType.Points);
                 using (var labelBitmap = new Bitmap(labelImage.Width, labelImage.Height, labelImage.WidthStep, System.Drawing.Imaging.PixelFormat.Format32bppArgb, labelImage.ImageData))
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    for (int i = 0; i < tailPoints.Points.Length; i++)
-                    {
-<<<<<<< HEAD
-                        GL.Color3(1.0, 0.0, 0.0);
-=======
-                        GL.Color4(1.0, 0.0, 0.0, 0.5);
->>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
-                        GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
-                    }
+                    GL.Color4(1.0, 0.0, 0.0, 0.5);
+                    GL.Begin(PrimitiveType.Points);
+                    GL.Vertex2(NormalizePoint(centroidData.Centroid, centroidData.Image.Size));
                     GL.End();
-
                     GL.Color4(Color4.White);
                     GL.Enable(EnableCap.Texture2D);
                     labelTexture.Update(labelImage);
                     labelTexture.Draw();
                 }
             }
+        }
+        public override void Unload()
+        {
+            base.Unload();
+            thresholdImageViewer.Dispose();
+            thresholdImageViewer = null;
         }
     }
 }
