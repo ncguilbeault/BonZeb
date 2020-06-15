@@ -1,5 +1,4 @@
 ﻿using OpenCV.Net;
-using Bonsai.Vision;
 
 namespace Bonsai.TailTracking
 {
@@ -9,17 +8,11 @@ namespace Bonsai.TailTracking
         public Point2f Centroid { get; set; }
         public IplImage Image { get; set; }
         public IplImage ThresholdImage { get; set; }
-        public IplImage Contours { get; set; }
-        public IplImage Background { get; set; }
-        public IplImage BackgroundSubtractedImage { get; set; }
-        public CentroidData(Point2f centroid, IplImage image, IplImage thresholdImage, IplImage contours = null, IplImage background = null, IplImage backgroundSubtractedImage = null)
+        public CentroidData(Point2f centroid, IplImage image, IplImage thresholdImage)
         {
             Centroid = centroid;
             Image = image;
             ThresholdImage = thresholdImage;
-            Contours = contours;
-            Background = background;
-            BackgroundSubtractedImage = backgroundSubtractedImage;
         }
     }
 }

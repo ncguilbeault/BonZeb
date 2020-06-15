@@ -7,7 +7,7 @@ namespace Bonsai.TailTracking
         public IplImage Image { get; set; }
         public IplImage Background { get; set; }
         public IplImage BackgroundSubtractedImage { get; set; }
-        public BackgroundSubtractionData(IplImage image, IplImage background = null, IplImage backgroundSubtractedImage = null)
+        public BackgroundSubtractionData(IplImage backgroundSubtractedImage, IplImage background, IplImage image)
         {
             Image = image;
             Background = background;

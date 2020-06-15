@@ -1,27 +1,34 @@
 ﻿using System;
-using System.Reflection;
 using System.Windows.Forms;
 using OpenCV.Net;
+using System.Globalization;
 using Bonsai.Vision.Design;
 
 namespace Bonsai.TailTracking.Design
 {
-    public partial class MultipleImageViewer : UserControl
+    public partial class ThresholdImageViewer : UserControl
     {
-        ToolStripComboBox selectImage;
+        CheckBox checkBox;
+        ToolStripControlHost host;
         ToolStripStatusLabel statusLabel;
-        string currentSelectedImage;
 
-        public MultipleImageViewer()
+        public bool ShowThresholdImage { get => checkBox.Checked; set => checkBox.CheckState = value ? CheckState.Checked : CheckState.Unchecked; }
+
+        //public event EventHandler ShowThresholdImageChanged
+        //{
+        //    add { checkBox.CheckStateChanged += value; }
+        //    remove { checkBox.CheckStateChanged -= value; }
+        //}
+
+        public ThresholdImageViewer()
         {
             InitializeComponent();
-            selectImage = new ToolStripComboBox();
-            selectImage.DropDownStyle = ComboBoxStyle.DropDownList;
-            selectImage.FlatStyle = FlatStyle.Flat;
-            selectImage.BackColor = statusStrip.BackColor;
-            selectImage.Width = 100;
+            checkBox = new CheckBox();
+            checkBox.Text = "ShowThresholdImage";
+            checkBox.CheckState = CheckState.Unchecked;
+            host = new ToolStripControlHost(checkBox);
             statusLabel = new ToolStripStatusLabel();
-            statusStrip.Items.Add(selectImage);
+            statusStrip.Items.Add(host);
             statusStrip.Items.Add(statusLabel);
             imageControl.Canvas.MouseClick += new MouseEventHandler(imageControl_MouseClick);
             imageControl.Canvas.MouseMove += (sender, e) =>
@@ -48,19 +55,7 @@ namespace Bonsai.TailTracking.Design
                     Parent.ClientSize = new System.Drawing.Size(image.Width, image.Height);
                 }
             };
-
-            selectImage.SelectedIndexChanged += (sender, e) =>
-            {
-                currentSelectedImage = (string)selectImage.SelectedItem;
-            };
         }
-
-        //public StatusStrip StatusStrip { get => statusStrip; set => statusStrip += value; }
-
-        public string SelectedImageViewer { get => currentSelectedImage; }
-
-        public VisualizerCanvas Canvas { get => imageControl; }
-
         void imageControl_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -68,32 +63,14 @@ namespace Bonsai.TailTracking.Design
                 statusStrip.Visible = !statusStrip.Visible;
             }
         }
-        public void Update(IplImage frame)
+        public VisualizerCanvas Canvas
         {
-            imageControl.Image = frame;
-            if (frame == null)
-            {
-                statusLabel.Text = string.Empty;
-            }
+            get { return imageControl; }
         }
-        public void PopulateComboBoxItems<T>()
+        public void Update(IplImage image)
         {
-            Type type = typeof(T);
-            foreach (PropertyInfo property in type.GetProperties())
-            {
-                if (property.PropertyType.Equals(typeof(IplImage)))
-                {
-                    selectImage.Items.Add(property.Name);
-                    selectImage.SelectedItem = property.Name;
-                    currentSelectedImage = (string)selectImage.SelectedItem;
-                }
-            }
-            int maxWidth = 0;
-            foreach (var obj in selectImage.Items)
-            {
-                maxWidth = TextRenderer.MeasureText(obj.ToString(), selectImage.Font).Width > maxWidth ? TextRenderer.MeasureText(obj.ToString(), selectImage.Font).Width : maxWidth;
-            }
-            selectImage.DropDownWidth = maxWidth;
+            imageControl.Image = image;
+            if (image == null) statusLabel.Text = string.Empty;
         }
     }
 }
