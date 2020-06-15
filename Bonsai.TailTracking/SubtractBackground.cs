@@ -10,7 +10,7 @@ namespace Bonsai.TailTracking
     [Description("Calculates the background using a method of comparing individual pixel values over time and maintaining the pixel-wise extrema. Input image must contain only a single channel.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class CalculateBackground : Transform<IplImage, IplImage>
+    public class SubtractBackground : Transform<IplImage, BackgroundSubtractionData>
     {
 
         [Description("Method to use for comparing pixels. Darkest maintains the darkest values for each pixel. Brightest maintains the brightest values for each pixel.")]
@@ -20,26 +20,35 @@ namespace Bonsai.TailTracking
         [Description("Noise threshold used to check if current pixel value deviates far enough from the background value.")]
         public int NoiseThreshold { get => noiseThreshold; set => noiseThreshold = value > 0 ? value : 0; }
 
-        public override IObservable<IplImage> Process(IObservable<IplImage> source)
+        public override IObservable<BackgroundSubtractionData> Process(IObservable<IplImage> source)
         {
             IplImage background = null;
 
             return source.Select(value =>
             {
-                if (background == null)
+                IplImage input = new IplImage(value.Size, value.Depth, 1);
+                IplImage temp = new IplImage(value.Size, value.Depth, 1);
+                IplImage mask = new IplImage(value.Size, value.Depth, 1);
+                if (value.Channels != 1)
                 {
-                    background = value.Clone();
+                    CV.CvtColor(value, input, ColorConversion.Bgr2Gray);
                 }
                 else
                 {
-                    IplImage temp = new IplImage(value.Size, value.Depth, value.Channels);
+                    CV.Copy(value, input);
+                }
+                if (background == null)
+                {
+                    background = input.Clone();
+                }
+                else
+                {
                     if (PixelSearch == PixelSearchMethod.Brightest)
                     {
-                        CV.Sub(value, background, temp);
+                        CV.Sub(input, background, temp);
                         if (noiseThreshold != 0)
                         {
-                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
-                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
+                            CV.SubS(temp, new Scalar(noiseThreshold), mask);
                             CV.Add(temp, background, background, mask);
                         }
                         else
@@ -49,11 +58,10 @@ namespace Bonsai.TailTracking
                     }
                     else
                     {
-                        CV.Sub(background, value, temp);
+                        CV.Sub(background, input, temp);
                         if (noiseThreshold != 0)
                         {
-                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
-                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
+                            CV.SubS(temp, new Scalar(noiseThreshold), mask);
                             CV.Sub(background, temp, background, mask);
                         }
                         else
@@ -61,8 +69,9 @@ namespace Bonsai.TailTracking
                             CV.Sub(background, temp, background, temp);
                         }
                     }
+                    CV.AbsDiff(input, background, temp);
                 }
-                return background;
+                return new BackgroundSubtractionData(input, background, temp);
             });
 
         }

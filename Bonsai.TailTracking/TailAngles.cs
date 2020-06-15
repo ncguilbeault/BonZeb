@@ -2,15 +2,16 @@
 
 namespace Bonsai.TailTracking
 {
-    public class TailPoints
+    public class TailAngles
     {
-        // Class used for creating a data type which contains the calculated tail points.
+        public double[] Angles { get; set; }
         public Point2f[] Points { get; set; }
         public IplImage Image { get; set; }
-        public TailPoints(Point2f[] points, IplImage image = null)
+        public TailAngles(double[] angles, Point2f[] points = null, IplImage image = null)
         {
             Image = image;
             Points = points;
+            Angles = angles;
         }
     }
 }
