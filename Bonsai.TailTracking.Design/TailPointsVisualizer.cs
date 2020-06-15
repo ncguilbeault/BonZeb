@@ -56,7 +56,7 @@ namespace Bonsai.TailTracking.Design
     
             if (tailPoints != null)
             {
-                GL.PointSize(3 * VisualizerCanvas.Height / 640f);
+                GL.PointSize(5 * VisualizerCanvas.Height / 640f);
                 if (labelImage == null || labelImage.Size != tailPoints.Image.Size)
                 {
                     labelImage = new IplImage(tailPoints.Image.Size, IplDepth.U8, 4);
@@ -71,11 +71,7 @@ namespace Bonsai.TailTracking.Design
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     for (int i = 0; i < tailPoints.Points.Length; i++)
                     {
-<<<<<<< HEAD
                         GL.Color3(1.0, 0.0, 0.0);
-=======
-                        GL.Color4(1.0, 0.0, 0.0, 0.5);
->>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
                         GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
                     }
                     GL.End();

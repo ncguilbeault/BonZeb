@@ -81,8 +81,3 @@ C:\Users\Nick\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csprojAssemblyReference.cache
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CopyComplete
 C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\obj\Debug\Bonsai.TailTracking.csproj.CoreCompileInputs.cache
-<<<<<<< HEAD
-=======
-C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.System.dll
-C:\Users\Nicholas\Documents\Bonsai.TailTracking\Bonsai.TailTracking\bin\Debug\Bonsai.Vision.Design.dll
->>>>>>> parent of d33a178... Added custom visualizers for tail angles and for centroid tracking.
