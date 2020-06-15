@@ -158,7 +158,7 @@ namespace Bonsai.TailTracking
         {
             IplImage temp = image.Clone();
             MemStorage memStorage = new MemStorage();
-            CV.FindContours(temp, memStorage, out Seq seqContours);
+            int contourCount = CV.FindContours(temp, memStorage, out Seq seqContours);
             Contours contours = new Contours(seqContours, temp.Size);
             Seq currentContour = contours.FirstContour;
             ConnectedComponentCollection connectedComponents = new ConnectedComponentCollection(contours.ImageSize);

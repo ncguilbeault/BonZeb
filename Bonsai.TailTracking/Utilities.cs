@@ -134,7 +134,7 @@ namespace Bonsai.TailTracking
             return imageData;
         }
 
-        public static double[] CalculateTailAngle(Point2f[] points)
+        public static double[] CalculateTailCurvature(Point2f[] points)
         {
             double headingAngle = -Math.Atan2(points[1].Y - points[0].Y, points[1].X - points[0].X);
             Point2f[] rotatedPoints = RotatePoints(points, points[0], headingAngle);
