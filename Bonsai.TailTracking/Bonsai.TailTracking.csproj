@@ -85,6 +85,7 @@
     <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="CalibrationParameters.cs" />
     <Compile Include="CentroidData.cs" />
+    <Compile Include="CentroidTrackingMethod.cs" />
     <Compile Include="ConvertDegreesToRadians.cs" />
     <Compile Include="ConvertRadiansToDegrees.cs" />
     <Compile Include="CreatePoint2f.cs" />

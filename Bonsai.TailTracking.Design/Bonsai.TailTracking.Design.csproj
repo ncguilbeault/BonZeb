@@ -40,6 +40,10 @@
     <Reference Include="Bonsai.Design">
       <HintPath>..\..\..\.nuget\packages\bonsai.design\2.5.0\lib\net462\Bonsai.Design.dll</HintPath>
     </Reference>
+    <Reference Include="Bonsai.Vision, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppData\Local\Bonsai\Packages\Bonsai.Vision.2.5.0\lib\net462\Bonsai.Vision.dll</HintPath>
+    </Reference>
     <Reference Include="Bonsai.Vision.Design">
       <HintPath>..\..\..\.nuget\packages\bonsai.vision.design\2.5.0\lib\net462\Bonsai.Vision.Design.dll</HintPath>
     </Reference>
@@ -72,7 +76,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackgroundSubtractionVisualizer.cs" />
+    <Compile Include="CentroidViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="CentroidVisualizer.cs" />
+    <Compile Include="MultipleImageViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultipleImageViewer.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MultipleImageViewer.resx</DependentUpon>
+    </Compile>
     <Compile Include="ThresholdImageViewer.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,6 +113,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="MultipleImageViewer.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MultipleImageViewer.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="ThresholdImageViewer.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ThresholdImageViewer.Designer.cs</LastGenOutput>
