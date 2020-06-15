@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bonsai.TailTracking</RootNamespace>
     <AssemblyName>Bonsai.TailTracking</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,13 +30,22 @@
     <WarningLevel>4</WarningLevel>
     <BuildPackage>true</BuildPackage>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bonsai.Core, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bonsai.Core.2.3.0\lib\net45\Bonsai.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Bonsai.System">
+      <HintPath>..\..\..\.nuget\packages\bonsai.system\2.5.0\lib\net462\Bonsai.System.dll</HintPath>
+    </Reference>
     <Reference Include="Bonsai.Vision">
       <HintPath>..\packages\Bonsai.Vision.2.3.0\lib\net45\Bonsai.Vision.dll</HintPath>
+    </Reference>
+    <Reference Include="Bonsai.Vision.Design">
+      <HintPath>..\..\..\.nuget\packages\bonsai.vision.design\2.5.0\lib\net462\Bonsai.Vision.Design.dll</HintPath>
     </Reference>
     <Reference Include="OpenCV.Net">
       <HintPath>..\packages\OpenCV.Net.3.3.1\lib\net40\OpenCV.Net.dll</HintPath>
@@ -45,6 +54,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
       <Private>True</Private>
@@ -57,6 +67,8 @@
       <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,30 +76,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalculateBackground.cs" />
+    <Compile Include="BackgroundSubtractionData.cs" />
     <Compile Include="CalculateCentroid.cs" />
-    <Compile Include="CalculateCumulativeTailCurvature.cs" />
+    <Compile Include="CalculateCumulativeTailAngle.cs" />
     <Compile Include="CalculateEyeAngles.cs" />
     <Compile Include="CalculateHeadingAngle.cs" />
-    <Compile Include="CalculateMeanTailCurvature.cs" />
+    <Compile Include="CalculateMeanTailAngle.cs" />
     <Compile Include="CalculateTailPoints.cs" />
     <Compile Include="CalibrationParameters.cs" />
+    <Compile Include="CentroidData.cs" />
+    <Compile Include="CentroidTrackingMethod.cs" />
     <Compile Include="ConvertDegreesToRadians.cs" />
     <Compile Include="ConvertRadiansToDegrees.cs" />
     <Compile Include="CreatePoint2f.cs" />
     <Compile Include="CropImageAroundFish.cs" />
-    <Compile Include="DetectTailBeatInstances.cs" />
-    <Compile Include="DetectTailBeatAmplitude.cs" />
-    <Compile Include="DetectTailBeatFrequency.cs" />
     <Compile Include="DetectTailBeatKinematics.cs" />
     <Compile Include="DrawEyeAngles.cs" />
     <Compile Include="DrawHeadingAngle.cs" />
     <Compile Include="DrawRectangle.cs" />
     <Compile Include="CalculateCalibrationParameters.cs" />
     <Compile Include="DrawTailPoints.cs" />
-    <Compile Include="CalculateTailCurvature.cs" />
+    <Compile Include="CalculateTailAngles.cs" />
     <Compile Include="FindEyeContours.cs" />
     <Compile Include="PixelSearchMethod.cs" />
+    <Compile Include="SaveTailTrackingData.cs" />
+    <Compile Include="SubtractBackground.cs" />
+    <Compile Include="TailAngles.cs" />
+    <Compile Include="TailTrackingDataDisposable.cs" />
     <Compile Include="TailKinematics.cs" />
     <Compile Include="TailPoints.cs" />
     <Compile Include="Utilities.cs" />
