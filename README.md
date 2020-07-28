@@ -5,8 +5,8 @@
 1. [Preface](#preface)
 2. [Download](#download)
 3. [Dependencies](#dependencies)
-4. [Video Acquisition](#video)
-5. [Behavioural Tracking and Analysis](#behaviour)
+4. [Video Acquisition](#video-acquisition)
+5. [Behavioural Tracking and Analysis](#behavioural-tracking-and-analysis)
 6. [Acknowledgements](#acknowledgements)
 
 # Preface
