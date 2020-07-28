@@ -4,11 +4,13 @@
 # Table of Contents
 1. [Preface](#preface)
 2. [Download](#download)
-3. [Bonsai Dependencies](#dependencies)
-4. [Acknowledgements](#acknowledgements)
+3. [Dependencies](#dependencies)
+4. [Video Acquisition](#video)
+5. [Behavioural Tracking and Analysis](#behaviour)
+6. [Acknowledgements](#acknowledgements)
 
 # Preface
-BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution behavioural tracking and analysis of zebrafish. 
+BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution zebrafish behavioural tracking and analysis. 
 Bonsai-Rx provides a useful programming framework for applications in behavioural neuroscience. 
 BonZeb provides essential tools for zebrafish researchers looking to implement closed-loop and open-loop behavioural feedback, with a specific focus on visual stimulation.
 BonZeb is built on top of the Bonsai framework and users will need to be somewhat familiar with Bonsai before getting started.
@@ -30,6 +32,16 @@ Bonsai – Video Library
 Bonsai – Video Design Library
 Bonsai – Shaders Library
 Bonsai – Shaders Design Library
+
+# Video Acquisition
+BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition.
+Users must install the manufacturers software development kit (SDK) and ensure the camera is connected to the computer and working properly before using the camera in Bonsai.
+Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no boot mode. To do this, Bonsai must be started from the command line with the following argument:
+
+`Bonsai.exe --noboot`
+
+# Behavioural Tracking and Analysis
+BonZeb provides many different modules for behavioural tracking and analysis including methods for centroid tracking, tail tracking, eye tracking, and tail beat analysis.
 
 # Acknowledgements
 Thank you to all of the people who tested BonZeb and provided useful feedback. Thank you to the developers and to the larger Bonsai community for creating a welcoming and useful platform. 
