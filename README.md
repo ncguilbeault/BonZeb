@@ -22,16 +22,25 @@ You can download the latest [Bonsai](https://bonsai-rx.org/docs/installation/) o
 BonZeb can be downloaded online and installed using Bonsai's built-in package manager. BonZeb can also be added to Bonsai by downloading the [GitHub Repository](https://github.com/ncguilbeault/BonZeb) and adding it manually to the Bonsai package manager.
 
 # Dependencies
-Users should install the following Bonsai packages in addition to Bonsai's core packages: 
-Bonsai – Arduino Library
-Bonsai – Vision Library
-Bonsai – Vision Design Library
-Bonsai – Scripting Library
-Bonsai – Windows Input Library
-Bonsai – Video Library
-Bonsai – Video Design Library
-Bonsai – Shaders Library
-Bonsai – Shaders Design Library
+When installing BonZeb through Bonsai's package manager, all of the dependencies will be installed automatically. To implement the complete Bonsai workflows we provide, users must also install the following Bonsai libraries:
+
+* Bonsai - Arduino Library
+* Bonsai - Core Library
+* Bonsai - Design Library
+* Bonsai - Dsp Library
+* Bonsai - Dsp Design Library
+* Bonsai - Editor
+* Bonsai - Player
+* Bonsai - Scripting Library
+* Bonsai - Shaders Library
+* Bonsai - Shaders Design Library
+* Bonsai - System Library
+* Bonsai - System Design Library
+* Bonsai - Video Library
+* Bonsai - Video Design Library
+* Bonsai - Vision Library
+* Bonsai - Vision Design Library
+* Bonsai - Windows Input Library
 
 # Video Acquisition
 BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition.
