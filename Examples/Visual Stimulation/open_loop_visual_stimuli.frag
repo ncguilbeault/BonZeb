@@ -1,25 +1,5 @@
 #version 400
 
-// Define uniform variables incoming from Bonsai
-uniform float fish_position_x;
-uniform float fish_position_y;
-uniform float fish_heading_angle;
-uniform float time;
-uniform int switch_stim;
-
-// Define OpenGL incoming and outgoing variables
-in vec2 tex_coord;
-out vec4 frag_colour;
-
-// Define useful variable constants
-const float quarterpi = 0.78539816339;
-const float thirdpi = 1.0471975512;
-const float halfpi = 1.57079632679;
-const float pi = 3.14159265359;
-const float threehalvespi = 4.71238898038;
-const float twopi = 6.28318530718;
-const float inf = 1. / 0.;
-
 // Looming Dot Parameters
 const float looming_dot_dist = 0.1; // distance of looming dot from fish
 const float looming_dot_lv = 0.03; // size to velocity ratio. Larger values take longer to expand than smaller values
@@ -44,6 +24,26 @@ const float optokinetic_gratings_speed = 4.0; // speed of optokinetic gratings
 const float optokinetic_gratings_spat_freq = 4.0; // spatial frequency of optokinetic gratings
 const float optokinetic_gratings_inner_rad = 0.01; // radius of the black inner circle
 const float optokinetic_gratings_outer_rad = 0.5; // radius of the optokinetic gratings
+
+// Define useful variable constants
+const float quarterpi = 0.78539816339;
+const float thirdpi = 1.0471975512;
+const float halfpi = 1.57079632679;
+const float pi = 3.14159265359;
+const float threehalvespi = 4.71238898038;
+const float twopi = 6.28318530718;
+const float inf = 1. / 0.;
+
+// Define uniform variables incoming from Bonsai
+uniform float fish_position_x;
+uniform float fish_position_y;
+uniform float fish_heading_angle;
+uniform float time;
+uniform int switch_stim;
+
+// Define OpenGL incoming and outgoing variables
+in vec2 tex_coord;
+out vec4 frag_colour;
 
 // Define solid black
 void solid_black_stimulus()
