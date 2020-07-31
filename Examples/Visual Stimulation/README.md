@@ -1,5 +1,5 @@
 # BonZeb
-![](../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo.png)
 
 # Visual Stimulus Library
 The visual stimulus library contains the following visual stimuli:
