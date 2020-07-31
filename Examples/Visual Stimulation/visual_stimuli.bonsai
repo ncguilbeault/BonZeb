@@ -50,12 +50,12 @@
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="IntProperty">
-          <Value>12</Value>
+          <Value>2</Value>
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="gl:UpdateUniform">
-          <gl:UniformName>switch_stim</gl:UniformName>
+          <gl:UniformName>stimulus_number</gl:UniformName>
           <gl:ShaderName>visual_stimuli</gl:ShaderName>
         </Combinator>
       </Expression>
