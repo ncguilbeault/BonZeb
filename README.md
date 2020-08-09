@@ -5,16 +5,17 @@
 1. [Preface](#preface)
 2. [Download](#download)
 3. [Dependencies](#dependencies)
-4. [Video Acquisition](#video-acquisition)
-5. [Behavioural Tracking and Analysis](#behavioural-tracking-and-analysis)
-6. [Visual Stimulation](#visual-stimulation)
-7. [Calibration](#calibration)
-8. [Open-loop Free-swimming](#open-loop-free-swimming)
-9. [Closed-loop Head-fixed](#closed-loop-head-fixed)
-10. [Multi-animal Tracking](#multi-animal-tracking)
-11. [Optogenetics](#optogenetics)
-12. [Calcium Imaging](#calcium-imaging)
-13. [Acknowledgements](#acknowledgements)
+4. [Getting Started with Bonsai](#getting-started-with-bonsai)
+5. [Video Acquisition](#video-acquisition)
+6. [Behavioural Tracking and Analysis](#behavioural-tracking-and-analysis)
+7. [Visual Stimulation](#visual-stimulation)
+8. [Calibration](#calibration)
+9. [Open-loop Free-swimming](#open-loop-free-swimming)
+10. [Closed-loop Head-fixed](#closed-loop-head-fixed)
+11. [Multi-animal Tracking](#multi-animal-tracking)
+12. [Optogenetics](#optogenetics)
+13. [Calcium Imaging](#calcium-imaging)
+14. [Acknowledgements](#acknowledgements)
 
 # Preface
 BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution zebrafish behavioural tracking and analysis. 
@@ -50,6 +51,9 @@ When installing BonZeb, all of the essential dependencies will be installed auto
 * Bonsai - Vision Library
 * Bonsai - Vision Design Library
 * Bonsai - Windows Input Library
+
+# Getting Started with Bonsai
+Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement. If you are just learning about Bonsai for the first time, see the `Getting Started` folder to learn more about how to get started using Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
 BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition.
