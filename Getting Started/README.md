@@ -10,7 +10,7 @@ Data streams can be split and merged together in various ways such that the fina
 
 # Bonsai Interface
 When you run Bonsai, two windows will appear.
-The window the displays the Bonsai workflow space is used for building Bonsai code.
+One window displays the Bonsai workflow space and is used for building Bonsai code.
 The terminal window is not used for programming in Bonsai, but will display error codes or print statements as they appear from Bonsai at runtime.
 Below is a picture of the IDE.
 
