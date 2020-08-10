@@ -1,9 +1,7 @@
 # BonZeb
 ![](../Resources/BonZeb_Logo.png)
 
-# Getting Started
-
-# Bonsai Interface
+# Getting Started - Bonsai Interface
 When you run Bonsai, two windows will appear.
 One window displays the Bonsai workflow space and is used for building Bonsai code.
 The terminal window is not used for programming in Bonsai, but will display error codes or print statements as they appear from Bonsai at runtime.
