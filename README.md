@@ -53,7 +53,12 @@ When installing BonZeb, all of the essential dependencies will be installed auto
 * Bonsai - Windows Input Library
 
 # Getting Started with Bonsai
-Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement. If you are just learning about Bonsai for the first time, see the `Getting Started` folder to learn more about how to get started using Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
+Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement (IDE). 
+The nodes in a Bonsai workflow, also called modules, can represent a variety of different Bonsai objects, such as data sources, transformations, combinators, or sinks. 
+Modules in a workflow are linked by edges to form pipelines, also called data streams, where the output of one node is sent as input to another node. 
+The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
+Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.
+If you are just learning about Bonsai for the first time, see the `Getting Started` folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
 BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition.
