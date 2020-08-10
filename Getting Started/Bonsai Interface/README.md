@@ -1,5 +1,5 @@
 # BonZeb
-![](../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo.png)
 
 # Getting Started - Bonsai Interface
 When you run Bonsai, two windows will appear.
