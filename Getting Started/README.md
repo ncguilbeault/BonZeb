@@ -1,12 +1,7 @@
 # BonZeb
-![](Resources/BonZeb_Logo.png)
+![](../Resources/BonZeb_Logo.png)
 
-# Getting Started with Bonsai
-Bonsai is a visual programming language that uses graphs to represent data processing pipelines in the interactive development environement (IDE), called the workflow. 
-The nodes in a Bonsai workflow, also called modules, can represent a variety of different Bonsai objects, such as data sources, transformations, combinators, or sinks. 
-Modules in a workflow are linked by edges to form pipelines, also called data streams, where the output of one node is sent as input to another node. 
-The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
-Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.
+# Getting Started
 
 # Bonsai Interface
 When you run Bonsai, two windows will appear.
