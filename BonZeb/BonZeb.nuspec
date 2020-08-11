@@ -7,7 +7,7 @@
     <authors>Nicholas Guilbeault</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/ncguilbeault/BonZeb</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/ncguilbeault/Bonsai.TailTracking/master/Resources/Bonsai.TailTracking-Logo.png?token=AGHP5HFTVZGQFVMSRPI32SK6HOPZY</iconUrl>
+    <iconUrl>https://github.com/ncguilbeault/BonZeb/blob/master/Resources/BonZeb_Logo.png?raw=true</iconUrl>
     <description>BonZeb library containing modules for online tail tracking.</description>
     <copyright>Nicholas Guilbeault © 2020</copyright>
     <tags>BonZeb library.</tags>
