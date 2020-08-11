@@ -34,3 +34,19 @@ When a package is selected, an option to install the package will appear if the 
 Packages that are already installed are shown with a green checkmark.
 
 ![](images/image5.png)
+
+# Adding a local package
+To add a local Bonsai package to the package manager, users must select the settings button on the bottom left corner of the package manager to be brought to the settings page.
+
+![](images/image6.png)
+
+A new window will appear where users can add a local package to the package manager. 
+The first step is to select the add button on the top right corner of the settings window. 
+Enter a name for the package (this name will be how the package manager displays the package) and the path to the package folder saved on the computer.
+Make sure the package has been checked is the list of available package sources.
+Once all of this is set, press the `OK` button in the bottom right.
+
+![](images/image7.png)
+
+After the above steps, the package will be made available inside of the package manager.
+The new package is available to download under online packages.
