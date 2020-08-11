@@ -7,7 +7,7 @@ There will be things that I overlook or do not explain in great detail.
 The developers of Bonsai do a magnificent job explaining concepts and I highly recommend users to read [this](https://bonsai-rx.org/docs/observables/).
 
 # Observable Sequences
-Bonsai (Bonsai-Rx) is built in C#/.NET and is based on the ReactiveX (Rx) programming architecture. 
+Bonsai (Bonsai-Rx) is built in C#/.NET and is based on the [ReactiveX (Rx)](http://reactivex.io/) programming architecture. 
 Bonsai is an object-oriented, compiled programming language with a visual programming interface that operates using observable sequences. 
 Observable sequences are essentially streams of data. 
 Nodes are connected together to perform operations on observable sequences.
