@@ -68,7 +68,7 @@ The values of these properties can be set in the properties interface.
 Some of these properties will update while a workflow is running whereas others may only update after the workflow has restarted.
 In addition to changing the properties manually, it is possible to set the value of these properties within the workflow itself using externalized properties and property mapping.
 Properties can be externalized to become accessible within the Bonsai workflow. 
-Externalize the property of a module by right-clicking a node and selecting the property you want to externalize from the externalized property list.
+Externalize the property of a module by right-clicking a node and selecting the property to externalize from the `Externalize Property` list.
 
 ![](images/image4.png)
 
@@ -81,3 +81,12 @@ For example, a `String` node can be used as input to the `FileName` externalized
 ![](images/image5.png)
 
 Once a property has been externalized, the name and description of the property can be set manually. If the property of a node is set in the properties section but also has the same property externalized, then the externalized property will override the property set in the node’s properties section. Additionally, setting the property of a node in the properties section will not propagate upstream to the value of the externalized property, so it is important to remember that if a property has been externalized, the value of the upstream externalized property must be set in order to update the property of the node downstream. 
+
+# Property Source
+A property source is used to generate a source node corresponding to a property of a node. 
+The property source will generate the same data type of the property selected. 
+The property source can be used to set the property of a node or multiple nodes using property mapping as discussed above. 
+This is a useful technique for creating a source node for a specific data type and broadcasting the property to nodes throughout the workflow.
+To generate a property source, right-click a module select the property from the `Create Property Source` list.
+
+![](images/image6.png)
