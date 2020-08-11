@@ -21,9 +21,9 @@ This will show all of the Bonsai packages and package dependencies that have bee
 
 If you select one of the installed packages in the packages section, an option to uninstall will appear.
 If you select uninstall, this will remove the package from the Bonsai IDE.
-Packages which have other packages dependant on them cannot be uninstalled until all of the dependant packages are uninstalled first.
+Note: packages which have other packages dependant on them cannot be uninstalled until all of the dependant packages are uninstalled first.
 
-
+![](images/image4.png)
 
 When in the online section, an option to install a new package will appear. 
 In the online section, you can browse Bonsai’s core packages from the Bonsai packages section or go to community packages to view packages that have been developed and made available online by the community. 
