@@ -1,8 +1,12 @@
 # BonZeb
 ![](../../Resources/BonZeb_Logo.png)
 
-# Combinators - Zip, CombineLatest, WithLatestFrom
-Combinators are a class of operators which are very diverse and can be very useful for building Bonsai scripts. 
+# Combinators
+Combinators are a class of operators which are very diverse and can be very useful for building Bonsai scripts.
+There are many different types of combinators, all of which have unique properties and behaviors.
+Below are descriptions and examples of some of the most commonly used combinators.
+
+# Zip, CombineLatest, WithLatestFrom
 `Zip`, `CombineLatest`, and `WithLatestFrom`, are essential combinators to understand.
 Each operator works by combining individual elements from multiple data streams into a single data stream consisting of multiple elements.
 The behavior of each operator differs in the timing and content of their outputs.
@@ -57,3 +61,39 @@ Thus, `WithLatestFrom` produced a value when the 3 second timer fired but did no
 Consider the exact same scenario except using 2 timers that are set to fire at the same time of 5 seconds. 
 Despite the fact that the timers are both set to fire at the same time, their timings are not synchronized and thus their timings are off.
 This is an important thing to keep in ming when building pipelines.
+
+# Groups
+The group modules are subclass of combinators. 
+Group nodes encapsulate a more complex workflow into a single node.
+They tend to receive input from the main workflow, operate on the input using the encapsulated workflow, and then produce output back to the main workflow, though it is also possible to use a group node that receives no input and produces no output.
+You can learn more about higher-order observables and groups [here](https://bonsai-rx.org/docs/higher-order/).
+
+# NestedWorkflow
+The `NestedWorkflow` module groups or encapsulates a complex workflow into a single node and places the encapsulated workflow into a new build context. 
+Defining a subject inside a `NestedWorkflow` will make the subject only accessible to subscribers within the `NestedWorkflow`.
+
+# GroupWorkflow
+The `GroupWorkflow` module encapsulates a complex workflow into a single node.
+Subjects defined inside a `GroupWorkflow` can be accessed outside the `GroupWorkflow`. 
+
+# IncludeWorkflow
+The `IncludeWorkflow` module encapsulates an external bonsai workflow (one that has been saved to a seperate file) and makes it easy to distribute commonly used processes across workflows. 
+Subjects defined within an `IncludeWorkflow` are globally accessible outside of the `IncludeWorkflow`. 
+
+# CreateObservable
+The `CreateObservable` module generates a higher-order observable sequence using the enclosed workflow.
+A higher-order observable sequence is essentially an observable sequence of observable sequences. 
+
+# SelectMany
+The `SelectMany` module is similar to the `CreateObservable` node, except it generates a single observable sequence for each individual input and merges the inputs together to generate output. 
+
+# Scan
+The `Scan` module is similar to a recursive function.
+The input to the `Scan` module consists of both the input sequence and the output sequence of the `Scan` module. 
+
+# Condition
+The `Condition` module is a type of group node that filters input data.
+It uses the encapsulated workflow to create a boolean comparison of the data, similar to an `if` statement in other programming languages.
+If the boolean returns `True`, then the input data from the upstream sequence is passed along to subscribers downstream.
+If the boolean returns `False`, the no data are passed downstream.
+
