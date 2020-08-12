@@ -61,7 +61,12 @@ Data streams can be split and merged together in various ways such that the fina
 If you are just learning about Bonsai for the first time, see the `Getting Started` folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
-BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition.
+BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:
+
+* [Allied Vision](https://github.com/ncguilbeault/Bonsai.AlliedVision)
+* [Teledyne Dalsa](https://github.com/ncguilbeault/Bonsai.TeledyneDALSA)
+* [Euresys CameraLink](https://github.com/ncguilbeault/Bonsai.EuresysCameraLink)
+
 Users must install the manufacturers software development kit (SDK) and ensure the camera is connected to the computer and working properly before using the camera in Bonsai.
 Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no boot mode. To do this, Bonsai must be started from the command line with the following argument:
 
