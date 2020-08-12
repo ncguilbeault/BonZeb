@@ -88,7 +88,17 @@ The `MeshName` property takes the name of the mesh defined in the `Meshes` secti
 # Fragment and Vertex Files
 Fragment and vertex files are essential components of the OpenGL shader rendering pipeline.
 The vertex file (ending in .vert) processes vertices.
-Vertices map areas of the shader window into a coordinate space to be processed by the fragment file.
-The fragment file (ending in .frag) receives coordinates and processes fragments.
+Vertices map areas of the shader window into a texture space to be processed by the fragment file.
+The vertex coordinates, given by vp, range from -1 to 1.
+Below is an example of a vertex file.
+
+![](images/image5.png)
+
+The fragment file (ending in .frag) receives texture coordinates and processes these into fragments.
 Fragments determine what colour value to assign to each coordinate.
-Together, the vertex and fragment files determine how to render visual stimuli to a shader window.
+The texture coordinates processed by the fragment shader range from 0 to 1.
+Below is an example of a fragment file.
+
+![](images/image6.png)
+
+Together, the vertex and fragment files work to render visual stimuli to the shader window.
