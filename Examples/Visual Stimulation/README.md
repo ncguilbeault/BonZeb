@@ -27,6 +27,7 @@ The visual stimulus library contains the following visual stimuli:
 The Bonsai workflow demonstrates how to control visual stimuli using variables calculated in Bonsai.
 The position and heading angle are simulated in the workflow using the mouse cursor for position and a float variable for heading angle.
 In a normal behavioural experiment, these values are calculated using behavioural data captured in real-time.
+The `UpdateUniform` node connects values computed in the Bonsai workflow to uniform variables defined in the OpenGL shader.
 Below is a picture of the Bonsai workflow that describes what each stream of the workflow is doing.
 
 ![](images/image1.png)
@@ -102,3 +103,8 @@ Below is an example of a fragment file.
 ![](images/image6.png)
 
 Together, the vertex and fragment files work to render visual stimuli to the shader window.
+
+# Uniform Variables
+Uniform variables allow you to pass variables from the Bonsai workflow to the shader. 
+Uniform variables are defined inside the shader and are used to calculate parameters of the visual stimuli.
+The Bonsai workflow uses the `UpdateUniform` node to connect values generated in the Bonsai workflow to uniform variables inside the shader program.
