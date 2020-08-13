@@ -1,7 +1,7 @@
 # BonZeb
 ![](../../Resources/BonZeb_Logo.png)
 
-# Visual Stimulation
+# Shaders
 BonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
 The Bonsai Shaders package utilizes OpenGL for rendering visual graphics. 
 Bonsai Shaders provide extensive flexibility for programming in OpenGL. 
@@ -28,7 +28,7 @@ In this case, we colour each fragment white.
 Together, the vertex and fragment files work to render visual stimuli to the shader window.
 The result of this shader, when run, will be a white rectangle displayed to the entire window.
 
-# Bonsai Shaders
+# Bonsai
 The `UpdateFrame` node is needed inside the Bonsai workflow to configure the shader.
 Once the node is added to the workflow, the shader must be configured using the Bonsai shader configuration dialogue. 
 The Bonsai shader configuration window specifies the shader's rendering properties and rendering environment. 
@@ -95,54 +95,3 @@ The `NormalizedDeviceCoordinates` transforms (normalizes) the coordinates of the
 An `ExpressionTransform` node maps the values of the x coordinate between 0 and 1 for the fragment shader and converts this to a float type using the single function. 
 The output is then passed to the `UpdateUniform` node.
 In this way, the grayscale intensity of the shader window is dependant on the x position of the mouse, which changes as the cursor moves from left to right across the shader window.
-
-# Visual Stimulus Library
-The visual stimulus library contains the following visual stimuli:
-1. Solid black
-2. Solid white
-3. Black-white flashes
-4. Left Phototaxis
-5. Right Phototaxis
-6. Left Looming dot
-7. Right Looming dot
-8. Left Optomotor gratings
-9. Right Optomotor gratings
-10. Converging Optomotor gratings
-11. Diverging Optomotor gratings
-12. Concentric optomotor gratings
-13. Left Optokinetic gratings
-14. Right Optokinetic gratings
-15. Forward Moving prey
-16. Left Moving prey
-17. Right Moving prey
-18. Left Stationary prey
-19. Right Stationary prey
-
-# Bonsai Workflow
-The Bonsai workflow demonstrates how to control visual stimuli using variables calculated in Bonsai.
-The position and heading angle are simulated in the workflow using the mouse cursor for position and a float variable for heading angle.
-In a normal behavioural experiment, these values are calculated using behavioural data captured in real-time.
-The `UpdateUniform` node connects values computed in the Bonsai workflow to uniform variables defined in the OpenGL shader.
-Below is a picture of the Bonsai workflow that describes what each stream of the workflow is doing.
-
-![](images/image1.png)
-
-The stream labelled `Time` provides input to the time variable in the shader.
-Each time a new frame is rendered, the `UpdateFrame` node produces an output value.
-The `EventArgs.Time` attribute of the output is used to obtain the time between successive updates of the shader window.
-The `Accumulate` node keeps track of the time in seconds since the start of the workflow.
-The output of the `Accumulate` node feeds into the time variable of the shader.
-
-The stream labelled `Simulated Fish Position` provides the inputs to the fish x and y position variables in the shader.
-When the mouse cursor crosses into the the shader window, the `MouseMove` node produces an output.
-The `NormalizedDeviceCoordinates` node maps the position of the cursor to coordinates relative to the shader.
-`ExpressionTransform` nodes are used to extract the x and y coordinates into seperate streams.
-The x and y coordinates are normalized once more inside the `ExpressionTransform` node.
-The coordinates are converted to floats using the `single()` function inside the `ExpressionTransform`.
-The output of each `ExpressionTransform` node is passed to the x and y position variables in the shader, respectively. 
-
-The stream labelled `Stimulus Number` determines the visual stimulus number.
-The output of the `Integer` node is sent to the stimulus number variable in the shader.
-
-The stream labelled `Simulated Heading Angle` provides the inputs to the fish heading angle variable in the shader.
-The output of the `Float` node is passed to the fish heading angle variable in the shader.
