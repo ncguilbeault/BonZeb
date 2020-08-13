@@ -79,7 +79,7 @@ See the [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and A
 # Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
 The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
-See the [Visual Stimulation](<Examples/Visual Stimulation/>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
+See the [Visual Stimulation](<Examples/Visual Stimulation>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
 
 # Calibration
 BonZeb provides a simple solution for users to perform calibration of visual display devices.
@@ -88,23 +88,23 @@ See the [Calibration](<Examples/Calibration>) folder for how to calibrate visual
 
 # Open-loop Free-swimming
 BonZeb provides examples for how to build and implement open-loop free-swimming behavioural assays. 
-See the [Open-loop Free-swimming](<Examples\Open-loop Free-swimming\>) folder for how an open-loop free-swimming behavioural assay can be used and implemented.
+See the [Open-loop Free-swimming](<Examples/Open-loop Free-swimming>) folder for how an open-loop free-swimming behavioural assay can be used and implemented.
 
 # Closed-loop Head-fixed
 BonZeb provides examples for how to build and implement closed-loop head-fixed behavioural assays. 
-See the [Closed-loop Head-fixed](<Examples\Closed-loop Head-fixed\>) folder for how a closed-loop head-fixed behavioural assay can be used and implemented.
+See the [Closed-loop Head-fixed](<Examples/Closed-loop Head-fixed>) folder for how a closed-loop head-fixed behavioural assay can be used and implemented.
 
 # Multi-animal Tracking
 BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
-See the [Multi-animal Tracking](<Examples\Multi-animal Tracking\>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
+See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
 
 # Optogenetics
 BonZeb provides examples for how to perform optogenetics. 
-See the [Optogenetics](<Examples\Optogenetics\>) folder for how to implement an optogenetic stimulation paradigm.
+See the [Optogenetics](<Examples/Optogenetics>) folder for how to implement an optogenetic stimulation paradigm.
 
 # Calcium Imaging
 BonZeb provides examples for how to perform calcium imaging with closed-loop visual stimulation. 
-See the [Calcium Imaging](<Examples\Calcium Imaging\>) folder for how to implement calcium imaging with closed-loop visual stimulation.
+See the [Calcium Imaging](<Examples/Calcium Imaging>) folder for how to implement calcium imaging with closed-loop visual stimulation.
 
 # Acknowledgements
 Thank you to all of the people who tested BonZeb and provided useful feedback on the manuscript. Thank you to the developers and to the larger Bonsai community for creating an iniviting and powerful platform. 
