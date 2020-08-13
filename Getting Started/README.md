@@ -11,5 +11,6 @@ For new users reading this section, I recommend reading these sections in the fo
 1. [Starting Bonsai](<Starting Bonsai/>)
 2. [Package Manager](<Package Manager/>)
 3. [Bonsai Language Basics](<Bonsai Language Basics/>)
-4. [Combinators](Combinators/)
+4. [Combinators](Combinators)
 5. [Subjects](Subjects/)
+6. [Shaders](Shaders/)
