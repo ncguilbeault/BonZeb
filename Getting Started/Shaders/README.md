@@ -30,13 +30,11 @@ The result of this shader when run will be a white rectangle displayed to the en
 
 # Bonsai
 The `UpdateFrame` node is needed inside the Bonsai workflow to configure the shader.
-Once the node is added to the workflow, the shader must be configured using the Bonsai shader configuration dialogue. 
-The Bonsai shader configuration window specifies the shader's rendering properties and rendering environment. 
-The menu can be accessed by double clicking on the `UpdateFrame` node.
 
 # Shader Configuration
+The Bonsai shader configuration window specifies the shader's rendering properties and rendering environment. 
 To open the shader configuration dialogue, double click on the `UpdateFrame` node.
-The first set of properties correspond to the `Window` parameters.
+The first set of properties correspond to the `Window` parameters of the shader.
 
 ![](images/image3.png)
 
