@@ -31,12 +31,14 @@ The result of this shader when run will be a white rectangle displayed to the en
 # Bonsai
 The `UpdateFrame` node is needed inside the Bonsai workflow to configure the shader.
 
+![](images/image3.png)
+
 # Shader Configuration
 The Bonsai shader configuration window specifies the shader's rendering properties and rendering environment. 
 To open the shader configuration dialogue, double click on the `UpdateFrame` node.
 The first set of properties correspond to the `Window` parameters of the shader.
 
-![](images/image3.png)
+![](images/image4.png)
 
 In the `Render Settings` section, the `Display Device` property sets which video display to render the shader window onto.
 Under `Window Style`, changing the height and width will change the resolution of the shader window.
@@ -45,7 +47,7 @@ The `State` property determines whether the shader should be started normally, f
 
 A mesh must be set in the `Meshes` menu as follows.
 
-![](images/image4.png)
+![](images/image5.png)
 
 A mesh defines the area inside a window that will contain the shader.
 A mesh with the type `TexturedQuad` is added to the list of meshes, but other types of OpenGL meshes can be added as well.
@@ -57,7 +59,7 @@ For this example, no textures are added to the shader.
 
 A shader must be specifed in the `Shaders` menu as follows.
 
-![](images/image5.png)
+![](images/image6.png)
 
 A `Material` is added as the type of shader.
 The same variable name as the mesh or a new variable name can be ascribed to the `Name` property of the shader.
@@ -72,7 +74,7 @@ Uniform variables are defined inside the shader and are used to calculate parame
 Below is an example, which defines a uniform variable inside the fragment file of the shader.
 In this example, the uniform variable `scale` is used to modify the grayscale values of each fragment.
 
-![](images/image6.png)
+![](images/image7.png)
 
 Bonsai workflows can feed input to uniform variables using the `UpdateUniform` node.
 Set the shader name property of the `UpdateUniform` node to the name of the shader defined during configuration.
@@ -80,13 +82,13 @@ Set the uniform variable property to the name of the variable defined inside the
 Then, a pipeline is set up to feed data from Bonsai to the uniform variable.
 In the example below, a `Float` value is passed to the `UpdateUniform` node, which will determine the scale value of the fragments in the shader. 
 
-![](images/image7.png)
+![](images/image8.png)
 
 In this case, the scale only changes value when we manually change the value of `Float`. 
 We can go a step further and use a dynamic input to the uniform variable.
 Below is an example where a dynamic value is generated inside the Bonsai workflow and processed by the shader.
 
-![](images/image8.png)
+![](images/image9.png)
 
 A `MouseMove` node calculates the position of the mouse cursor in the shader window. 
 The `NormalizedDeviceCoordinates` transforms (normalizes) the coordinates of the mouse with respect to the shader window to map the values of the cursor from -1 to 1. 
