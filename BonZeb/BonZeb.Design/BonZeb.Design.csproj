@@ -32,19 +32,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Bonsai.Core">
-      <HintPath>..\packages\bonsai.core\2.5.0\lib\net462\Bonsai.Core.dll</HintPath>
+      <HintPath>..\packages\Bonsai.Core.2.5.0\lib\net462\Bonsai.Core.dll</HintPath>
     </Reference>
     <Reference Include="Bonsai.Design">
-      <HintPath>..\packages\bonsai.design\2.5.0\lib\net462\Bonsai.Design.dll</HintPath>
+      <HintPath>..\packages\Bonsai.Design.2.5.0\lib\net462\Bonsai.Design.dll</HintPath>
     </Reference>
     <Reference Include="Bonsai.Vision.Design">
-      <HintPath>..\packages\bonsai.vision.design\2.5.1\lib\net462\Bonsai.Vision.Design.dll</HintPath>
+      <HintPath>..\packages\Bonsai.Vision.Design.2.5.1\lib\net462\Bonsai.Vision.Design.dll</HintPath>
     </Reference>
     <Reference Include="OpenCV.Net">
-      <HintPath>..\packages\opencv.net\3.3.1\lib\net40\OpenCV.Net.dll</HintPath>
+      <HintPath>..\packages\OpenCV.Net.3.3.1\lib\net40\OpenCV.Net.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>..\packages\opentk\3.1.0\lib\net20\OpenTK.dll</HintPath>
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
