@@ -74,17 +74,17 @@ Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no
 
 # Behavioural Tracking and Analysis
 BonZeb provides many different modules for behavioural tracking and analysis including methods for centroid tracking, tail tracking, eye tracking, and tail beat analysis.
-See the [Behavioural Tracking and Analysis](Examples\Behavioural Tracking and Analysis\) folder for how to perform online behavioural tracking and analysis and offline tracking with batch processing.
+See the [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and Analysis>) folder for how to perform online behavioural tracking and analysis and offline tracking with batch processing.
 
 # Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
 The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
-See the [Visual Stimulation](<Examples\Visual Stimulation\>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
+See the [Visual Stimulation](<Examples/Visual Stimulation/>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
 
 # Calibration
 BonZeb provides a simple solution for users to perform calibration of visual display devices.
 Users can use BonZeb to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV.
-See the [Calibration](<Examples\Calibration\>) folder for how to calibrate visual display devices for rendering visual stimuli.
+See the [Calibration](<Examples/Calibration>) folder for how to calibrate visual display devices for rendering visual stimuli.
 
 # Open-loop Free-swimming
 BonZeb provides examples for how to build and implement open-loop free-swimming behavioural assays. 
