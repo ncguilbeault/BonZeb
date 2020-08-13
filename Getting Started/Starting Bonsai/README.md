@@ -1,7 +1,7 @@
 # BonZeb
 ![](../../Resources/BonZeb_Logo.png)
 
-# Getting Started
+# Starting Bonsai
 When you run Bonsai, two windows will appear.
 One window displays the `Get Started` window and the other window displays a terminal window.
 The terminal window is not used for programming in Bonsai, but will display error codes or print statements as they appear from Bonsai at runtime.
