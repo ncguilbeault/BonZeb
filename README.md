@@ -74,7 +74,7 @@ Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no
 
 # Behavioural Tracking and Analysis
 BonZeb provides many different modules for behavioural tracking and analysis including methods for centroid tracking, tail tracking, eye tracking, and tail beat analysis.
-See the [Behavioural Tracking and Analysis](<Examples\Behavioural Tracking and Analysis\>) folder for how to perform online behavioural tracking and analysis and offline tracking with batch processing.
+See the [Behavioural Tracking and Analysis](Examples\Behavioural Tracking and Analysis\) folder for how to perform online behavioural tracking and analysis and offline tracking with batch processing.
 
 # Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
