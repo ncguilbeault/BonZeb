@@ -97,7 +97,7 @@ Below is an example of a vertex file.
 
 The fragment file (ending in .frag) receives texture coordinates and processes these into fragments.
 Fragments determine what colour value to assign to each coordinate.
-The texture coordinates processed by the fragment shader range from 0 to 1.
+The texture coordinates processed by the fragment shader range from (0, 0) to (1, 1).
 Below is an example of a fragment file.
 
 ![](images/image6.png)
