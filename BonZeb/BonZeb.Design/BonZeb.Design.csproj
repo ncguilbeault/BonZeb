@@ -1,79 +1,38 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AC5D4FC0-D1FE-4AC0-B8C0-E70459B175BF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BonZeb.Design</RootNamespace>
-    <AssemblyName>BonZeb.Design</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <Title>BonZeb</Title>
+    <Description>Visualizers for BonZeb.</Description>
+    <Authors>Nicholas Guilbeault</Authors>
+    <Copyright>Copyright © Nicholas Guilbeault 2020</Copyright>
+    <ProjectUrl>https://github.com/ncguilbeault/BonZeb</ProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/bonvision/BonVision/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://github.com/ncguilbeault/BonZeb/blob/master/Resources/BonZeb_Logo.png?raw=true</PackageIconUrl>
+    <PackageOutputPath>..\bin\$(Configuration)</PackageOutputPath>
+    <PackageTags>Bonsai Rx BonZeb Visualizers Tracking Stimulation Zebrafish</PackageTags>
+    <IncludeSymbols Condition="'$(Configuration)'=='Release'">true</IncludeSymbols>
+    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+    <TargetFramework>net472</TargetFramework>
+    <Features>strict</Features>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Bonsai.Core">
-      <HintPath>..\packages\Bonsai.Core.2.5.0\lib\net462\Bonsai.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Bonsai.Design">
-      <HintPath>..\packages\Bonsai.Design.2.5.0\lib\net462\Bonsai.Design.dll</HintPath>
-    </Reference>
-    <Reference Include="Bonsai.Vision.Design">
-      <HintPath>..\packages\Bonsai.Vision.Design.2.5.1\lib\net462\Bonsai.Vision.Design.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenCV.Net">
-      <HintPath>..\packages\OpenCV.Net.3.3.1\lib\net40\OpenCV.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK">
-      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
+    <PackageReference Include="Bonsai.Core" version="2.5.0" />
+    <PackageReference Include="Bonsai.System" version="2.5.1" />
+    <PackageReference Include="Bonsai.Vision" version="2.5.1" />
+    <PackageReference Include="Bonsai.Vision.Design" version="2.5.1" />
+    <PackageReference Include="OpenCV.Net" version="3.3.1" />
+    <PackageReference Include="OpenTK" version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BonZeb\BonZeb.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TailPointsVisualizer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="BonZeb.Design.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BonZeb\BonZeb.csproj">
-      <Project>{c4fd2b39-d964-4537-839c-844fba7ad8bc}</Project>
-      <Name>BonZeb</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
