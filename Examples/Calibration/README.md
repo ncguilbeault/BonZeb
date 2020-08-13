@@ -5,7 +5,9 @@
 Calibration is essential to closed-loop and open-loop visual feedback.
 There are multiple ways to calibrate a visual display in Bonsai. 
 We provide a simple calibration method to map the area used for visual stimulus rendering to a camera’s FOV or a specified region within the camera’s FOV.
-Below is the full Bonsai workflow.
+BonZeb provides the `DrawRectangle` node which is used to generate the values for the x and y offset, as well as the x and y range needed to update the vertex file.
+Multiple `DrawRectangle` nodes can be used to calibrate regions of interest (ROIs) within a full field of view (FOV)
+Below is an example of how to calibrate a shader for the full FOV.
 
 ![](images/image1.png)
 
