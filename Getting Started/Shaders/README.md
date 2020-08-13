@@ -2,7 +2,7 @@
 ![](../../Resources/BonZeb_Logo.png)
 
 # Shaders
-BonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
+BBonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
 The Bonsai Shaders package utilizes OpenGL for rendering visual graphics. 
 Bonsai Shaders provide extensive flexibility for programming in OpenGL. 
 Visual stimuli in BonZeb are generated using a vertex file and a fragment file.
