@@ -4,10 +4,10 @@
                  xmlns:gl="clr-namespace:Bonsai.Shaders;assembly=Bonsai.Shaders"
                  xmlns:vid="clr-namespace:Bonsai.Video;assembly=Bonsai.Video"
                  xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
                  xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
                  xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
-                 xmlns:p1="clr-namespace:BonZeb;assembly=BonZeb"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
@@ -29,27 +29,27 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:Crop">
           <cv:RegionOfInterest>
-            <cv:X>0</cv:X>
+            <cv:X>2560</cv:X>
             <cv:Y>0</cv:Y>
-            <cv:Width>2560</cv:Width>
-            <cv:Height>1440</cv:Height>
+            <cv:Width>1920</cv:Width>
+            <cv:Height>1080</cv:Height>
           </cv:RegionOfInterest>
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="p1:DrawRectangle">
-          <p1:RegionOfInterest>
-            <p1:X>840</p1:X>
-            <p1:Y>324</p1:Y>
-            <p1:Width>952</p1:Width>
-            <p1:Height>162</p1:Height>
-          </p1:RegionOfInterest>
-          <p1:Colour>
-            <p1:Val0>255</p1:Val0>
-            <p1:Val1>255</p1:Val1>
-            <p1:Val2>255</p1:Val2>
-            <p1:Val3>255</p1:Val3>
-          </p1:Colour>
+        <Combinator xsi:type="bz:DrawRectangle">
+          <bz:RegionOfInterest>
+            <bz:X>840</bz:X>
+            <bz:Y>324</bz:Y>
+            <bz:Width>952</bz:Width>
+            <bz:Height>162</bz:Height>
+          </bz:RegionOfInterest>
+          <bz:Colour>
+            <bz:Val0>255</bz:Val0>
+            <bz:Val1>255</bz:Val1>
+            <bz:Val2>255</bz:Val2>
+            <bz:Val3>255</bz:Val3>
+          </bz:Colour>
         </Combinator>
       </Expression>
       <Expression xsi:type="MemberSelector">
@@ -144,26 +144,26 @@
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="p1:DrawRectangle">
-          <p1:RegionOfInterest>
-            <p1:X>110</p1:X>
-            <p1:Y>130</p1:Y>
-            <p1:Width>76</p1:Width>
-            <p1:Height>86</p1:Height>
-          </p1:RegionOfInterest>
-          <p1:Colour>
-            <p1:Val0>0</p1:Val0>
-            <p1:Val1>0</p1:Val1>
-            <p1:Val2>0</p1:Val2>
-            <p1:Val3>0</p1:Val3>
-          </p1:Colour>
+        <Combinator xsi:type="bz:DrawRectangle">
+          <bz:RegionOfInterest>
+            <bz:X>110</bz:X>
+            <bz:Y>130</bz:Y>
+            <bz:Width>76</bz:Width>
+            <bz:Height>86</bz:Height>
+          </bz:RegionOfInterest>
+          <bz:Colour>
+            <bz:Val0>0</bz:Val0>
+            <bz:Val1>0</bz:Val1>
+            <bz:Val2>0</bz:Val2>
+            <bz:Val3>0</bz:Val3>
+          </bz:Colour>
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="rx:CombineLatest" />
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="p1:CalculateCalibrationParameters" />
+        <Combinator xsi:type="bz:CalculateCalibrationParameters" />
       </Expression>
       <Expression xsi:type="MemberSelector">
         <Selector>XOffset</Selector>

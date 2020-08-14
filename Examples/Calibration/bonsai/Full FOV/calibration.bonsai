@@ -3,11 +3,11 @@
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:gl="clr-namespace:Bonsai.Shaders;assembly=Bonsai.Shaders"
                  xmlns:vid="clr-namespace:Bonsai.Video;assembly=Bonsai.Video"
-                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
-                 xmlns:p1="clr-namespace:BonZeb;assembly=BonZeb"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
                  xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
-                 xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
                  xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
@@ -29,27 +29,27 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="cv:Crop">
           <cv:RegionOfInterest>
-            <cv:X>0</cv:X>
+            <cv:X>2560</cv:X>
             <cv:Y>0</cv:Y>
-            <cv:Width>2560</cv:Width>
-            <cv:Height>1440</cv:Height>
+            <cv:Width>1920</cv:Width>
+            <cv:Height>1080</cv:Height>
           </cv:RegionOfInterest>
         </Combinator>
       </Expression>
       <Expression xsi:type="Combinator">
-        <Combinator xsi:type="p1:DrawRectangle">
-          <p1:RegionOfInterest>
-            <p1:X>840</p1:X>
-            <p1:Y>324</p1:Y>
-            <p1:Width>952</p1:Width>
-            <p1:Height>162</p1:Height>
-          </p1:RegionOfInterest>
-          <p1:Colour>
-            <p1:Val0>255</p1:Val0>
-            <p1:Val1>255</p1:Val1>
-            <p1:Val2>255</p1:Val2>
-            <p1:Val3>255</p1:Val3>
-          </p1:Colour>
+        <Combinator xsi:type="bz:DrawRectangle">
+          <bz:RegionOfInterest>
+            <bz:X>640</bz:X>
+            <bz:Y>862</bz:Y>
+            <bz:Width>952</bz:Width>
+            <bz:Height>162</bz:Height>
+          </bz:RegionOfInterest>
+          <bz:Colour>
+            <bz:Val0>255</bz:Val0>
+            <bz:Val1>255</bz:Val1>
+            <bz:Val2>255</bz:Val2>
+            <bz:Val3>255</bz:Val3>
+          </bz:Colour>
         </Combinator>
       </Expression>
       <Expression xsi:type="MemberSelector">
@@ -132,11 +132,7 @@ def process(value):
                     "Full FOV xOffset",
                     "Full FOV yOffset",
                     "Full FOV xRange",
-                    "Full FOV yRange",
-                    "ROI xOffset",
-                    "ROI yOffset",
-                    "ROI xRange",
-                    "ROI yRange"        ])
+                    "Full FOV yRange",       ])
 
     data = [      "{}".format(datetime.now().year),
                   "{}".format(datetime.now().month),
@@ -186,6 +182,12 @@ def process(value):
         <Combinator xsi:type="gl:UpdateUniform">
           <gl:UniformName>colour</gl:UniformName>
           <gl:ShaderName>full_fov</gl:ShaderName>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="cv:CameraCapture">
+          <cv:Index>0</cv:Index>
+          <cv:CaptureProperties />
         </Combinator>
       </Expression>
     </Nodes>
