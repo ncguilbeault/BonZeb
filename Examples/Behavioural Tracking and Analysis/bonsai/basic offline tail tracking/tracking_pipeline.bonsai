@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.5.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="cv:FileCapture">
+          <cv:FileName>video1.mp4</cv:FileName>
+          <cv:PlaybackRate>0</cv:PlaybackRate>
+          <cv:StartPosition>0</cv:StartPosition>
+          <cv:PositionUnits>Frames</cv:PositionUnits>
+          <cv:Loop>false</cv:Loop>
+          <cv:Playing>true</cv:Playing>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="cv:Grayscale" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="bz:CalculateCentroid">
+          <bz:ThresholdValue>75</bz:ThresholdValue>
+          <bz:ThresholdType>Binary</bz:ThresholdType>
+          <bz:MaxValue>255</bz:MaxValue>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="rx:Zip" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="bz:CalculateTailPoints">
+          <bz:DistTailBase>40</bz:DistTailBase>
+          <bz:HeadingDirection>-1</bz:HeadingDirection>
+          <bz:NumTailSegments>8</bz:NumTailSegments>
+          <bz:DistTailPoints>14</bz:DistTailPoints>
+          <bz:RangeTailPointAngles>150</bz:RangeTailPointAngles>
+          <bz:PixelSearchMethod>Darkest</bz:PixelSearchMethod>
+          <bz:OffsetX>0</bz:OffsetX>
+          <bz:OffsetY>0</bz:OffsetY>
+          <bz:TailPointCalculationMethod>WeightedMedian</bz:TailPointCalculationMethod>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="bz:CalculateTailCurvature" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
+      </Expression>
+      <Expression xsi:type="io:CsvWriter">
+        <io:FileName>tailcurvature.csv</io:FileName>
+        <io:Append>false</io:Append>
+        <io:Overwrite>false</io:Overwrite>
+        <io:Suffix>None</io:Suffix>
+        <io:IncludeHeader>false</io:IncludeHeader>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="bz:DetectTailBeatKinematics">
+          <bz:BoutThreshold>15</bz:BoutThreshold>
+          <bz:FrameRate>332</bz:FrameRate>
+          <bz:FrameWindow>5</bz:FrameWindow>
+          <bz:PeakThreshold xsi:nil="true" />
+          <bz:WithinBoutThreshold xsi:nil="true" />
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="io:CsvWriter">
+        <io:FileName>tailbeatkinematics.csv</io:FileName>
+        <io:Append>false</io:Append>
+        <io:Overwrite>false</io:Overwrite>
+        <io:Suffix>None</io:Suffix>
+        <io:IncludeHeader>true</io:IncludeHeader>
+      </Expression>
+    </Nodes>
+    <Edges>
+      <Edge From="0" To="1" Label="Source1" />
+      <Edge From="1" To="2" Label="Source1" />
+      <Edge From="1" To="3" Label="Source1" />
+      <Edge From="2" To="3" Label="Source2" />
+      <Edge From="3" To="4" Label="Source1" />
+      <Edge From="4" To="5" Label="Source1" />
+      <Edge From="5" To="6" Label="Source1" />
+      <Edge From="6" To="7" Label="Source1" />
+      <Edge From="7" To="8" Label="Source1" />
+      <Edge From="8" To="9" Label="Source1" />
+    </Edges>
+  </Workflow>
+</WorkflowBuilder>

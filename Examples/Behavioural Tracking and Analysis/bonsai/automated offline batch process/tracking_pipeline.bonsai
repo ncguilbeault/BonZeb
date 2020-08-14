@@ -1,0 +1,660 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.5.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="io:GetFiles">
+          <io:Path>path_to_videos</io:Path>
+          <io:SearchPattern>*</io:SearchPattern>
+          <io:SearchOption>TopDirectoryOnly</io:SearchOption>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="SelectMany">
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="WorkflowInput">
+              <Name>Source1</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Concat" />
+            </Expression>
+            <Expression xsi:type="CreateObservable">
+              <Workflow>
+                <Nodes>
+                  <Expression xsi:type="GroupWorkflow">
+                    <Name>CalculateBackground</Name>
+                    <Workflow>
+                      <Nodes>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:FileCapture">
+                            <cv:FileName>videos\video2.mp4</cv:FileName>
+                            <cv:PlaybackRate>0</cv:PlaybackRate>
+                            <cv:StartPosition>0</cv:StartPosition>
+                            <cv:PositionUnits>Frames</cv:PositionUnits>
+                            <cv:Loop>false</cv:Loop>
+                            <cv:Playing>true</cv:Playing>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:Grayscale" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateBackground">
+                            <bz:PixelSearch>Brightest</bz:PixelSearch>
+                            <bz:NoiseThreshold>0</bz:NoiseThreshold>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:TakeLast">
+                            <rx:Count>1</rx:Count>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="WorkflowOutput" />
+                      </Nodes>
+                      <Edges>
+                        <Edge From="0" To="1" Label="Source1" />
+                        <Edge From="1" To="2" Label="Source1" />
+                        <Edge From="2" To="3" Label="Source1" />
+                        <Edge From="3" To="4" Label="Source1" />
+                        <Edge From="4" To="5" Label="Source1" />
+                        <Edge From="5" To="6" Label="Source1" />
+                      </Edges>
+                    </Workflow>
+                  </Expression>
+                  <Expression xsi:type="ReplaySubject">
+                    <Name>Background</Name>
+                    <BufferSize xsi:nil="true" />
+                  </Expression>
+                  <Expression xsi:type="GroupWorkflow">
+                    <Name>TrackVideo</Name>
+                    <Workflow>
+                      <Nodes>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Background</Name>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:FileCapture">
+                            <cv:FileName>videos\video2.mp4</cv:FileName>
+                            <cv:PlaybackRate>0</cv:PlaybackRate>
+                            <cv:StartPosition>0</cv:StartPosition>
+                            <cv:PositionUnits>Frames</cv:PositionUnits>
+                            <cv:Loop>false</cv:Loop>
+                            <cv:Playing>true</cv:Playing>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:Grayscale" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="dsp:AbsoluteDifference" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateCentroid">
+                            <bz:ThresholdValue>75</bz:ThresholdValue>
+                            <bz:ThresholdType>Binary</bz:ThresholdType>
+                            <bz:MaxValue>255</bz:MaxValue>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateTailPoints">
+                            <bz:DistTailBase>40</bz:DistTailBase>
+                            <bz:HeadingDirection>-1</bz:HeadingDirection>
+                            <bz:NumTailSegments>8</bz:NumTailSegments>
+                            <bz:DistTailPoints>14</bz:DistTailPoints>
+                            <bz:RangeTailPointAngles>150</bz:RangeTailPointAngles>
+                            <bz:PixelSearchMethod>Brightest</bz:PixelSearchMethod>
+                            <bz:OffsetX>0</bz:OffsetX>
+                            <bz:OffsetY>0</bz:OffsetY>
+                            <bz:TailPointCalculationMethod>WeightedMedian</bz:TailPointCalculationMethod>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="MemberSelector">
+                          <Selector>Points</Selector>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateTailCurvature" />
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>(it[it.Length - 1] + it[it.Length - 2] + it[it.Length - 3]) / 3</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:Threshold">
+                            <cv:ThresholdValue>60</cv:ThresholdValue>
+                            <cv:MaxValue>255</cv:MaxValue>
+                            <cv:ThresholdType>BinaryInv</cv:ThresholdType>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>tailcurvature.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2tailcurvature.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:DetectTailBeatKinematics">
+                            <bz:BoutThreshold>15</bz:BoutThreshold>
+                            <bz:FrameRate>332</bz:FrameRate>
+                            <bz:FrameWindow>5</bz:FrameWindow>
+                            <bz:PeakThreshold xsi:nil="true" />
+                            <bz:WithinBoutThreshold xsi:nil="true" />
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="MemberSelector">
+                          <Selector>Frequency</Selector>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>frequency.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2frequency.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="MemberSelector">
+                          <Selector>Amplitude</Selector>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>amplitude.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2amplitude.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="MemberSelector">
+                          <Selector>Instance</Selector>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>instance.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2instance.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:DrawTailPoints">
+                            <bz:Colour>
+                              <bz:Val0>255</bz:Val0>
+                              <bz:Val1>0</bz:Val1>
+                              <bz:Val2>0</bz:Val2>
+                              <bz:Val3>255</bz:Val3>
+                            </bz:Colour>
+                            <bz:Radius>2</bz:Radius>
+                            <bz:Thickness>1</bz:Thickness>
+                            <bz:Fill>false</bz:Fill>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:FindEyeContours">
+                            <bz:Mode>External</bz:Mode>
+                            <bz:Method>ChainApproxNone</bz:Method>
+                            <bz:MinArea>1</bz:MinArea>
+                            <bz:MaxArea xsi:nil="true" />
+                            <bz:MinDistance>1</bz:MinDistance>
+                            <bz:MaxDistance>100</bz:MaxDistance>
+                            <bz:DiscardRegionContainingCentroid>true</bz:DiscardRegionContainingCentroid>
+                            <bz:AngleRangeForEyeSearch>150</bz:AngleRangeForEyeSearch>
+                            <bz:FitEllipsesToEyes>false</bz:FitEllipsesToEyes>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateEyeAngles" />
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it[0]</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>lefteyeangle.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2lefteyeangle.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it[1]</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>righteyeangle.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2righteyeangle.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:CalculateHeadingAngle">
+                            <bz:InitializeHeadingAngleToZero>false</bz:InitializeHeadingAngleToZero>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>headingangle.csv</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="io:CsvWriter">
+                          <io:FileName>videos\video2headingangle.csv</io:FileName>
+                          <io:Append>false</io:Append>
+                          <io:Overwrite>false</io:Overwrite>
+                          <io:Suffix>None</io:Suffix>
+                          <io:IncludeHeader>false</io:IncludeHeader>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:DrawHeadingAngle">
+                            <bz:Colour>
+                              <bz:Val0>0</bz:Val0>
+                              <bz:Val1>0</bz:Val1>
+                              <bz:Val2>255</bz:Val2>
+                              <bz:Val3>255</bz:Val3>
+                            </bz:Colour>
+                            <bz:Thickness>1</bz:Thickness>
+                            <bz:LineLength>15</bz:LineLength>
+                            <bz:CapSize>5</bz:CapSize>
+                            <bz:LineOffset>15</bz:LineOffset>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:Zip" />
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="bz:DrawEyeAngles">
+                            <bz:Colour>
+                              <bz:Val0>0</bz:Val0>
+                              <bz:Val1>255</bz:Val1>
+                              <bz:Val2>0</bz:Val2>
+                              <bz:Val3>255</bz:Val3>
+                            </bz:Colour>
+                            <bz:Thickness>1</bz:Thickness>
+                            <bz:LineLength>10</bz:LineLength>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="StringProperty">
+                            <Value>tracked.avi</Value>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="SubscribeSubject">
+                          <Name>Filename</Name>
+                        </Expression>
+                        <Expression xsi:type="scr:ExpressionTransform">
+                          <scr:Expression>it.SubString(0, it.Length-4)</scr:Expression>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:CombineLatest" />
+                        </Expression>
+                        <Expression xsi:type="Add" />
+                        <Expression xsi:type="PropertyMapping">
+                          <PropertyMappings>
+                            <Property Name="FileName" />
+                          </PropertyMappings>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="cv:VideoWriter">
+                            <cv:FileName>videos\video2tracked.avi</cv:FileName>
+                            <cv:Suffix>None</cv:Suffix>
+                            <cv:Buffered>true</cv:Buffered>
+                            <cv:Overwrite>false</cv:Overwrite>
+                            <cv:FourCC>MJPG</cv:FourCC>
+                            <cv:FrameRate>332</cv:FrameRate>
+                            <cv:FrameSize>
+                              <cv:Width>0</cv:Width>
+                              <cv:Height>0</cv:Height>
+                            </cv:FrameSize>
+                            <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="Combinator">
+                          <Combinator xsi:type="rx:TakeLast">
+                            <rx:Count>1</rx:Count>
+                          </Combinator>
+                        </Expression>
+                        <Expression xsi:type="WorkflowOutput" />
+                      </Nodes>
+                      <Edges>
+                        <Edge From="0" To="5" Label="Source2" />
+                        <Edge From="1" To="2" Label="Source1" />
+                        <Edge From="2" To="3" Label="Source1" />
+                        <Edge From="3" To="4" Label="Source1" />
+                        <Edge From="4" To="5" Label="Source1" />
+                        <Edge From="4" To="14" Label="Source1" />
+                        <Edge From="4" To="47" Label="Source2" />
+                        <Edge From="5" To="6" Label="Source1" />
+                        <Edge From="6" To="7" Label="Source1" />
+                        <Edge From="6" To="8" Label="Source1" />
+                        <Edge From="7" To="8" Label="Source2" />
+                        <Edge From="8" To="9" Label="Source1" />
+                        <Edge From="9" To="10" Label="Source1" />
+                        <Edge From="10" To="11" Label="Source1" />
+                        <Edge From="10" To="51" Label="Source1" />
+                        <Edge From="10" To="47" Label="Source1" />
+                        <Edge From="10" To="49" Label="Source2" />
+                        <Edge From="10" To="71" Label="Source1" />
+                        <Edge From="10" To="80" Label="Source3" />
+                        <Edge From="11" To="12" Label="Source1" />
+                        <Edge From="12" To="13" Label="Source1" />
+                        <Edge From="13" To="21" Label="Source1" />
+                        <Edge From="14" To="49" Label="Source1" />
+                        <Edge From="15" To="18" Label="Source2" />
+                        <Edge From="16" To="17" Label="Source1" />
+                        <Edge From="17" To="18" Label="Source1" />
+                        <Edge From="18" To="19" Label="Source1" />
+                        <Edge From="19" To="20" Label="Source1" />
+                        <Edge From="20" To="21" Label="Source2" />
+                        <Edge From="21" To="22" Label="Source1" />
+                        <Edge From="22" To="23" Label="Source1" />
+                        <Edge From="22" To="31" Label="Source1" />
+                        <Edge From="22" To="39" Label="Source1" />
+                        <Edge From="23" To="30" Label="Source1" />
+                        <Edge From="24" To="27" Label="Source2" />
+                        <Edge From="25" To="26" Label="Source1" />
+                        <Edge From="26" To="27" Label="Source1" />
+                        <Edge From="27" To="28" Label="Source1" />
+                        <Edge From="28" To="29" Label="Source1" />
+                        <Edge From="29" To="30" Label="Source2" />
+                        <Edge From="31" To="38" Label="Source1" />
+                        <Edge From="32" To="35" Label="Source2" />
+                        <Edge From="33" To="34" Label="Source1" />
+                        <Edge From="34" To="35" Label="Source1" />
+                        <Edge From="35" To="36" Label="Source1" />
+                        <Edge From="36" To="37" Label="Source1" />
+                        <Edge From="37" To="38" Label="Source2" />
+                        <Edge From="39" To="46" Label="Source1" />
+                        <Edge From="40" To="43" Label="Source2" />
+                        <Edge From="41" To="42" Label="Source1" />
+                        <Edge From="42" To="43" Label="Source1" />
+                        <Edge From="43" To="44" Label="Source1" />
+                        <Edge From="44" To="45" Label="Source1" />
+                        <Edge From="45" To="46" Label="Source2" />
+                        <Edge From="47" To="48" Label="Source1" />
+                        <Edge From="48" To="80" Label="Source1" />
+                        <Edge From="49" To="50" Label="Source1" />
+                        <Edge From="50" To="51" Label="Source2" />
+                        <Edge From="50" To="82" Label="Source2" />
+                        <Edge From="50" To="71" Label="Source2" />
+                        <Edge From="51" To="52" Label="Source1" />
+                        <Edge From="52" To="53" Label="Source1" />
+                        <Edge From="52" To="62" Label="Source1" />
+                        <Edge From="53" To="54" Label="Source1" />
+                        <Edge From="54" To="61" Label="Source1" />
+                        <Edge From="55" To="58" Label="Source2" />
+                        <Edge From="56" To="57" Label="Source1" />
+                        <Edge From="57" To="58" Label="Source1" />
+                        <Edge From="58" To="59" Label="Source1" />
+                        <Edge From="59" To="60" Label="Source1" />
+                        <Edge From="60" To="61" Label="Source2" />
+                        <Edge From="62" To="63" Label="Source1" />
+                        <Edge From="63" To="70" Label="Source1" />
+                        <Edge From="64" To="67" Label="Source2" />
+                        <Edge From="65" To="66" Label="Source1" />
+                        <Edge From="66" To="67" Label="Source1" />
+                        <Edge From="67" To="68" Label="Source1" />
+                        <Edge From="68" To="69" Label="Source1" />
+                        <Edge From="69" To="70" Label="Source2" />
+                        <Edge From="71" To="72" Label="Source1" />
+                        <Edge From="72" To="79" Label="Source1" />
+                        <Edge From="72" To="80" Label="Source2" />
+                        <Edge From="73" To="76" Label="Source2" />
+                        <Edge From="74" To="75" Label="Source1" />
+                        <Edge From="75" To="76" Label="Source1" />
+                        <Edge From="76" To="77" Label="Source1" />
+                        <Edge From="77" To="78" Label="Source1" />
+                        <Edge From="78" To="79" Label="Source2" />
+                        <Edge From="80" To="81" Label="Source1" />
+                        <Edge From="81" To="82" Label="Source1" />
+                        <Edge From="82" To="83" Label="Source1" />
+                        <Edge From="83" To="90" Label="Source1" />
+                        <Edge From="84" To="87" Label="Source2" />
+                        <Edge From="85" To="86" Label="Source1" />
+                        <Edge From="86" To="87" Label="Source1" />
+                        <Edge From="87" To="88" Label="Source1" />
+                        <Edge From="88" To="89" Label="Source1" />
+                        <Edge From="89" To="90" Label="Source2" />
+                        <Edge From="90" To="91" Label="Source1" />
+                        <Edge From="91" To="92" Label="Source1" />
+                      </Edges>
+                    </Workflow>
+                  </Expression>
+                  <Expression xsi:type="SubscribeSubject">
+                    <Name>Background</Name>
+                  </Expression>
+                  <Expression xsi:type="Combinator">
+                    <Combinator xsi:type="rx:SubscribeWhen" />
+                  </Expression>
+                  <Expression xsi:type="WorkflowOutput" />
+                  <Expression xsi:type="WorkflowInput">
+                    <Name>Source1</Name>
+                  </Expression>
+                  <Expression xsi:type="BehaviorSubject">
+                    <Name>Filename</Name>
+                  </Expression>
+                </Nodes>
+                <Edges>
+                  <Edge From="0" To="1" Label="Source1" />
+                  <Edge From="2" To="4" Label="Source1" />
+                  <Edge From="3" To="4" Label="Source2" />
+                  <Edge From="4" To="5" Label="Source1" />
+                  <Edge From="6" To="7" Label="Source1" />
+                </Edges>
+              </Workflow>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Concat" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:ToList" />
+            </Expression>
+            <Expression xsi:type="WorkflowOutput" />
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="1" Label="Source1" />
+            <Edge From="1" To="2" Label="Source1" />
+            <Edge From="2" To="3" Label="Source1" />
+            <Edge From="3" To="4" Label="Source1" />
+            <Edge From="4" To="5" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="rx:Concat" />
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="rx:TakeLast">
+          <rx:Count>1</rx:Count>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="WorkflowOutput" />
+    </Nodes>
+    <Edges>
+      <Edge From="0" To="1" Label="Source1" />
+      <Edge From="1" To="2" Label="Source1" />
+      <Edge From="2" To="3" Label="Source1" />
+      <Edge From="3" To="4" Label="Source1" />
+    </Edges>
+  </Workflow>
+</WorkflowBuilder>
