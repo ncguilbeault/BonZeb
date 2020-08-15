@@ -12,7 +12,7 @@
     <Nodes>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="io:GetFiles">
-          <io:Path>path_to_videos</io:Path>
+          <io:Path>path_to_videos_folder</io:Path>
           <io:SearchPattern>*</io:SearchPattern>
           <io:SearchOption>TopDirectoryOnly</io:SearchOption>
         </Combinator>
@@ -643,18 +643,10 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="rx:Concat" />
       </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:TakeLast">
-          <rx:Count>1</rx:Count>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="WorkflowOutput" />
     </Nodes>
     <Edges>
       <Edge From="0" To="1" Label="Source1" />
       <Edge From="1" To="2" Label="Source1" />
-      <Edge From="2" To="3" Label="Source1" />
-      <Edge From="3" To="4" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>
