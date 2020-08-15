@@ -127,3 +127,33 @@ Setting the `Period` property of the `Timer` will adjust how long data will be c
 When the `Timer` branch fires after the elapsed `Period`, the `Tracking` data stream stops, which is controlled by the `TakeUntil` and `TakeLast` nodes.
 
 ![](images/image19.png)
+
+# Automated offline video tracking
+Similar to the more complicated example above, the workflow can be adopted to automatically track a pre-acquired video.
+The offline tracking workflow is shown below.
+
+![](images/image20.png)
+
+The `CalculateBackground` group uses the entire pre-acquired video to calculate the background and takes the final background calculated for tracking.
+
+![](images/image21.png)
+
+The `Tracking` group workflow is the same as before.
+The `Tracking` group is initiated once the background has been calculated.
+The `TakeLast` node determines when the last image of the video has been processed and then terminates the workflow.
+
+![](images/image22.png)
+
+# Automated offline tail beat analysis
+BonZeb can also be used to further process data files which have already been collected.
+In the example below, the tail beat kinematics are calculated based on a pre-acquired tail angles data file.
+
+![](images/image23.png)
+
+The `CsvReader` node loads all of the data from the csv file.
+It produces a single `String` output for each row contained in the data file.
+The `String` is parsed using the `Parse` node, which seperates each row of data into a list of strings.
+Each string in the list corresponds to a single tail angle at a given time.
+These values are then converted into a `Double` and converted from radians to degrees.
+The data are then used to calculate the tail beat frequency, amplitude, and bout instance, using the `DetectTailBeatKinematics` module, and subsequently saved to file.
+
