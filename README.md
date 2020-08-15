@@ -52,12 +52,13 @@ When installing BonZeb, all of the essential dependencies will be installed auto
 * Bonsai - Vision Design Library
 * Bonsai - Windows Input Library
 
-# [Getting Started with Bonsai](<Getting Started/>)
+# Getting Started with Bonsai
 Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement (IDE). 
 The nodes in a Bonsai workflow, also called modules, can represent a variety of different Bonsai objects, such as data sources, transformations, combinators, or sinks. 
 Modules in a workflow are linked by edges to form pipelines, also called data streams, where the output of one node is sent as input to another node. 
 The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
 Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.
+
 If you are just learning about Bonsai for the first time, see the [Getting Started](<Getting Started/>) folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
@@ -72,13 +73,19 @@ Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no
 
 `Bonsai.exe --noboot`
 
-# [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and Analysis>)
+# Behavioural Tracking and Analysis
 BonZeb provides many different modules and workflows for behavioural tracking and analysis.
 These include methods for background calculation, centroid tracking, tail tracking, eye tracking, and tail beat analysis.
 BonZeb can be used for online tracking, offline tracking, and batch processing.
+
 See the [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and Analysis>) folder for how to implement these methods.
 
-# [Visual Stimulation](<Examples/Visual Stimulation>)
+# Multi-animal Tracking
+BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
+
+See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
+
+# Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
 The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
 See the [Visual Stimulation](<Examples/Visual Stimulation>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
@@ -86,26 +93,27 @@ See the [Visual Stimulation](<Examples/Visual Stimulation>) folder for how to ge
 # [Calibration](<Examples/Calibration>)
 BonZeb provides a simple solution for users to perform calibration of visual display devices.
 Users can use BonZeb to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV.
+
 See the [Calibration](<Examples/Calibration>) folder for how to calibrate visual display devices for rendering visual stimuli.
 
-# [Open-loop Free-swimming](<Examples/Open-loop Free-swimming>)
+# Open-loop Free-swimming
 BonZeb provides examples for how to build and implement open-loop free-swimming behavioural assays. 
+
 See the [Open-loop Free-swimming](<Examples/Open-loop Free-swimming>) folder for how an open-loop free-swimming behavioural assay can be used and implemented.
 
-# [Closed-loop Head-fixed](<Examples/Closed-loop Head-fixed>)
+# Closed-loop Head-fixed
 BonZeb provides examples for how to build and implement closed-loop head-fixed behavioural assays. 
+
 See the [Closed-loop Head-fixed](<Examples/Closed-loop Head-fixed>) folder for how a closed-loop head-fixed behavioural assay can be used and implemented.
 
-# [Multi-animal Tracking](<Examples/Multi-animal Tracking>)
-BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
-See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
-
-# [Optogenetics](<Examples/Optogenetics>)
+# Optogenetics
 BonZeb provides examples for how to perform optogenetics. 
+
 See the [Optogenetics](<Examples/Optogenetics>) folder for how to implement an optogenetic stimulation paradigm.
 
-# [Calcium Imaging](<Examples/Calcium Imaging>)
+# Calcium Imaging
 BonZeb provides examples for how to perform calcium imaging with closed-loop visual stimulation. 
+
 See the [Calcium Imaging](<Examples/Calcium Imaging>) folder for how to implement calcium imaging with closed-loop visual stimulation.
 
 # Acknowledgements
