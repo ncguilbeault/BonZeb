@@ -75,6 +75,7 @@ When the `Tab` key is pressed, the background calculate stops and the `Tracking`
 Inside the `Tracking` group, there is a lot of overlap with the previous example.
 The images from the camera are combined with the background followed by background subtraction.
 Once the centroid is calculated, the tail points are calculated followed by the the tail angles.
+The `ExpressionTransform` node takes the average of the last 3 tail segments.
 
 ![](images/image11.png)
 
