@@ -6,6 +6,14 @@ BonZeb was designed to perform rapid behavioural tracking and analysis of zebraf
 BonZeb behavioural tracking seamlessly integrates with Bonsai to enable flexible and robust tracking paradigms.
 BonZeb provides nodes to perform tail curvature analysis, tail beat analysis, eye angle analysis, and more.
 
+This folder contains the following sections:
+1. [Basic behavioural tracking and analysis](#basic-behavioural-tracking-and-analysis)
+2. [Head-fixed Tracking](#head-fixed-tracking)
+3. [Timed online tracking](#timed-online-tracking)
+4. [Automated offline video tracking](#automated-offline-video-tracking)
+5. [Automated offline tail beat analysis](#automated-offline-tail-beat-analysis)
+6. [Automated offline batch process](#automated-offline-batch-process)
+
 # Basic behavioural tracking and analysis
 Most behavioural tracking protocols for free-swimming adhere to the following pipeline:
 
