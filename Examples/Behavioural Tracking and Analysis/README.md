@@ -9,7 +9,7 @@ BonZeb provides nodes to perform tail curvature analysis, tail beat analysis, ey
 # Basic behavioural tracking and analysis
 Most behavioural tracking protocols for free-swimming adhere to the following pipeline:
 
-![](images/image1.png)
+![](images/basictracking1.png)
 
 Video is processed using background subtraction.
 The background subtracted image is thresholded to obtain a binary image.
@@ -19,18 +19,18 @@ The angles between each of these points is calculated and normalized to the head
 The tail angles can then be used to analyze tail beat kinematics.
 Below is an example of a Bonsai workflow which can implement this behavioral tracking and analysis pipeline using BonZeb.
 
-![](images/image2.png)
+![](images/basictracking2.png)
 
 The `CameraCapture` node generates images of the animal.
 These images are then converted to grayscale using the `Grayscale` node.
 
-![](images/image3.png)
+![](images/basictracking3.png)
 
 The grayscale images are then passed onto a `CalculateBackground` node to calculate the background as the darkest or lightest pixels over time.
 The grayscale image and the background are then zipped together using a `Zip` node.
 The background is then subtracted from incoming images using the `AbsoluteDifference` node.
 
-![](images/image4.png)
+![](images/basictracking4.png)
 
 Following background subtraction, the centroid is calculated using the `CalculateCentroid` node.
 The `CalculateCentroid` node performs a threshold to create a binary image.
@@ -39,14 +39,14 @@ The center of mass derived from the raw image moments is taken as the centroid o
 The background subtracted image and the centroid are zipped together with `Zip`.
 These are then passed to the `CalculateTailPoints` node, which searches for the tail points in the image, given the centroid.
 
-![](images/image5.png)
+![](images/basictracking5.png)
 
 The tail points are then passed to the `CalculateTailCurvature` node to normalize and compute the angle between successive points.
 These angles, commputed in radians, are then converted to units of degrees using the `ConvertRadiansToDegrees` module.
 The `DetectTailBeatKinematics` node receives the tail angles as input and computes the tail beat frequency, amplitudes, and bout instance.
 The angles and the tail kinematics are saved to seperate csv files using `CsvWriter` nodes.
 
-![](images/image6.png)
+![](images/basictracking6.png)
 
 This pipeline sets up the basis for tracking in more complex online and offline workflows.
 
