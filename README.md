@@ -88,9 +88,10 @@ See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how
 # Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
 The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
+
 See the [Visual Stimulation](<Examples/Visual Stimulation>) folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
 
-# [Calibration](<Examples/Calibration>)
+# Calibration
 BonZeb provides a simple solution for users to perform calibration of visual display devices.
 Users can use BonZeb to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV.
 
