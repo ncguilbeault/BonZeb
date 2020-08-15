@@ -7,7 +7,7 @@ BonZeb behavioural tracking seamlessly integrates with Bonsai to enable flexible
 BonZeb provides nodes to perform tail curvature analysis, tail beat analysis, eye angle analysis, and more.
 
 # Basic behavioural tracking and analysis
-Most behavioural tracking protocols in BonZeb adhere to the following pipeline:
+Most behavioural tracking protocols for free-swimming adhere to the following pipeline:
 
 ![](images/image1.png)
 
@@ -49,6 +49,18 @@ The angles and the tail kinematics are saved to seperate csv files using `CsvWri
 ![](images/image6.png)
 
 This pipeline sets up the basis for tracking in more complex online and offline workflows.
+
+# Head-fixed Tracking
+The tracking protocol used for head-fixed tracking is very similar to free-swimming tracking with some exceptions.
+Below is an example workflow that uses this method.
+
+![](images/headfixed1.png)
+
+The main difference is that rather than calculating a moving centroid, a static point is used to seed the tail tracking algorithm.
+The `HeadingDirection` property of the `CalculateTailPoints` node is set to the fixed heading angle of the animal.
+We generate a single static point using the `CreatePoint2f` node and combine it with the latest image from the camera using `WithLatestFrom`.
+
+![](images/headfixed2.png)
 
 # Timed online tracking
 The following workflow sets up a more complex system.
