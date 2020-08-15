@@ -52,7 +52,7 @@ When installing BonZeb, all of the essential dependencies will be installed auto
 * Bonsai - Vision Design Library
 * Bonsai - Windows Input Library
 
-# Getting Started with Bonsai
+# [Getting Started with Bonsai](<Getting Started/>)
 Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement (IDE). 
 The nodes in a Bonsai workflow, also called modules, can represent a variety of different Bonsai objects, such as data sources, transformations, combinators, or sinks. 
 Modules in a workflow are linked by edges to form pipelines, also called data streams, where the output of one node is sent as input to another node. 
