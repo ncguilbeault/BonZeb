@@ -1,16 +1,16 @@
 # BonZeb
 ![](../Resources/BonZeb_Logo.png)
 
-# Getting Started
-In this section, users will find information about the basics of Bonsai and the Bonsai programmming language as they relate to BonZeb.
-These guides are meant to help users with little to no experience in Bonsai.
-For the safe of brevity, a lot of information is skipped or glossed over.
-For more information about Bonsai, please visit these websites [1](https://bonsai-rx.org/resources/), [2](https://bonsai-rx.org/community/), [3](https://gitter.im/bonsai-rx/Lobby), and [4](https://groups.google.com/forum/#!forum/bonsai-users).
+# Examples
+BonZeb offers solutions for researchers looking to perform single and multi-animal tracking, analysis, closed-loop/open-loop stimulation, optogenetics, and calcium imaging.
+In this section, users will learn how BonZeb works and how to implement these methods in Bonsai workflows.
 
-For new users reading this section, I recommend reading these sections in the following order:
-1. [Starting Bonsai](<Starting Bonsai>)
-2. [Package Manager](<Package Manager>)
-3. [Bonsai Language Basics](<Bonsai Language Basics>)
-4. [Combinators](Combinators)
-5. [Subjects](Subjects)
-6. [Shaders](Shaders)
+I recommend reading the sections in the following order:
+1. [Visual Stimulation](<Visual Stimulation>)
+2. [Calibration](<Calibration>)
+3. [Behavioural Tracking and Analysis](<Behavioural Tracking and Analysis>)
+4. [Multi-animal Tracking](<Multi-animal Tracking>)
+5. [Open-loop Free-swimming](<Open-loop Free-swimming>)
+6. [Closed-loop Head-fixed](<Closed-loop Head-fixed>)
+7. [Optogenetics](<Optogenetics>)
+8. [Calcium Imaging](<Calcium Imaging>)
