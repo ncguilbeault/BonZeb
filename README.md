@@ -73,18 +73,6 @@ Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no
 
 `Bonsai.exe --noboot`
 
-# Behavioural Tracking and Analysis
-BonZeb provides many different modules and workflows for behavioural tracking and analysis.
-These include methods for background calculation, centroid tracking, tail tracking, eye tracking, and tail beat analysis.
-BonZeb can be used for online tracking, offline tracking, and batch processing.
-
-See the [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and Analysis>) folder for how to implement these methods.
-
-# Multi-animal Tracking
-BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
-
-See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
-
 # Visual Stimulation
 BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
 The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
@@ -96,6 +84,18 @@ BonZeb provides a simple solution for users to perform calibration of visual dis
 Users can use BonZeb to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV.
 
 See the [Calibration](<Examples/Calibration>) folder for how to calibrate visual display devices for rendering visual stimuli.
+
+# Behavioural Tracking and Analysis
+BonZeb provides many different modules and workflows for behavioural tracking and analysis.
+These include methods for background calculation, centroid tracking, tail tracking, eye tracking, and tail beat analysis.
+BonZeb can be used for online tracking, offline tracking, and batch processing.
+
+See the [Behavioural Tracking and Analysis](<Examples/Behavioural Tracking and Analysis>) folder for how to implement these methods.
+
+# Multi-animal Tracking
+BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
+
+See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
 
 # Open-loop Free-swimming
 BonZeb provides examples for how to build and implement open-loop free-swimming behavioural assays. 
