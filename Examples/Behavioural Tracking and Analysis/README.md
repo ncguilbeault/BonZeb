@@ -154,6 +154,6 @@ The `CsvReader` node loads all of the data from the csv file.
 It produces a single `String` output for each row contained in the data file.
 The `String` is parsed using the `Parse` node, which seperates each row of data into a list of strings.
 Each string in the list corresponds to a single tail angle at a given time.
-These values are then converted into a `Double` and converted from radians to degrees.
+These values are then converted into a `Double` data type.
 The data are then used to calculate the tail beat frequency, amplitude, and bout instance, using the `DetectTailBeatKinematics` module, and subsequently saved to file.
 
