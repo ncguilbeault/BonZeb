@@ -8,6 +8,10 @@ We provide a simple calibration method to map the area used for visual stimulus 
 BonZeb provides the `DrawRectangle` node which is used to generate the values for the x and y offset, as well as the x and y range needed to update the vertex shader.
 Multiple `DrawRectangle` nodes can be used to calibrate regions of interest (ROIs) within a larger field of view (FOV)
 
+This folder contains the following sections:
+1. [Full FOV](#full-fov)
+2. [Calibrating sub regions within a FOV](#calibrating-sub-regions-within-a-fov)
+
 # Full FOV
 Below is the workflow used to calibrate a shader using the full FOV.
 
