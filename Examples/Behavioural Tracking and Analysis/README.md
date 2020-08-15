@@ -1,60 +1,115 @@
 # BonZeb
 ![](../../Resources/BonZeb_Logo.png)
 
-# Visual Stimulation
-BonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
-The Bonsai Shaders package utilizes OpenGL for rendering visual graphics. 
-Bonsai Shaders provide extensive flexibility for programming in OpenGL. 
-Visual stimuli in BonZeb are generated using a vertex file and a fragment file.
-This folder contains a visual stimulus library used in BonZeb.
+# Behavioural Tracking and Analysis
+BonZeb was designed to perform rapid behavioural tracking and analysis of zebrafish.
+BonZeb behavioural tracking seamlessly integrates with Bonsai to enable flexible and robust tracking paradigms.
+BonZeb provides nodes to perform tail curvature analysis, tail beat analysis, eye angle analysis, and more.
 
-# Visual Stimulus Library
-The visual stimulus library contains the following visual stimuli:
-1. Solid black
-2. Solid white
-3. Black-white flashes
-4. Left Phototaxis
-5. Right Phototaxis
-6. Left Looming dot
-7. Right Looming dot
-8. Left Optomotor gratings
-9. Right Optomotor gratings
-10. Converging Optomotor gratings
-11. Diverging Optomotor gratings
-12. Concentric optomotor gratings
-13. Left Optokinetic gratings
-14. Right Optokinetic gratings
-15. Forward Moving prey
-16. Left Moving prey
-17. Right Moving prey
-18. Left Stationary prey
-19. Right Stationary prey
-
-# Bonsai Workflow
-The Bonsai workflow demonstrates how to control visual stimuli using variables calculated in Bonsai.
-The position and heading angle are simulated in the workflow using the mouse cursor for position and a float variable for heading angle.
-In a normal behavioural experiment, these values are calculated using behavioural data captured in real-time.
-The `UpdateUniform` node connects values computed in the Bonsai workflow to uniform variables defined in the OpenGL shader.
-Below is a picture of the Bonsai workflow that describes what each stream of the workflow is doing.
+# Basic behavioural tracking and analysis
+Most behavioural tracking protocols in BonZeb adhere to the following pipeline:
 
 ![](images/image1.png)
 
-The stream labelled `Time` provides input to the time variable in the shader.
-Each time a new frame is rendered, the `UpdateFrame` node produces an output value.
-The `EventArgs.Time` attribute of the output is used to obtain the time between successive updates of the shader window.
-The `Accumulate` node keeps track of the time in seconds since the start of the workflow.
-The output of the `Accumulate` node feeds into the time variable of the shader.
+Video is processed using background subtraction.
+The background subtracted image is thresholded to obtain a binary image.
+Connected components are calculated from the pixels of the binary image.
+The centroid of the connected component corresponding to the animal is then used to calculate points along the tail of the animal.
+The angles between each of these points is calculated and normalized to the heading angle.
+The tail angles can then be used to analyze tail beat kinematics.
+Below is an example of a Bonsai workflow which can implement this behavioral tracking and analysis pipeline using BonZeb.
 
-The stream labelled `Simulated Fish Position` provides the inputs to the fish x and y position variables in the shader.
-When the mouse cursor crosses into the the shader window, the `MouseMove` node produces an output.
-The `NormalizedDeviceCoordinates` node maps the position of the cursor to coordinates relative to the shader.
-`ExpressionTransform` nodes are used to extract the x and y coordinates into seperate streams.
-The x and y coordinates are normalized once more inside the `ExpressionTransform` node.
-The coordinates are converted to floats using the `single()` function inside the `ExpressionTransform`.
-The output of each `ExpressionTransform` node is passed to the x and y position variables in the shader, respectively. 
+![](images/image2.png)
 
-The stream labelled `Stimulus Number` determines the visual stimulus number.
-The output of the `Integer` node is sent to the stimulus number variable in the shader.
+The `CameraCapture` node generates images of the animal.
+These images are then converted to grayscale using the `Grayscale` node.
 
-The stream labelled `Simulated Heading Angle` provides the inputs to the fish heading angle variable in the shader.
-The output of the `Float` node is passed to the fish heading angle variable in the shader.
+![](images/image3.png)
+
+The grayscale images are then passed onto a `CalculateBackground` node to calculate the background as the darkest or lightest pixels over time.
+The grayscale image and the background are then zipped together using a `Zip` node.
+The background is then subtracted from incoming images using the `AbsoluteDifference` node.
+
+![](images/image4.png)
+
+Following background subtraction, the centroid is calculated using the `CalculateCentroid` node.
+The `CalculateCentroid` node performs a threshold to create a binary image.
+The raw image moments are then calculated from the binary image moments.
+The center of mass derived from the raw image moments is taken as the centroid of the animal.
+The background subtracted image and the centroid are zipped together with `Zip`.
+These are then passed to the `CalculateTailPoints` node, which searches for the tail points in the image, given the centroid.
+
+![](images/image5.png)
+
+The tail points are then passed to the `CalculateTailCurvature` node to normalize and compute the angle between successive points.
+These angles, commputed in radians, are then converted to units of degrees using the `ConvertRadiansToDegrees` module.
+The `DetectTailBeatKinematics` node receives the tail angles as input and computes the tail beat frequency, amplitudes, and bout instance.
+The angles and the tail kinematics are saved to seperate csv files using `CsvWriter` nodes.
+
+![](images/image6.png)
+
+This pipeline sets up the basis for tracking in more complex online and offline workflows.
+
+# Timed online tracking
+The following workflow sets up a more complex system.
+
+![](images/image7.png)
+
+Here, things are organized into `GroupWorkflows`.
+Below shows what is inside the `VideoAcquisition` group.
+
+![](images/image8.png)
+
+All that happens inside the `VideoAcquisition` group is the `CameraCapture` node broadcasts images to the workflow using a `PublishSubject` node called `Image`.
+To use a specific camera module, simply change the `CameraCapture` node to a similar node which produces the `IplImage` data type.
+Below is what happens inside the `CalculateBackground` group node.
+
+![](images/image9.png)
+
+The background is calculated using the `CalculateBackground` node.
+When the user believes that the background has been sufficiently extracted from the live video, the user presses the `Tab` key on the keyboard.
+When the `Tab` key is pressed, the background calculate stops and the `Tracking` group is initiated.
+
+![](images/image10.png)
+
+Inside the `Tracking` group, there is a lot of overlap with the previous example.
+The images from the camera are combined with the background followed by background subtraction.
+Once the centroid is calculated, the tail points are calculated followed by the the tail angles.
+
+![](images/image12.png)
+
+Instead of saving all of the tail kinematic data into a single csv file, we select each value (frequency, amplitude, and instance) and save each individually to a csv file.
+
+![](images/image13.png)
+
+We also introduce a protocol for tracking of the eyes and heading angle.
+
+![](images/image14.png)
+
+The eyes are tracked by taking a `Threshold` of the image.
+The threshold value must be large enough such that the eyes are seperated into 2 distinct binary regions.
+The image produced by this `Threshold` is zipped with the tail points and passed to the `FindEyeContours` function.
+The `FindEyeContours` node finds the binary regions corresponding to the left and right eye.
+These data are generated as a `ConnectedComponentCollection`.
+
+![](images/image15.png)
+
+The `ConnectedComponentCollection` generated by the `FindEyeContours` node contain the `ConnectedComponents` corresponding to each eye.
+This output is zipped with the tail points and passed to the `CalculateEyeAngles` node.
+The `CalculateEyeAngles` node uses information about the tail points and the binary regions of the eyes to effectively normalize and calculate each eye angle with respect to the heading angle.
+The angle for the left and right eye are then saved using `CsvWriter` nodes.
+
+![](images/image16.png)
+
+The `ConnectedComponentCollection` produced from the `FindEyeContours` is zipped with the tail points and passed onto the `CalculateHeadingAngle` node.
+The `CalculateHeadingAngle` node uses the centroids of each eye and the tail points to calculate the heading angle.
+The heading angle is saved to file.
+
+![](images/image17.png)
+
+In the final branch of the `Tracking` group workflow, a video with the tracking data overlaid is saved to a `.avi` file using the `VideoWriter` node.
+The `DrawTailPoints` node overlays the calculated tail points onto the image and produces a new image.
+The `DrawHeadingAngle` node draws an arrow corrsponding to the heading angle onto the image.
+The `DrawEyeAngles` node draws the angles of each eye onto the image.
+
+![](images/image18.png)
