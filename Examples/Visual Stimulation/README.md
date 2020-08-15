@@ -9,7 +9,7 @@ Visual stimuli in BonZeb are generated using a vertex file and a fragment file.
 
 This folder contains the following sections:
 1. [Visual Stimulus Library](#visual-stimulus-library)
-2. [Bonsai Workflow](#bonsai-workflow)
+2. [Visual Stimulation Workflow](#visual-stimulation-workflow)
 
 # Visual Stimulus Library
 The visual stimulus library contains the following visual stimuli:
@@ -33,7 +33,7 @@ The visual stimulus library contains the following visual stimuli:
 18. Left Stationary prey
 19. Right Stationary prey
 
-# Bonsai Workflow
+# Visual Stimulation Workflow
 The Bonsai workflow demonstrates how to control visual stimuli using variables calculated in Bonsai.
 The position and heading angle are simulated in the workflow using the mouse cursor for position and a float variable for heading angle.
 In a normal behavioural experiment, these values are calculated using behavioural data captured in real-time.
