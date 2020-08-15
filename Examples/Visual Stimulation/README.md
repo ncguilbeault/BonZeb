@@ -6,10 +6,10 @@ BonZeb was built to interface with the Bonsai Shaders package to generate visual
 The Bonsai Shaders package utilizes OpenGL for rendering visual graphics. 
 Bonsai Shaders provide extensive flexibility for programming in OpenGL. 
 Visual stimuli in BonZeb are generated using a vertex file and a fragment file.
-This folder contains the following sections:
 
-1.[Visual Stimulus Library](#visual-stimulus-library)
-2.[Bonsai Workflow](#bonsai-workflow)
+This folder contains the following sections:
+1. [Visual Stimulus Library](#visual-stimulus-library)
+2. [Bonsai Workflow](#bonsai-workflow)
 
 # Visual Stimulus Library
 The visual stimulus library contains the following visual stimuli:
