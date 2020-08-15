@@ -2,50 +2,26 @@
 <WorkflowBuilder Version="2.5.0"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
-                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
                  xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
-                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
       <Expression xsi:type="io:CsvReader">
-        <io:FileName>tailcurvature.csv</io:FileName>
+        <io:FileName>tailangles.csv</io:FileName>
         <io:SkipRows>0</io:SkipRows>
       </Expression>
-      <Expression xsi:type="CreateObservable">
-        <Name>ExtractTailCurvature</Name>
-        <Workflow>
-          <Nodes>
-            <Expression xsi:type="WorkflowInput">
-              <Name>Source1</Name>
-            </Expression>
-            <Expression xsi:type="Parse">
-              <Pattern />
-              <Separator>,</Separator>
-            </Expression>
-            <Expression xsi:type="scr:ExpressionTransform">
-              <scr:Name />
-              <scr:Expression>Convert.ToDouble(it[it.Length - 1])</scr:Expression>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
-            </Expression>
-            <Expression xsi:type="WorkflowOutput" />
-          </Nodes>
-          <Edges>
-            <Edge From="0" To="1" Label="Source1" />
-            <Edge From="1" To="2" Label="Source1" />
-            <Edge From="2" To="3" Label="Source1" />
-            <Edge From="3" To="4" Label="Source1" />
-          </Edges>
-        </Workflow>
+      <Expression xsi:type="Parse">
+        <Pattern />
+        <Separator>,</Separator>
       </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:Concat" />
+      <Expression xsi:type="scr:ExpressionTransform">
+        <scr:Name />
+        <scr:Expression>Convert.ToDouble(it[it.Length - 1])</scr:Expression>
       </Expression>
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="bz:DetectTailBeatKinematics">
-          <bz:BoutThreshold>10</bz:BoutThreshold>
+          <bz:BoutThreshold>30</bz:BoutThreshold>
           <bz:FrameRate>332</bz:FrameRate>
           <bz:FrameWindow>3</bz:FrameWindow>
           <bz:PeakThreshold>40</bz:PeakThreshold>

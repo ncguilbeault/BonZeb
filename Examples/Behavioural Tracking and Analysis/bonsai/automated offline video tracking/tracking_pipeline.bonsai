@@ -292,11 +292,6 @@
                 <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
               </Combinator>
             </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="rx:TakeLast">
-                <rx:Count>1</rx:Count>
-              </Combinator>
-            </Expression>
             <Expression xsi:type="WorkflowOutput" />
           </Nodes>
           <Edges>
@@ -349,7 +344,6 @@
             <Edge From="38" To="39" Label="Source1" />
             <Edge From="39" To="40" Label="Source1" />
             <Edge From="40" To="41" Label="Source1" />
-            <Edge From="41" To="42" Label="Source1" />
           </Edges>
         </Workflow>
       </Expression>
@@ -359,6 +353,11 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="rx:SubscribeWhen" />
       </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="rx:TakeLast">
+          <rx:Count>1</rx:Count>
+        </Combinator>
+      </Expression>
       <Expression xsi:type="WorkflowOutput" />
     </Nodes>
     <Edges>
@@ -366,6 +365,7 @@
       <Edge From="2" To="4" Label="Source1" />
       <Edge From="3" To="4" Label="Source2" />
       <Edge From="4" To="5" Label="Source1" />
+      <Edge From="5" To="6" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>
