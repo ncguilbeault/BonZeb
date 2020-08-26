@@ -10,7 +10,7 @@ I recommend reading the sections in the following order:
 2. [Calibration](<Calibration>)
 3. [Behavioural Tracking and Analysis](<Behavioural Tracking and Analysis>)
 4. [Multi-animal Tracking](<Multi-animal Tracking>)
-5. [Open-loop Free-swimming](<Open-loop Free-swimming>)
+5. [Virtual Open-loop Free-swimming](<Virtual Open-loop Free-swimming>)
 6. [Closed-loop Head-fixed](<Closed-loop Head-fixed>)
 7. [Optogenetics](<Optogenetics>)
 8. [Calcium Imaging](<Calcium Imaging>)
