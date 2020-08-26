@@ -10,7 +10,7 @@
 6. [Behavioural Tracking and Analysis](#behavioural-tracking-and-analysis)
 7. [Visual Stimulation](#visual-stimulation)
 8. [Calibration](#calibration)
-9. [Open-loop Free-swimming](#open-loop-free-swimming)
+9. [Virtual Open-loop Free-swimming](#virtual-open-loop-free-swimming)
 10. [Closed-loop Head-fixed](#closed-loop-head-fixed)
 11. [Multi-animal Tracking](#multi-animal-tracking)
 12. [Optogenetics](#optogenetics)
@@ -97,10 +97,10 @@ BonZeb provides examples for how to perform multi-animal free-swimming and head-
 
 See the [Multi-animal Tracking](<Examples/Multi-animal Tracking>) folder for how to perform multi-animal free-swimming and head-fixed tracking.
 
-# Open-loop Free-swimming
-BonZeb provides examples for how to build and implement open-loop free-swimming behavioural assays. 
+# Virtual Open-loop Free-swimming
+BonZeb provides examples for how to build and implement virtual open-loop free-swimming behavioural assays. 
 
-See the [Open-loop Free-swimming](<Examples/Open-loop Free-swimming>) folder for how an open-loop free-swimming behavioural assay can be used and implemented.
+See the [Virtual Open-loop Free-swimming](<Examples/Virtual Open-loop Free-swimming>) folder for how ti implement virtual open-loop free-swimming behavioural assays.
 
 # Closed-loop Head-fixed
 BonZeb provides examples for how to build and implement closed-loop head-fixed behavioural assays. 
