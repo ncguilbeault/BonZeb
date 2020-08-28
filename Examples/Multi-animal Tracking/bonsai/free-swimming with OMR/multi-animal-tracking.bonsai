@@ -1,41 +1,116 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <WorkflowBuilder Version="2.5.0"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
-                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
-                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
-                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
-                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
                  xmlns:gl="clr-namespace:Bonsai.Shaders;assembly=Bonsai.Shaders"
-                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
                  xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
                  xmlns="https://bonsai-rx.org/2018/workflow">
   <Workflow>
     <Nodes>
-      <Expression xsi:type="SubscribeSubject">
-        <Name>StartTrial</Name>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="gl:UpdateFrame" />
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>EventArgs.Time</Selector>
+      </Expression>
+      <Expression xsi:type="PublishSubject">
+        <Name>Time</Name>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="IntProperty">
+          <Value>0</Value>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="gl:UpdateUniform">
+          <gl:UniformName>switch_stim</gl:UniformName>
+          <gl:ShaderName>OMR</gl:ShaderName>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="GroupWorkflow">
+        <Name>VideoAcquisition</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="cv:CameraCapture">
+                <cv:Index>0</cv:Index>
+                <cv:CaptureProperties />
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="cv:Grayscale" />
+            </Expression>
+            <Expression xsi:type="PublishSubject">
+              <Name>Image</Name>
+            </Expression>
+            <Expression xsi:type="WorkflowOutput" />
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="1" Label="Source1" />
+            <Edge From="1" To="2" Label="Source1" />
+            <Edge From="2" To="3" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
+      <Expression xsi:type="GroupWorkflow">
+        <Name>CalculateBackground</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="wie:KeyDown">
+                <wie:Filter>Tab</wie:Filter>
+                <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Image</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:CalculateBackground">
+                <bz:PixelSearch>Brightest</bz:PixelSearch>
+                <bz:NoiseThreshold>0</bz:NoiseThreshold>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:SkipUntil" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Take">
+                <rx:Count>1</rx:Count>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="BehaviorSubject">
+              <Name>Background</Name>
+            </Expression>
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="3" Label="Source2" />
+            <Edge From="1" To="2" Label="Source1" />
+            <Edge From="2" To="3" Label="Source1" />
+            <Edge From="3" To="4" Label="Source1" />
+            <Edge From="4" To="5" Label="Source1" />
+          </Edges>
+        </Workflow>
       </Expression>
       <Expression xsi:type="NestedWorkflow">
-        <Name>StimulusTrials</Name>
+        <Name>MultiAnimalTracking</Name>
         <Workflow>
           <Nodes>
             <Expression xsi:type="SubscribeSubject">
-              <Name>Frame</Name>
+              <Name>Image</Name>
             </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="cv:LoadImage">
-                <cv:FileName>background.tif</cv:FileName>
-                <cv:Mode>Unchanged</cv:Mode>
-              </Combinator>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Background</Name>
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="rx:WithLatestFrom" />
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="dsp:AbsoluteDifference" />
-            </Expression>
-            <Expression xsi:type="PublishSubject">
-              <Name>BackgroundSubtractedFrame</Name>
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:Threshold">
@@ -59,8 +134,97 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:BinaryRegionAnalysis" />
             </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="cv:Centroid" />
+            </Expression>
+            <Expression xsi:type="Condition">
+              <Name>LeftQuarter</Name>
+              <Workflow>
+                <Nodes>
+                  <Expression xsi:type="WorkflowInput">
+                    <Name>Source1</Name>
+                  </Expression>
+                  <Expression xsi:type="MemberSelector">
+                    <Selector>X</Selector>
+                  </Expression>
+                  <Expression xsi:type="LessThan">
+                    <Operand xsi:type="FloatProperty">
+                      <Value>250</Value>
+                    </Operand>
+                  </Expression>
+                  <Expression xsi:type="WorkflowOutput" />
+                </Nodes>
+                <Edges>
+                  <Edge From="0" To="1" Label="Source1" />
+                  <Edge From="1" To="2" Label="Source1" />
+                  <Edge From="2" To="3" Label="Source1" />
+                </Edges>
+              </Workflow>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="IntProperty">
+                <Value>-1</Value>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Condition">
+              <Name>RightQuarter</Name>
+              <Workflow>
+                <Nodes>
+                  <Expression xsi:type="WorkflowInput">
+                    <Name>Source1</Name>
+                  </Expression>
+                  <Expression xsi:type="MemberSelector">
+                    <Selector>X</Selector>
+                  </Expression>
+                  <Expression xsi:type="GreaterThan">
+                    <Operand xsi:type="FloatProperty">
+                      <Value>750</Value>
+                    </Operand>
+                  </Expression>
+                  <Expression xsi:type="WorkflowOutput" />
+                </Nodes>
+                <Edges>
+                  <Edge From="0" To="1" Label="Source1" />
+                  <Edge From="1" To="2" Label="Source1" />
+                  <Edge From="2" To="3" Label="Source1" />
+                </Edges>
+              </Workflow>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="IntProperty">
+                <Value>1</Value>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="IntProperty">
+                <Value>1</Value>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Merge" />
+            </Expression>
+            <Expression xsi:type="PropertyMapping">
+              <PropertyMappings>
+                <Property Name="Value" />
+              </PropertyMappings>
+            </Expression>
             <Expression xsi:type="SubscribeSubject">
-              <Name>BackgroundSubtractedFrame</Name>
+              <Name>Time</Name>
+            </Expression>
+            <Expression xsi:type="Multiply">
+              <Operand xsi:type="DoubleProperty">
+                <Value>1</Value>
+              </Operand>
+            </Expression>
+            <Expression xsi:type="rx:Accumulate" />
+            <Expression xsi:type="scr:ExpressionTransform">
+              <scr:Expression>single(it)</scr:Expression>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="gl:UpdateUniform">
+                <gl:UniformName>phase</gl:UniformName>
+                <gl:ShaderName>OMR</gl:ShaderName>
+              </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="rx:Zip" />
@@ -78,8 +242,8 @@
                   <Expression xsi:type="Combinator">
                     <Combinator xsi:type="rx:Concat" />
                   </Expression>
-                  <Expression xsi:type="scr:ExpressionTransform">
-                    <scr:Expression>it.Centroid</scr:Expression>
+                  <Expression xsi:type="MemberSelector">
+                    <Selector>Centroid</Selector>
                   </Expression>
                   <Expression xsi:type="MemberSelector">
                     <Selector>Item2</Selector>
@@ -107,11 +271,15 @@
                             <bz:TailPointCalculationMethod>PixelSearch</bz:TailPointCalculationMethod>
                           </Combinator>
                         </Expression>
+                        <Expression xsi:type="MemberSelector">
+                          <Selector>Points</Selector>
+                        </Expression>
                         <Expression xsi:type="WorkflowOutput" />
                       </Nodes>
                       <Edges>
                         <Edge From="0" To="1" Label="Source1" />
                         <Edge From="1" To="2" Label="Source1" />
+                        <Edge From="2" To="3" Label="Source1" />
                       </Edges>
                     </Workflow>
                   </Expression>
@@ -188,93 +356,8 @@ def process(value):
             </Expression>
             <Expression xsi:type="WorkflowOutput" />
             <Expression xsi:type="Combinator">
-              <Combinator xsi:type="cv:Centroid" />
-            </Expression>
-            <Expression xsi:type="Condition">
-              <Workflow>
-                <Nodes>
-                  <Expression xsi:type="WorkflowInput">
-                    <Name>Source1</Name>
-                  </Expression>
-                  <Expression xsi:type="scr:ExpressionTransform">
-                    <scr:Expression>it.X &lt; 250</scr:Expression>
-                  </Expression>
-                  <Expression xsi:type="WorkflowOutput" />
-                </Nodes>
-                <Edges>
-                  <Edge From="0" To="1" Label="Source1" />
-                  <Edge From="1" To="2" Label="Source1" />
-                </Edges>
-              </Workflow>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="IntProperty">
-                <Value>-1</Value>
-              </Combinator>
-            </Expression>
-            <Expression xsi:type="Condition">
-              <Workflow>
-                <Nodes>
-                  <Expression xsi:type="WorkflowInput">
-                    <Name>Source1</Name>
-                  </Expression>
-                  <Expression xsi:type="scr:ExpressionTransform">
-                    <scr:Expression>it.X &gt; 750</scr:Expression>
-                  </Expression>
-                  <Expression xsi:type="WorkflowOutput" />
-                </Nodes>
-                <Edges>
-                  <Edge From="0" To="1" Label="Source1" />
-                  <Edge From="1" To="2" Label="Source1" />
-                </Edges>
-              </Workflow>
-            </Expression>
-            <Expression xsi:type="Combinator">
               <Combinator xsi:type="IntProperty">
                 <Value>1</Value>
-              </Combinator>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="IntProperty">
-                <Value>1</Value>
-              </Combinator>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="rx:Merge" />
-            </Expression>
-            <Expression xsi:type="PropertyMapping">
-              <PropertyMappings>
-                <Property Name="Value" />
-              </PropertyMappings>
-            </Expression>
-            <Expression xsi:type="SubscribeSubject">
-              <Name>Time</Name>
-            </Expression>
-            <Expression xsi:type="Multiply">
-              <Operand xsi:type="DoubleProperty">
-                <Value>1</Value>
-              </Operand>
-            </Expression>
-            <Expression xsi:type="rx:Accumulate" />
-            <Expression xsi:type="scr:ExpressionTransform">
-              <scr:Expression>single(it)</scr:Expression>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="gl:UpdateUniform">
-                <gl:UniformName>phase</gl:UniformName>
-                <gl:ShaderName>OMR</gl:ShaderName>
-              </Combinator>
-            </Expression>
-            <Expression xsi:type="io:CsvWriter">
-              <io:FileName>phase.csv</io:FileName>
-              <io:Append>false</io:Append>
-              <io:Overwrite>false</io:Overwrite>
-              <io:Suffix>None</io:Suffix>
-              <io:IncludeHeader>false</io:IncludeHeader>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="IntProperty">
-                <Value>2</Value>
               </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
@@ -283,55 +366,34 @@ def process(value):
                 <gl:ShaderName>OMR</gl:ShaderName>
               </Combinator>
             </Expression>
-            <Expression xsi:type="SubscribeSubject">
-              <Name>Frame</Name>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="cv:VideoWriter">
-                <cv:FileName>video.avi</cv:FileName>
-                <cv:Suffix>None</cv:Suffix>
-                <cv:Buffered>true</cv:Buffered>
-                <cv:Overwrite>false</cv:Overwrite>
-                <cv:FourCC>RAW</cv:FourCC>
-                <cv:FrameRate>332</cv:FrameRate>
-                <cv:FrameSize>
-                  <cv:Width>0</cv:Width>
-                  <cv:Height>0</cv:Height>
-                </cv:FrameSize>
-                <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
-              </Combinator>
-            </Expression>
           </Nodes>
           <Edges>
             <Edge From="0" To="2" Label="Source1" />
             <Edge From="1" To="2" Label="Source2" />
             <Edge From="2" To="3" Label="Source1" />
             <Edge From="3" To="4" Label="Source1" />
+            <Edge From="3" To="20" Label="Source2" />
             <Edge From="4" To="5" Label="Source1" />
+            <Edge From="4" To="7" Label="Source1" />
             <Edge From="5" To="6" Label="Source1" />
-            <Edge From="5" To="13" Label="Source1" />
-            <Edge From="6" To="7" Label="Source1" />
-            <Edge From="7" To="9" Label="Source1" />
-            <Edge From="8" To="9" Label="Source2" />
-            <Edge From="9" To="10" Label="Source1" />
+            <Edge From="6" To="20" Label="Source1" />
+            <Edge From="7" To="8" Label="Source1" />
+            <Edge From="7" To="10" Label="Source1" />
+            <Edge From="8" To="9" Label="Source1" />
+            <Edge From="9" To="13" Label="Source1" />
             <Edge From="10" To="11" Label="Source1" />
-            <Edge From="11" To="12" Label="Source1" />
+            <Edge From="11" To="13" Label="Source2" />
+            <Edge From="12" To="13" Label="Source3" />
             <Edge From="13" To="14" Label="Source1" />
-            <Edge From="13" To="16" Label="Source1" />
-            <Edge From="14" To="15" Label="Source1" />
-            <Edge From="15" To="19" Label="Source1" />
+            <Edge From="14" To="16" Label="Source2" />
+            <Edge From="15" To="16" Label="Source1" />
             <Edge From="16" To="17" Label="Source1" />
-            <Edge From="17" To="19" Label="Source2" />
-            <Edge From="18" To="19" Label="Source3" />
-            <Edge From="19" To="20" Label="Source1" />
-            <Edge From="20" To="22" Label="Source2" />
+            <Edge From="17" To="18" Label="Source1" />
+            <Edge From="18" To="19" Label="Source1" />
+            <Edge From="20" To="21" Label="Source1" />
             <Edge From="21" To="22" Label="Source1" />
             <Edge From="22" To="23" Label="Source1" />
-            <Edge From="23" To="24" Label="Source1" />
             <Edge From="24" To="25" Label="Source1" />
-            <Edge From="25" To="26" Label="Source1" />
-            <Edge From="27" To="28" Label="Source1" />
-            <Edge From="29" To="30" Label="Source1" />
           </Edges>
         </Workflow>
       </Expression>
@@ -341,6 +403,12 @@ def process(value):
           <Nodes>
             <Expression xsi:type="WorkflowInput">
               <Name>Source1</Name>
+            </Expression>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Background</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:SubscribeWhen" />
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="TimeSpanProperty">
@@ -358,160 +426,38 @@ def process(value):
                 <rx:Period>PT1M</rx:Period>
               </Combinator>
             </Expression>
-            <Expression xsi:type="WorkflowOutput" />
-          </Nodes>
-          <Edges>
-            <Edge From="0" To="1" Label="Source1" />
-            <Edge From="1" To="2" Label="Source1" />
-            <Edge From="2" To="3" Label="Source1" />
-            <Edge From="3" To="4" Label="Source1" />
-          </Edges>
-        </Workflow>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:Skip">
-          <rx:Count>1</rx:Count>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="IntProperty">
-          <Value>0</Value>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="gl:UpdateUniform">
-          <gl:UniformName>switch_stim</gl:UniformName>
-          <gl:ShaderName>OMR</gl:ShaderName>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:Take">
-          <rx:Count>1</rx:Count>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="PublishSubject">
-        <Name>EndTrial</Name>
-      </Expression>
-      <Expression xsi:type="SubscribeSubject">
-        <Name>EndTrial</Name>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:TakeUntil" />
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:SubscribeWhen" />
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="cv:CameraCapture">
-          <cv:Index>0</cv:Index>
-          <cv:CaptureProperties />
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="cv:Grayscale" />
-      </Expression>
-      <Expression xsi:type="PublishSubject">
-        <Name>Frame</Name>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="wie:KeyDown">
-          <wie:Filter>Tab</wie:Filter>
-          <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="SubscribeSubject">
-        <Name>StartTrial</Name>
-      </Expression>
-      <Expression xsi:type="NestedWorkflow">
-        <Name>BackgroundSubtraction</Name>
-        <Workflow>
-          <Nodes>
             <Expression xsi:type="Combinator">
-              <Combinator xsi:type="wie:KeyDown">
-                <wie:Filter>Tab</wie:Filter>
-                <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
-              </Combinator>
-            </Expression>
-            <Expression xsi:type="SubscribeSubject">
-              <Name>Frame</Name>
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="bz:CalculateBackground">
-                <bz:PixelSearch>Darkest</bz:PixelSearch>
-                <bz:NoiseThreshold>0</bz:NoiseThreshold>
+              <Combinator xsi:type="rx:Skip">
+                <rx:Count>1</rx:Count>
               </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
-              <Combinator xsi:type="rx:SkipUntil" />
-            </Expression>
-            <Expression xsi:type="Combinator">
-              <Combinator xsi:type="cv:SaveImage">
-                <cv:FileName>background.tif</cv:FileName>
-                <cv:Suffix>None</cv:Suffix>
+              <Combinator xsi:type="rx:Take">
+                <rx:Count>1</rx:Count>
               </Combinator>
             </Expression>
             <Expression xsi:type="WorkflowOutput" />
           </Nodes>
           <Edges>
-            <Edge From="0" To="3" Label="Source2" />
-            <Edge From="1" To="2" Label="Source1" />
-            <Edge From="2" To="3" Label="Source1" />
+            <Edge From="0" To="2" Label="Source1" />
+            <Edge From="1" To="2" Label="Source2" />
+            <Edge From="2" To="3" Label="Source2" />
             <Edge From="3" To="4" Label="Source1" />
             <Edge From="4" To="5" Label="Source1" />
+            <Edge From="5" To="6" Label="Source1" />
+            <Edge From="6" To="7" Label="Source1" />
+            <Edge From="7" To="8" Label="Source1" />
           </Edges>
         </Workflow>
       </Expression>
-      <Expression xsi:type="PublishSubject">
-        <Name>StartTrial</Name>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:TakeUntil" />
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="rx:SubscribeWhen" />
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="gl:UpdateFrame" />
-      </Expression>
-      <Expression xsi:type="MemberSelector">
-        <Selector>EventArgs.Time</Selector>
-      </Expression>
-      <Expression xsi:type="PublishSubject">
-        <Name>Time</Name>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="IntProperty">
-          <Value>0</Value>
-        </Combinator>
-      </Expression>
-      <Expression xsi:type="Combinator">
-        <Combinator xsi:type="gl:UpdateUniform">
-          <gl:UniformName>switch_stim</gl:UniformName>
-          <gl:ShaderName>OMR</gl:ShaderName>
-        </Combinator>
-      </Expression>
+      <Expression xsi:type="WorkflowOutput" />
     </Nodes>
     <Edges>
-      <Edge From="0" To="10" Label="Source2" />
+      <Edge From="0" To="1" Label="Source1" />
       <Edge From="1" To="2" Label="Source1" />
-      <Edge From="2" To="3" Label="Source1" />
       <Edge From="3" To="4" Label="Source1" />
-      <Edge From="4" To="5" Label="Source1" />
-      <Edge From="5" To="6" Label="Source1" />
-      <Edge From="6" To="7" Label="Source1" />
-      <Edge From="7" To="9" Label="Source1" />
-      <Edge From="8" To="9" Label="Source2" />
-      <Edge From="9" To="10" Label="Source1" />
-      <Edge From="11" To="12" Label="Source1" />
-      <Edge From="12" To="13" Label="Source1" />
-      <Edge From="14" To="19" Label="Source2" />
-      <Edge From="15" To="18" Label="Source2" />
-      <Edge From="16" To="17" Label="Source1" />
-      <Edge From="17" To="18" Label="Source1" />
-      <Edge From="18" To="19" Label="Source1" />
-      <Edge From="20" To="21" Label="Source1" />
-      <Edge From="21" To="22" Label="Source1" />
-      <Edge From="23" To="24" Label="Source1" />
+      <Edge From="7" To="8" Label="Source1" />
+      <Edge From="8" To="9" Label="Source1" />
     </Edges>
   </Workflow>
 </WorkflowBuilder>
