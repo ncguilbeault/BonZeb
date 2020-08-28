@@ -18,7 +18,8 @@ Below is an overview of the method we used for tracking multiple free-swimming a
 ![](images/freeswimming1.png)
 
 We use the same basic structure for multi-animal tracking as described in [Timed online tracking](<../Behavioural Tracking and Analysis#timed-online-tracking>).
-Inside the `MultiAnimalTracking` group workflow is shown below.
+The differences between that workflow and this workflow are contained within the `MultiAnimalTracking` nested workflow. 
+Inside the `MultiAnimalTracking` workflow is shown below.
 
 ![](images/freeswimming2.png)
 
@@ -73,7 +74,7 @@ This is sent as the final output from the `SelectMany` node titled `TrackMultipl
 
 ![](images/freeswimming9.png)
 
-This output is processed by a `PythonTransform` node, which generates the final output of the `MultiAnimalTracking` group workflow.
+This output is processed by a `PythonTransform` node, which generates the final output of the `MultiAnimalTracking` workflow.
 
 ![](images/freeswimming10.png)
 
