@@ -142,3 +142,47 @@ A cumulative sum of this value is maintained using the `Accumulate` node and the
 The accumulated value is sent to the `UpdateUniform` node which updates the phase of OMR stimulus.
 
 ![](images/freeswimmingwithOMR10.png)
+
+# Free-Swimming with multi-prey
+The multi-prey paradigm is similar to both previous workflows with only a few differences occuring in the `MultiAnimalTracking` workflow, which is shown below.
+
+![](images/multi-prey-1.png)
+
+Everything is the same as in the original multi animal tracking example, except we have an additional branch added to the workflow.
+
+![](images/multi-prey-2.png)
+
+Most of the work is happening inside the `PythonTransform` node labelled `MultiPreyBehavior`.
+The `Time` variable is passed as input to the `MultiPreyBehavior` node.
+The contents of the `MultiPreyBehavior` node are seperated into 4 main sections.
+The first section import modules and displays a list of user defined variables that change the parameters of the multi-prey stimuli.
+Below shows the list of parameters that can be changed.
+
+![](images/multi-prey-3.png)
+
+`n` determines the number of prey to generate.
+`max_speed` and `min_speed` determine the range of linear speed of the prey.
+`max_position_increment` and `min_position_increment` determine the range of how far the prey travel along a single linear path.
+`max_turn_speed` and `min_turn_speed` determine the range of the angular speed of the prey.
+`max_orientation_increment` and `min_orientation_increment` determine the range of how much the prey will change orientation in a single turn.
+`max_size` and `min_size` determine the range of sizes the prey can be initialized to.
+
+The second section defines a class called `Prey`.
+Inside the `Prey` class, various functions are defined which describe how the behavior of each prey is initialized, activated, and updated.
+
+The third section defines the `load` and `unload` functions.
+These functions instantiate and clear the `multi_prey` list of `Prey` objects, respectively.
+
+The last section defines the `process` function.
+The `process` function is executed for each input of `Time`.
+At every time step, the behaviour of each prey is updated.
+The position, size, and orientation of each prey is converted into a `Vector4` format.
+The vector containing the data for each prey is containined within an array and passed as the final output.
+
+The `DrawArrays` node receives the array of `Vector4` elements and renders the data of each prey to the shader.
+These data are then combined with the latest image and processed by another `PythonTransform` node labelled `SaveMultiPreyData`
+The `SaveMultiPreyData` node will save the data to a csv file named `multi-prey-data.csv`.
+By combining the multi-prey data with the latest images, the number of data points saved in the `multi-prey-data.csv` file will equal the number of data points acquired in the `tracking_results.csv` file.
+
+![](images/multi-prey-4.png)
+
