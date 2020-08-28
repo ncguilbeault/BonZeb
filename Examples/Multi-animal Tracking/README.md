@@ -9,8 +9,6 @@ This folder contains the following sections:
 1. [Free-swimming](#free-swimming)
 2. [Free-swimming with OMR](#free-swimming-with-OMR)
 3. [Free-swimming with multi-prey](#free-swimming-with-multi-prey)
-4. [Head-Fixed](#head-fixed)
-5. [Seperate Wells](#seperate-wells)
 
 # Free-Swimming
 Below is an overview of the method we used for tracking multiple free-swimming animals.
