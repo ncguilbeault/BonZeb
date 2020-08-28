@@ -125,14 +125,14 @@ This means that when the centroid of the group is less than 250, the group's cen
 Similarly, the `RightQuarter` condition checks whether the X coordinate is greater than 750.
 Below is an example showing the encapsulated workflow which sets up the condition for the `LeftQuarter` node.
 
-[](images/freeswimmingwithOMR8.png)
+![](images/freeswimmingwithOMR8.png)
 
 The output of each of these nodes goes to an `Int` node which outputs either a -1 (if in the leftquarter) or +1 (if in the rightquarter).
 Since only one of these conditions can be True at any time, we use `Merge` to merge the outputs into a single stream.
 We also merge a third `Int` node with a value of 1.
 This value is relevant only at the start of the workflow, when the direction of the stimulus is initialized to travel in one direction.
 
-[](images/freeswimmingwithOMR9.png)
+![](images/freeswimmingwithOMR9.png)
 
 The outputs of these values are used to multiply time.
 The value of the `Time` subject is sent to a `Multiply` node.
@@ -141,4 +141,4 @@ Thus, the value of `Multiply` is set to either -1 or 1 depending on the position
 A cumulative sum of this value is maintained using the `Accumulate` node and the `ExpressionTransform` node converts this value from a double to a float for the shader.
 The accumulated value is sent to the `UpdateUniform` node which updates the phase of OMR stimulus.
 
-[](images/freeswimmingwithOMR10.png)
+![](images/freeswimmingwithOMR10.png)
