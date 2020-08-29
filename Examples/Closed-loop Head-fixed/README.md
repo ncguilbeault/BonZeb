@@ -15,7 +15,7 @@ Below is an overview of the closed-loop OMR workflow for head-fixed fish.
 
 ![](images/1D-closed-loop-1.png)
 
-It follows the general structure of the [timed online tracking](<../Behavioural Tracking and Analysis#timed-online-tracking>) workflow but uses the tracking pipeline from [Head-fixed tracking](<../Behavioural Tracking and Analysis#head-fixed-tracking>).
+It follows the general structure of the [timed online tracking](<../Behavioural Tracking and Analysis#timed-online-tracking>) workflow but uses the tracking pipeline from [head-fixed tracking](<../Behavioural Tracking and Analysis#head-fixed-tracking>).
 Below shows the contents of the `ClosedLoop` nested workflow.
 
 ![](images/1D-closed-loop-2.png)
