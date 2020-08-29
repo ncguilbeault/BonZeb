@@ -29,7 +29,7 @@
       <Expression xsi:type="Combinator">
         <Combinator xsi:type="gl:UpdateUniform">
           <gl:UniformName>switch_stim</gl:UniformName>
-          <gl:ShaderName>loom</gl:ShaderName>
+          <gl:ShaderName>OMR</gl:ShaderName>
         </Combinator>
       </Expression>
       <Expression xsi:type="GroupWorkflow">
@@ -147,7 +147,7 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="gl:UpdateUniform">
                 <gl:UniformName>fish_position_x</gl:UniformName>
-                <gl:ShaderName>loom</gl:ShaderName>
+                <gl:ShaderName>prey</gl:ShaderName>
               </Combinator>
             </Expression>
             <Expression xsi:type="MemberSelector">
@@ -156,7 +156,7 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="gl:UpdateUniform">
                 <gl:UniformName>fish_position_y</gl:UniformName>
-                <gl:ShaderName>loom</gl:ShaderName>
+                <gl:ShaderName>prey</gl:ShaderName>
               </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
@@ -203,7 +203,7 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="gl:UpdateUniform">
                 <gl:UniformName>angle</gl:UniformName>
-                <gl:ShaderName>loom</gl:ShaderName>
+                <gl:ShaderName>prey</gl:ShaderName>
               </Combinator>
             </Expression>
             <Expression xsi:type="Combinator">
@@ -214,36 +214,20 @@
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="gl:UpdateUniform">
                 <gl:UniformName>switch_stim</gl:UniformName>
-                <gl:ShaderName>loom</gl:ShaderName>
+                <gl:ShaderName>prey</gl:ShaderName>
               </Combinator>
             </Expression>
             <Expression xsi:type="SubscribeSubject">
               <Name>Time</Name>
             </Expression>
-            <Expression xsi:type="Scan">
-              <Workflow>
-                <Nodes>
-                  <Expression xsi:type="WorkflowInput">
-                    <Name>Source1</Name>
-                  </Expression>
-                  <Expression xsi:type="scr:ExpressionTransform">
-                    <scr:Expression>it.Accumulation &gt; 5 ? 0 : it.Accumulation + it.Value</scr:Expression>
-                  </Expression>
-                  <Expression xsi:type="WorkflowOutput" />
-                </Nodes>
-                <Edges>
-                  <Edge From="0" To="1" Label="Source1" />
-                  <Edge From="1" To="2" Label="Source1" />
-                </Edges>
-              </Workflow>
-            </Expression>
+            <Expression xsi:type="rx:Accumulate" />
             <Expression xsi:type="scr:ExpressionTransform">
-              <scr:Expression>it &gt; 2.982 ? single(2.982) : single(it)</scr:Expression>
+              <scr:Expression>single(it)</scr:Expression>
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="gl:UpdateUniform">
                 <gl:UniformName>time</gl:UniformName>
-                <gl:ShaderName>loom</gl:ShaderName>
+                <gl:ShaderName>prey</gl:ShaderName>
               </Combinator>
             </Expression>
           </Nodes>
