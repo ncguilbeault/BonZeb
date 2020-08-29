@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.5.0"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:gl="clr-namespace:Bonsai.Shaders;assembly=Bonsai.Shaders"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:bz="clr-namespace:BonZeb;assembly=BonZeb"
+                 xmlns:scr="clr-namespace:Bonsai.Scripting;assembly=Bonsai.Scripting"
+                 xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
+                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="gl:UpdateFrame" />
+      </Expression>
+      <Expression xsi:type="MemberSelector">
+        <Selector>EventArgs.Time</Selector>
+      </Expression>
+      <Expression xsi:type="PublishSubject">
+        <Name>Time</Name>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="IntProperty">
+          <Value>0</Value>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="Combinator">
+        <Combinator xsi:type="gl:UpdateUniform">
+          <gl:UniformName>switch_stim</gl:UniformName>
+          <gl:ShaderName>gratings</gl:ShaderName>
+        </Combinator>
+      </Expression>
+      <Expression xsi:type="GroupWorkflow">
+        <Name>VideoAcquisition</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="cv:CameraCapture">
+                <cv:Index>0</cv:Index>
+                <cv:CaptureProperties />
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="cv:Grayscale" />
+            </Expression>
+            <Expression xsi:type="PublishSubject">
+              <Name>Image</Name>
+            </Expression>
+            <Expression xsi:type="WorkflowOutput" />
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="1" Label="Source1" />
+            <Edge From="1" To="2" Label="Source1" />
+            <Edge From="2" To="3" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
+      <Expression xsi:type="NestedWorkflow">
+        <Name>ClosedLoop</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Image</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:CreatePoint2f">
+                <bz:X>0</bz:X>
+                <bz:Y>0</bz:Y>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Time</Name>
+            </Expression>
+            <Expression xsi:type="SubscribeSubject">
+              <Name>Time</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="wie:KeyDown">
+                <wie:Filter>Tab</wie:Filter>
+                <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:SubscribeWhen" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:WithLatestFrom" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:CalculateTailPoints">
+                <bz:DistTailBase>12</bz:DistTailBase>
+                <bz:HeadingDirection>-1</bz:HeadingDirection>
+                <bz:NumTailSegments>7</bz:NumTailSegments>
+                <bz:DistTailPoints>6</bz:DistTailPoints>
+                <bz:RangeTailPointAngles>120</bz:RangeTailPointAngles>
+                <bz:PixelSearchMethod>Brightest</bz:PixelSearchMethod>
+                <bz:OffsetX>0</bz:OffsetX>
+                <bz:OffsetY>0</bz:OffsetY>
+                <bz:TailPointCalculationMethod>PixelSearch</bz:TailPointCalculationMethod>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="MemberSelector">
+              <Selector>Points</Selector>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:CalculateMeanTailCurvature" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:ConvertRadiansToDegrees" />
+            </Expression>
+            <Expression xsi:type="io:CsvWriter">
+              <io:FileName>tail_angle.csv</io:FileName>
+              <io:Append>false</io:Append>
+              <io:Overwrite>false</io:Overwrite>
+              <io:Suffix>None</io:Suffix>
+              <io:IncludeHeader>false</io:IncludeHeader>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="bz:DetectTailBeatKinematics">
+                <bz:BoutThreshold>10</bz:BoutThreshold>
+                <bz:FrameRate>30</bz:FrameRate>
+                <bz:FrameWindow>5</bz:FrameWindow>
+                <bz:PeakThreshold xsi:nil="true" />
+                <bz:WithinBoutThreshold xsi:nil="true" />
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="MemberSelector">
+              <Selector>Frequency</Selector>
+            </Expression>
+            <Expression xsi:type="Divide">
+              <Operand xsi:type="DoubleProperty">
+                <Value>-20</Value>
+              </Operand>
+            </Expression>
+            <Expression xsi:type="PropertyMapping">
+              <PropertyMappings>
+                <Property Name="Value" />
+              </PropertyMappings>
+            </Expression>
+            <Expression xsi:type="Multiply">
+              <Operand xsi:type="FloatProperty">
+                <Value>1</Value>
+              </Operand>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Zip" />
+            </Expression>
+            <Expression xsi:type="Add" />
+            <Expression xsi:type="rx:Accumulate" />
+            <Expression xsi:type="scr:ExpressionTransform">
+              <scr:Expression>single(it)</scr:Expression>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="gl:UpdateUniform">
+                <gl:UniformName>phase</gl:UniformName>
+                <gl:ShaderName>gratings</gl:ShaderName>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="WorkflowOutput" />
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="5" Label="Source1" />
+            <Edge From="1" To="6" Label="Source2" />
+            <Edge From="2" To="17" Label="Source1" />
+            <Edge From="3" To="16" Label="Source1" />
+            <Edge From="4" To="5" Label="Source2" />
+            <Edge From="5" To="6" Label="Source1" />
+            <Edge From="6" To="7" Label="Source1" />
+            <Edge From="7" To="8" Label="Source1" />
+            <Edge From="8" To="9" Label="Source1" />
+            <Edge From="9" To="10" Label="Source1" />
+            <Edge From="10" To="11" Label="Source1" />
+            <Edge From="11" To="12" Label="Source1" />
+            <Edge From="12" To="13" Label="Source1" />
+            <Edge From="13" To="14" Label="Source1" />
+            <Edge From="14" To="15" Label="Source1" />
+            <Edge From="15" To="16" Label="Source2" />
+            <Edge From="16" To="17" Label="Source2" />
+            <Edge From="17" To="18" Label="Source1" />
+            <Edge From="18" To="19" Label="Source1" />
+            <Edge From="19" To="20" Label="Source1" />
+            <Edge From="20" To="21" Label="Source1" />
+            <Edge From="21" To="22" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
+      <Expression xsi:type="NestedWorkflow">
+        <Name>Timer</Name>
+        <Workflow>
+          <Nodes>
+            <Expression xsi:type="WorkflowInput">
+              <Name>Source1</Name>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="wie:KeyDown">
+                <wie:Filter>Tab</wie:Filter>
+                <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:SubscribeWhen" />
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="TimeSpanProperty">
+                <Value>PT0S</Value>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="PropertyMapping">
+              <PropertyMappings>
+                <Property Name="DueTime" />
+              </PropertyMappings>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Timer">
+                <rx:DueTime>PT0S</rx:DueTime>
+                <rx:Period>PT1M</rx:Period>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Skip">
+                <rx:Count>1</rx:Count>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="Combinator">
+              <Combinator xsi:type="rx:Take">
+                <rx:Count>1</rx:Count>
+              </Combinator>
+            </Expression>
+            <Expression xsi:type="WorkflowOutput" />
+          </Nodes>
+          <Edges>
+            <Edge From="0" To="2" Label="Source1" />
+            <Edge From="1" To="2" Label="Source2" />
+            <Edge From="2" To="3" Label="Source2" />
+            <Edge From="3" To="4" Label="Source1" />
+            <Edge From="4" To="5" Label="Source1" />
+            <Edge From="5" To="6" Label="Source1" />
+            <Edge From="6" To="7" Label="Source1" />
+            <Edge From="7" To="8" Label="Source1" />
+          </Edges>
+        </Workflow>
+      </Expression>
+      <Expression xsi:type="WorkflowOutput" />
+    </Nodes>
+    <Edges>
+      <Edge From="0" To="1" Label="Source1" />
+      <Edge From="1" To="2" Label="Source1" />
+      <Edge From="3" To="4" Label="Source1" />
+      <Edge From="6" To="7" Label="Source1" />
+      <Edge From="7" To="8" Label="Source1" />
+    </Edges>
+  </Workflow>
+</WorkflowBuilder>
