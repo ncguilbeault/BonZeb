@@ -130,7 +130,7 @@
             </Expression>
             <Expression xsi:type="Divide">
               <Operand xsi:type="DoubleProperty">
-                <Value>20</Value>
+                <Value>-20</Value>
               </Operand>
             </Expression>
             <Expression xsi:type="PropertyMapping">
