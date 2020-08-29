@@ -8,8 +8,8 @@ These methods provide a general framework for users to develop closed-loop assay
 
 This folder contains the following sections:
 1. [1D closed-loop with OMR](#1D-closed-loop-with-OMR)
-2. [Virtual open-loop with OMR](#virtual-open-loop-with-OMR)
-3. [Virtual open-loop with prey](#virtual-open-loop-with-prey)
+2. [2D closed-loop with OMR](#2D-closed-loop-with-OMR)
+3. [closed-loop with multi-gain trials](#closed-loop-with-multi-gain-trials)
 
 # 1D Closed-loop with OMR
 Below is an overview of the virtual open-loop workflow.
