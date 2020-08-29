@@ -1,7 +1,7 @@
 # BonZeb
 ![](../../Resources/BonZeb_Logo.png)
 
-# Closed-loop Head-fixed Stimulation
+# Closed-loop head-fixed stimulation
 BonZeb's tracking methods can be used to implement closed-loop stimulation.
 The examples provided address how closed-loop stimulation can be performed to stimulate optomotor swimming with OMR gratings.
 These methods provide a general framework for users to develop closed-loop assays with other forms of stimulation. 
@@ -9,9 +9,8 @@ These methods provide a general framework for users to develop closed-loop assay
 This folder contains the following sections:
 1. [1D closed-loop with OMR](#1D-closed-loop-with-OMR)
 2. [2D closed-loop with OMR](#2D-closed-loop-with-OMR)
-3. [closed-loop with multi-gain trials](#closed-loop-with-multi-gain-trials)
 
-# 1D Closed-loop with OMR
+# 1D closed-loop with OMR
 Below is an overview of the closed-loop OMR workflow for head-fixed fish.
 
 ![](images/1D-closed-loop-1.png)
@@ -50,3 +49,47 @@ Decreasing the value of `Divide` will result in increasing the gain value.
 A moving average or similar function can be applied to the tail beat frequency over time (i.e. using a `PythonTransform` or `CSharpTransform` node) to simulate the effects of acceleration and deceleration as shown below.
 
 ![](images/1D-closed-loop-6.png)
+
+# 2D closed-loop with OMR
+We can adapt the workflow from the [1D closed-loop example](#1D-closed-loop-with-OMR) to provide 2D closed-loop feedback.
+Below is the adapted `ClosedLoop` nested workflow.
+
+![](images/2D-closed-loop-1.png)
+
+The calculation of tail angle, tail beat frequency remain the same as before.
+The initial calculation of the closed-loop velocity using the tail beat frequency also remains the same.
+
+![](images/2D-closed-loop-2.png)
+
+We create a new branch to calculate the angular velocity feedback.
+We sample the `Instance` property from the output of the `TailBeatKinematics` in a seperate branch.
+We use an `ExpressionTransform` node to convert the boolean output of `Instance` to an integer output.
+We pass the integer output of the `ExpressionTransform` node to a `Scan` workflow.
+
+![](images/2D-closed-loop-3.png)
+
+Inside the `Scan` workflow, we use an `ExpressionTransform` node to keep track of the start of a new bout instance.
+We increment a counter by 1 for every input in which a bout has been detected.
+When no bout is detected, the counter resets.
+Below shows what is inside the `Scan` workflow.
+
+![](images/2D-closed-loop-4.png)
+
+The outputs from the `Scan` node, `CalculateMeanTailCurvature` and `Instance` (converted to an integer through the `ExpressionTransform`) are zipped together.
+An `ExpressionTransform` node calculates the update to the stimulus orientation by weighting the tail curvature by the relative duration of the bout multiplied by a gain factor.
+A second `ExpressionTransform` node checks whether the output is not a number and outputs a 0 or the value converted to a float.
+This value is sent to an `Accumulate` node which updates the angle of the stimulus.
+The `ExpressionTransform` node connected to the `UpdateUniform` node transforms the stimulus angle to a value between -1 and 1.
+This value is used as the value in the `Multiply` node connected to the closed-loop velocity.
+This transforms the original closed-loop velocity to account for the stimulus angle in the following manner.
+When the stimulus angle is perpendicular to the heading angle, the final velocity of the stimulus turns out to be just the base velocity.
+When the stimulus angle is in the opposite direction of the heading angle, the stimulus velocity increases.
+When the stimulus angle is aligned with the heading direction, the stimulus velocity decreases.
+
+![](images/2D-closed-loop-5.png)
+
+The final stimulus velocity is calculated the same way as before.
+The base velocity and closed-loop velocity are added together and accumulated.
+This value is then converted to a float type and used to update the phase of the stimulus.
+
+![](images/2D-closed-loop-6.png)
