@@ -94,6 +94,8 @@ The X and Y coordinates are passed as uniform variables to the shader.
 The tail points are calculated and processed into tail angles, as well as a heading angle for the shader.
 The `Time` subject is accumulated and passed to the shader.
 
+![](images/open-loop-OMR-2.png)
+
 # Virtual open-loop with prey
 The same workflow used for [virtual open-loop with OMR](<#virtual-open-loop-with-OMR>) also works for virtual open-loop prey.
 The difference is in the shader program.
