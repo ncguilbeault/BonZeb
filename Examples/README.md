@@ -1,5 +1,5 @@
 # BonZeb
-![](../Resources/BonZeb_Logo.png)
+![](../Resources/BonZeb_Logo_Man.png)
 
 # Examples
 BonZeb offers solutions for researchers looking to perform single and multi-animal tracking, analysis, closed-loop/open-loop stimulation, optogenetics, and calcium imaging.
