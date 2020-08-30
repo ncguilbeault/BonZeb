@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Closed-loop head-fixed stimulation
 BonZeb's tracking methods can be used to implement closed-loop stimulation.
