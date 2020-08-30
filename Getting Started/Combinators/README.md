@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Combinators
 Combinators are a class of operators which are very diverse and can be very useful for building Bonsai scripts.
