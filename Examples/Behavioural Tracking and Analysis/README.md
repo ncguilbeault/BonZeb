@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Behavioural Tracking and Analysis
 BonZeb was designed to perform rapid behavioural tracking and analysis of zebrafish.
