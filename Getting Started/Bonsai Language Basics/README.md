@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Understanding the Basics of the Bonsai Language
 It’s a bit tricky to summarize all of the basics of Bonsai in brief.
