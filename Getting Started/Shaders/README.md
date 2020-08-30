@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Shaders
 BonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
