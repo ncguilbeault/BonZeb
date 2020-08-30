@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Subjects
 Subjects are a useful way to take the output of any module in any data stream and broadcast it to other parts of the workflow. 
