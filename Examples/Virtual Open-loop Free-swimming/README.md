@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Virtual Open-loop Free-Swimming Stimulation
 BonZeb's tracking methods can be used to implement virtual open-loop stimulation.
