@@ -1,4 +1,5 @@
-![](Resources/BonZeb_Logo.png)
+# BonZeb
+![](Resources/BonZeb_Logo_Man.png)
 
 # Table of Contents
 1. [Preface](#preface)
