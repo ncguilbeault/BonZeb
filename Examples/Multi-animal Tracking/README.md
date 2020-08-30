@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo.png)
+![](../../Resources/BonZeb_Logo_Man.png)
 
 # Multi-animal tracking
 BonZeb's tracking methods can be used to perform behavioural tracking of multiple animals.
