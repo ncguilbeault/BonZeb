@@ -1,5 +1,5 @@
 # BonZeb
-![](../../Resources/BonZeb_Logo_Man.png)
+![](../Resources/BonZeb_Logo_Man.png)
 
 # Getting Started
 In this section, users will find information about the basics of Bonsai and the Bonsai programmming language as they relate to BonZeb.
