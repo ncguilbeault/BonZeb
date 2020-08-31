@@ -156,11 +156,11 @@ void converging_gratings()
   float value;
   if (tex_coord.x < fish_position_x)
   {
-    value = 0.5 * sin(tex_coord.x * twopi * optomotor_gratings_spat_freq - optomotor_gratings_speed * time) + 0.5;
+    value = 0.5 * sin((tex_coord.x - fish_position_x) * twopi * optomotor_gratings_spat_freq - optomotor_gratings_speed * time) + 0.5;
   }
   else
   {
-    value = 0.5 * sin(tex_coord.x * twopi * optomotor_gratings_spat_freq + optomotor_gratings_speed * time) + 0.5;
+    value = 0.5 * sin((tex_coord.x - fish_position_x) * twopi * optomotor_gratings_spat_freq + optomotor_gratings_speed * time) + 0.5;
   }
   frag_colour = vec4(value, value, value, 1.0);
   return;
@@ -172,11 +172,11 @@ void diverging_gratings()
   float value;
   if (tex_coord.x < fish_position_x)
   {
-    value = 0.5 * sin(tex_coord.x * twopi * optomotor_gratings_spat_freq + optomotor_gratings_speed * time) + 0.5;
+    value = 0.5 * sin((tex_coord.x - fish_position_x) * twopi * optomotor_gratings_spat_freq + optomotor_gratings_speed * time) + 0.5;
   }
   else
   {
-    value = 0.5 * sin(tex_coord.x * twopi * optomotor_gratings_spat_freq - optomotor_gratings_speed * time) + 0.5;
+    value = 0.5 * sin((tex_coord.x - fish_position_x) * twopi * optomotor_gratings_spat_freq - optomotor_gratings_speed * time) + 0.5;
   }
   frag_colour = vec4(value, value, value, 1.0);
   return;
