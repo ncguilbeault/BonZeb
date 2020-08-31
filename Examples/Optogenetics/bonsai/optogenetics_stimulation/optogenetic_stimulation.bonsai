@@ -1926,8 +1926,8 @@
             <Edge From="1" To="2" Label="Source1" />
             <Edge From="2" To="3" Label="Source1" />
             <Edge From="3" To="4" Label="Source1" />
+            <Edge From="3" To="16" Label="Source1" />
             <Edge From="4" To="5" Label="Source1" />
-            <Edge From="4" To="16" Label="Source1" />
             <Edge From="5" To="6" Label="Source1" />
             <Edge From="5" To="11" Label="Source1" />
             <Edge From="6" To="7" Label="Source1" />
@@ -1949,8 +1949,10 @@
             <Expression xsi:type="WorkflowInput">
               <Name>Source1</Name>
             </Expression>
-            <Expression xsi:type="scr:ExpressionTransform">
-              <scr:Expression>it/ 12000</scr:Expression>
+            <Expression xsi:type="Divide">
+              <Operand xsi:type="DoubleProperty">
+                <Value>12000</Value>
+              </Operand>
             </Expression>
             <Expression xsi:type="GreaterThanOrEqual">
               <Operand xsi:type="DoubleProperty">
