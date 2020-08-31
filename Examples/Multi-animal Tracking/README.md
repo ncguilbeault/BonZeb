@@ -15,7 +15,7 @@ Below is an overview of the method we used for tracking multiple free-swimming a
 
 ![](images/freeswimming1.png)
 
-We use the same basic structure for multi-animal tracking as described in [Timed online tracking](<../Behavioural Tracking and Analysis#timed-online-tracking>).
+We use the same basic structure for multi-animal tracking as described in [timed online tracking](<../Behavioural Tracking and Analysis#timed-online-tracking>).
 The differences between that workflow and this workflow are contained within the `MultiAnimalTracking` nested workflow. 
 Inside the `MultiAnimalTracking` workflow is shown below.
 
