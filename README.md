@@ -61,7 +61,7 @@ Data streams can be split and merged together in various ways such that the fina
 If you are just learning about Bonsai for the first time, see the [Getting Started](<Getting Started/>) folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
-BonZeb provides modules for interfacing with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:
+BonZeb is completely modular and works with any camera module alreay supported in Bonsai (Basler, FLIR, DirectShow, etc.). Additionally, BonZeb interfaces with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:
 
 * [Allied Vision](https://github.com/ncguilbeault/Bonsai.AlliedVision)
 * [Teledyne Dalsa](https://github.com/ncguilbeault/Bonsai.TeledyneDALSA)
