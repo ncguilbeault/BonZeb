@@ -32,6 +32,7 @@ The result of this shader when run will be a white rectangle displayed to the en
 The `UpdateFrame` node is needed inside the Bonsai workflow to configure the shader.
 
 [<img src="bonsai/shaders_example.svg">](bonsai/shaders_example.bonsai)
+<a href="bonsai/" download="shaders_example.bonsai"></a>
 
 
 # Shader Configuration
