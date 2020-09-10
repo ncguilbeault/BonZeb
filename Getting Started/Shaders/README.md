@@ -33,7 +33,6 @@ The `UpdateFrame` node is needed inside the Bonsai workflow to configure the sha
 
 <a href="bonsai/shaders_example.bonsai" download><img src="bonsai/shaders_example.svg" /></a>
 
-
 # Shader Configuration
 The Bonsai shader configuration window specifies the shader's rendering properties and rendering environment. 
 To open the shader configuration dialogue, double click on the `UpdateFrame` node.
