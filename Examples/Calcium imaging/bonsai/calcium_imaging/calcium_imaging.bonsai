@@ -229,16 +229,16 @@
                 <bz:WithinBoutThreshold xsi:nil="true" />
               </Combinator>
             </Expression>
-            <Expression xsi:type="MemberSelector">
-              <Selector>Frequency</Selector>
-            </Expression>
             <Expression xsi:type="io:CsvWriter">
-              <io:FileName>tail_beat_frequency.csv</io:FileName>
+              <io:FileName>tail_beat_kinematics.csv</io:FileName>
               <io:Append>false</io:Append>
               <io:Overwrite>false</io:Overwrite>
               <io:Suffix>None</io:Suffix>
               <io:IncludeHeader>false</io:IncludeHeader>
               <io:Selector />
+            </Expression>
+            <Expression xsi:type="MemberSelector">
+              <Selector>Frequency</Selector>
             </Expression>
             <Expression xsi:type="Multiply">
               <Operand xsi:type="FloatProperty">
