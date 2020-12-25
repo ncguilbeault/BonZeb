@@ -68,17 +68,22 @@ namespace BonZeb.Design
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    for (int i = 0; i < tailPoints.Points.Length; i++)
+                    try
                     {
-                        GL.Color3(1.0, 0.0, 0.0);
-                        GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
+                        for (int i = 0; i < tailPoints.Points.Length; i++)
+                        {
+                            GL.Color3(1.0, 0.0, 0.0);
+                            GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
+                        }
                     }
-                    GL.End();
-
-                    GL.Color4(Color4.White);
-                    GL.Enable(EnableCap.Texture2D);
-                    labelTexture.Update(labelImage);
-                    labelTexture.Draw();
+                    finally
+                    {
+                        GL.End();
+                        GL.Color4(Color4.White);
+                        GL.Enable(EnableCap.Texture2D);
+                        labelTexture.Update(labelImage);
+                        labelTexture.Draw();
+                    }
                 }
             }
         }

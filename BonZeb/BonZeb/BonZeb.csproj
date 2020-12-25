@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Title>BonZeb</Title>
-    <Description>Library containing modules for online tracking and stimulation.</Description>
+    <Description>Library containing modules for online tracking and stimulation of zebrafish and other animals.</Description>
     <Authors>Nicholas Guilbeault</Authors>
     <Copyright>Copyright © Nicholas Guilbeault 2020</Copyright>
     <ProjectUrl>https://github.com/ncguilbeault/BonZeb</ProjectUrl>

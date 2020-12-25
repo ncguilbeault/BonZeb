@@ -12,7 +12,7 @@ namespace BonZeb
     [Description("Calculates the tail points using the tail calculation method. Distances are measured in number of pixels in the image.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class CalculateTailPoints : Transform<Tuple<Point2f, IplImage>, TailPoints>
+    public class CalculateTailPoints : Transform<CentroidData, TailPoints>
     {
 
         public CalculateTailPoints()
@@ -64,7 +64,12 @@ namespace BonZeb
         [Description("The method used for calculating tail points.")]
         public TailPointCalculationMethod TailPointCalculationMethod { get; set; }
 
-        public override IObservable<TailPoints> Process(IObservable<Tuple<Point2f, IplImage>> source)
+        public override IObservable<TailPoints> Process(IObservable<CentroidData> source)
+        {
+            return source.Select(value => GetTailPoints(value.Centroid, value.Image));
+        }
+
+        public IObservable<TailPoints> Process(IObservable<Tuple<Point2f, IplImage>> source)
         {
             return source.Select(value => GetTailPoints(value.Item1, value.Item2));
         }

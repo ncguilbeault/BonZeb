@@ -10,7 +10,7 @@ namespace BonZeb
     [Description("Detects tail beat frequency from tail curvature using a peak signal detection method to determine the time between successive positive peaks.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class DetectTailBeatKinematics : Transform<double, TailKinematics>
+    public class DetectTailBeatKinematics : Transform<TailAngles<double>, TailKinematics>
     {
 
         public DetectTailBeatKinematics()
@@ -55,7 +55,39 @@ namespace BonZeb
         private double[] valWindow;
         private double sumValDiff;
 
-        public override IObservable<TailKinematics> Process(IObservable<double> source)
+        public override IObservable<TailKinematics> Process(IObservable<TailAngles<double>> source)
+        {
+            findMax = true;
+            boutDetected = false;
+            boutCounter = 0;
+            startPeakCounter = 0;
+            prevPeakCounter = 0;
+            firstPeak = true;
+            minVal = double.PositiveInfinity;
+            maxVal = double.NegativeInfinity;
+            frequency = 0;
+            amplitude = 0;
+            valWindow = new double[frameWindow];
+            return source.Select(value => DetectTailKinematicsFunc(value.Angles));
+        }
+
+        public IObservable<TailKinematics> Process(IObservable<TailAngles<double[]>> source)
+        {
+            findMax = true;
+            boutDetected = false;
+            boutCounter = 0;
+            startPeakCounter = 0;
+            prevPeakCounter = 0;
+            firstPeak = true;
+            minVal = double.PositiveInfinity;
+            maxVal = double.NegativeInfinity;
+            frequency = 0;
+            amplitude = 0;
+            valWindow = new double[frameWindow];
+            return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value.Angles)));
+        }
+
+        public IObservable<TailKinematics> Process(IObservable<double> source)
         {
             findMax = true;
             boutDetected = false;

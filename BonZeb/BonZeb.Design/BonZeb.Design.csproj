@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Title>BonZeb</Title>
-    <Description>Visualizers for BonZeb.</Description>
+    <Description>Visualizers for BonZeb package.</Description>
     <Authors>Nicholas Guilbeault</Authors>
     <Copyright>Copyright © Nicholas Guilbeault 2020</Copyright>
     <ProjectUrl>https://github.com/ncguilbeault/BonZeb</ProjectUrl>
