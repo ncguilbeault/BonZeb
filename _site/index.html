@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Welcome | BonZeb</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Welcome" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A Bonsai library for online tracking and stimulation of zebrafish and other animals." />
+<meta property="og:description" content="A Bonsai library for online tracking and stimulation of zebrafish and other animals." />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="BonZeb" />
+<script type="application/ld+json">
+{"url":"http://localhost:4000/","@type":"WebSite","headline":"Welcome","description":"A Bonsai library for online tracking and stimulation of zebrafish and other animals.","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/images/BonZeb_Logo_Man.svg"}},"name":"BonZeb","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=cf242691eec557596debfaee9ff3663200623495">
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="http://localhost:4000/">BonZeb</a></h1>
+        
+        
+          <img src="/assets/images/BonZeb_Logo_Man.svg" alt="Logo" />
+        
+
+        <p>A Bonsai library for online tracking and stimulation of zebrafish and other animals.</p>
+
+        
+        <p class="view"><a href="https://github.com/ncguilbeault/BonZeb">View the Project on GitHub <small>ncguilbeault/BonZeb</small></a></p>
+        
+
+        
+
+        
+      </header>
+      <section>
+
+      <h2 id="welcome">Welcome</h2>
+
+<h1 id="table-of-contents">Table of Contents</h1>
+<ol>
+  <li><a href="#preface">Preface</a></li>
+  <li><a href="#download">Download</a></li>
+  <li><a href="#dependencies">Dependencies</a></li>
+  <li><a href="#getting-started-with-bonsai">Getting Started with Bonsai</a></li>
+  <li><a href="#video-acquisition">Video Acquisition</a></li>
+  <li><a href="#visual-stimulation">Visual Stimulation</a></li>
+  <li><a href="#calibration">Calibration</a></li>
+  <li><a href="#behavioural-tracking-and-analysis">Behavioural Tracking and Analysis</a></li>
+  <li><a href="#multi-animal-tracking">Multi-animal Tracking</a></li>
+  <li><a href="#virtual-open-loop-free-swimming">Virtual Open-loop Free-swimming</a></li>
+  <li><a href="#closed-loop-head-fixed">Closed-loop Head-fixed</a></li>
+  <li><a href="#optogenetics">Optogenetics</a></li>
+  <li><a href="#calcium-imaging">Calcium Imaging</a></li>
+  <li><a href="#acknowledgements">Acknowledgements</a></li>
+</ol>
+
+<h1 id="preface">Preface</h1>
+<p>BonZeb is a <a href="https://bonsai-rx.org/">Bonsai</a> library for high-resolution zebrafish behavioural tracking and analysis. 
+BonZeb provides essential tools for zebrafish behavioural tracking and analysis.
+In this manual, you will find information and examples for how to use BonZeb to implement behavioural analysis, multi-animal tracking, closed-loop and virtual open-loop visual stimulation, and more.
+For more information on Bonsai, please check out the forums on <a href="https://gitter.im/bonsai-rx/Lobby">Gitter</a> and <a href="https://groups.google.com/forum/#!forum/bonsai-users">Google Groups</a></p>
+
+<h1 id="download">Download</h1>
+<p>This package was originally built in Bonsai version 2.4.0 but should work for newer versions of Bonsai as well. 
+You can download the latest <a href="https://bonsai-rx.org/docs/installation/">Bonsai</a> or go to the <a href="https://bitbucket.org/horizongir/bonsai">Bonsai Archives</a> to download earlier versions.
+BonZeb can be easily downloaded using Bonsai’s built-in package manager. 
+BonZeb can also be added to Bonsai manually by downloading the <a href="https://github.com/ncguilbeault/BonZeb">GitHub Repository</a> and adding it to the package manager.
+To add the package manually to the package manager, navigate to settings and add the .nuget folder of the repository to the list of available package sources.</p>
+
+<h1 id="dependencies">Dependencies</h1>
+<p>When installing BonZeb, all of the essential dependencies will be installed automatically. To implement the example workflows, users must also install the following Bonsai libraries:</p>
+
+<ul>
+  <li>Bonsai - Arduino Library</li>
+  <li>Bonsai - Core Library</li>
+  <li>Bonsai - Design Library</li>
+  <li>Bonsai - Dsp Library</li>
+  <li>Bonsai - Dsp Design Library</li>
+  <li>Bonsai - Editor</li>
+  <li>Bonsai - Player</li>
+  <li>Bonsai - Scripting Library</li>
+  <li>Bonsai - Shaders Library</li>
+  <li>Bonsai - Shaders Design Library</li>
+  <li>Bonsai - System Library</li>
+  <li>Bonsai - System Design Library</li>
+  <li>Bonsai - Video Library</li>
+  <li>Bonsai - Video Design Library</li>
+  <li>Bonsai - Vision Library</li>
+  <li>Bonsai - Vision Design Library</li>
+  <li>Bonsai - Windows Input Library</li>
+</ul>
+
+<h1 id="getting-started-with-bonsai">Getting Started with Bonsai</h1>
+<p>Bonsai is a powerful programming language with a visual programming interface that uses graphs, also called workflows, to represent data processing pipelines in the interactive development environement (IDE). 
+The nodes in a Bonsai workflow, also called modules, can represent a variety of different Bonsai objects, such as data sources, transformations, combinators, or sinks. 
+Modules in a workflow are linked by edges to form pipelines, also called data streams, where the output of one node is sent as input to another node. 
+The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
+Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.</p>
+
+<p>If you are just learning about Bonsai for the first time, see the <a href="Getting Started/">Getting Started</a> folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.</p>
+
+<h1 id="video-acquisition">Video Acquisition</h1>
+<p>BonZeb is completely modular and works with any camera module alreay supported in Bonsai (Basler, FLIR, DirectShow, etc.). Additionally, BonZeb interfaces with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:</p>
+
+<ul>
+  <li><a href="https://github.com/ncguilbeault/Bonsai.AlliedVision">Allied Vision</a></li>
+  <li><a href="https://github.com/ncguilbeault/Bonsai.TeledyneDALSA">Teledyne Dalsa</a></li>
+  <li><a href="https://github.com/ncguilbeault/Bonsai.EuresysCameraLink">Euresys CameraLink</a></li>
+</ul>
+
+<p>Users must install the manufacturers software development kit (SDK) and ensure the camera is connected to the computer and working properly before using the camera in Bonsai.
+Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no boot mode. To do this, Bonsai must be started from the command line with the following argument:</p>
+
+<p><code class="language-plaintext highlighter-rouge">Bonsai.exe --noboot</code></p>
+
+<h1 id="visual-stimulation">Visual Stimulation</h1>
+<p>BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
+The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.</p>
+
+<p>See the <a href="Examples/Visual Stimulation">Visual Stimulation</a> folder for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.</p>
+
+<h1 id="calibration">Calibration</h1>
+<p>BonZeb provides a simple solution for users to perform calibration of visual display devices.
+Users can use BonZeb to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV.</p>
+
+<p>See the <a href="Examples/Calibration">Calibration</a> folder for how to calibrate visual display devices for rendering visual stimuli.</p>
+
+<h1 id="behavioural-tracking-and-analysis">Behavioural Tracking and Analysis</h1>
+<p>BonZeb provides many different modules and workflows for behavioural tracking and analysis.
+These include methods for background calculation, centroid tracking, tail tracking, eye tracking, and tail beat analysis.
+BonZeb can be used for online tracking, offline tracking, and batch processing.</p>
+
+<p>See the <a href="Examples/Behavioural Tracking and Analysis">Behavioural Tracking and Analysis</a> folder for how to implement these methods.</p>
+
+<h1 id="multi-animal-tracking">Multi-animal Tracking</h1>
+<p>BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking.</p>
+
+<p>See the <a href="Examples/Multi-animal Tracking">Multi-animal Tracking</a> folder for how to perform multi-animal free-swimming and head-fixed tracking.</p>
+
+<h1 id="virtual-open-loop-free-swimming">Virtual Open-loop Free-swimming</h1>
+<p>BonZeb provides examples for how to build and implement virtual open-loop free-swimming behavioural assays.</p>
+
+<p>See the <a href="Examples/Virtual Open-loop Free-swimming">Virtual Open-loop Free-swimming</a> folder for how ti implement virtual open-loop free-swimming behavioural assays.</p>
+
+<h1 id="closed-loop-head-fixed">Closed-loop Head-fixed</h1>
+<p>BonZeb provides examples for how to build and implement closed-loop head-fixed behavioural assays.</p>
+
+<p>See the <a href="Examples/Closed-loop Head-fixed">Closed-loop Head-fixed</a> folder for how a closed-loop head-fixed behavioural assay can be used and implemented.</p>
+
+<h1 id="optogenetics">Optogenetics</h1>
+<p>BonZeb provides examples for how to perform optogenetics.</p>
+
+<p>See the <a href="Examples/Optogenetics">Optogenetics</a> folder for how to implement an optogenetic stimulation paradigm.</p>
+
+<h1 id="calcium-imaging">Calcium Imaging</h1>
+<p>BonZeb provides examples for how to perform calcium imaging with closed-loop visual stimulation.</p>
+
+<p>See the <a href="Examples/Calcium Imaging">Calcium Imaging</a> folder for how to implement calcium imaging with closed-loop visual stimulation.</p>
+
+<h1 id="acknowledgements">Acknowledgements</h1>
+<p>Thank you to all of the people who tested BonZeb and provided useful feedback on the manuscript. Thank you to the developers for creating the elegant and powerful programming language Bonsai and to the larger community for welcoming the exchange of ideas.</p>
+
+
+      </section>
+      <footer>
+        
+        <p>This project is maintained by <a href="https://github.com/ncguilbeault">ncguilbeault</a></p>
+        
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="/assets/js/scale.fix.js"></script>
+    
+  </body>
+</html>

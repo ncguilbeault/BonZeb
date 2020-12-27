@@ -1,1 +1,4 @@
-theme: jekyll-theme-midnight
+theme: jekyll-theme-minimal
+title: BonZeb
+description: A Bonsai library for online tracking and stimulation of zebrafish and other animals.
+logo: /assets/images/BonZeb_Logo_Man.svg
