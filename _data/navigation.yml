@@ -14,4 +14,7 @@ docs:
       url: /docs/visual-stimulus-library/
     - title: "Visual Stimulation Workflow"
       url: /docs/visual-stimulation-workflow/
+    - title: "Calibration"
+      url: /docs/calibration/
+
     

@@ -22,5 +22,5 @@ feature_row:
 ---
 
 {% include feature_row %}
-![Multi-animal Tracking](/assets/videos/multi-animal-tracking.gif){: .align-center}
+![Multi-animal Tracking](./../assets/videos/multi-animal-tracking.gif){: .align-center}
 <div align="center"><div class="archive__item-body"><h2 class="archive__item-title">Multi-animal Tracking</h2><div class="archive__item-excerpt"><p>An example of multi-animal tracking.</p></div></div></div>
