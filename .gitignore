@@ -12,3 +12,10 @@ example/_site
 Gemfile.lock
 node_modules
 npm-debug.log*
+*~
+*.sw[p_]
+**/vendor/bundle
+node_modules
+npm-debug.log*
+package-lock.json
+.jekyll-cache

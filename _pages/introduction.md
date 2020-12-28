@@ -1,36 +1,29 @@
-## Welcome
+---
+permalink: /introduction/
+sidebar:
+  - title: "BonZeb"
+    image: /assets/images/BonZeb_Logo_Man.svg
+    image_alt: "BonZeb"
+    text: "A Bonsai library for behavioural tracking and stimulation."
+---
 
-# Table of Contents
-1. [Preface](#preface)
-2. [Download](#download)
-3. [Dependencies](#dependencies)
-4. [Getting Started with Bonsai](#getting-started-with-bonsai)
-5. [Video Acquisition](#video-acquisition)
-6. [Visual Stimulation](#visual-stimulation)
-7. [Calibration](#calibration)
-8. [Behavioural Tracking and Analysis](#behavioural-tracking-and-analysis)
-9. [Multi-animal Tracking](#multi-animal-tracking)
-10. [Virtual Open-loop Free-swimming](#virtual-open-loop-free-swimming)
-11. [Closed-loop Head-fixed](#closed-loop-head-fixed)
-12. [Optogenetics](#optogenetics)
-13. [Calcium Imaging](#calcium-imaging)
-14. [Acknowledgements](#acknowledgements)
+# Introduction
+Welcome to BonZeb - a [Bonsai](https://bonsai-rx.org/) library for behavioural tracking and stimulation of zebrafish and other model organisms.
 
-# Preface
-BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution zebrafish behavioural tracking and analysis. 
+BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution behavioural tracking and stimulation. 
 BonZeb provides essential tools for zebrafish behavioural tracking and analysis.
-In this manual, you will find information and examples for how to use BonZeb to implement behavioural analysis, multi-animal tracking, closed-loop and virtual open-loop visual stimulation, and more.
+Here, you will find information and examples for how to use BonZeb to implement behavioural analysis, multi-animal tracking, closed-loop and virtual open-loop visual stimulation, and more.
 For more information on Bonsai, please check out the forums on [Gitter](https://gitter.im/bonsai-rx/Lobby) and [Google Groups](https://groups.google.com/forum/#!forum/bonsai-users)
 
 # Download
 This package was originally built in Bonsai version 2.4.0 but should work for newer versions of Bonsai as well. 
-You can download the latest [Bonsai](https://bonsai-rx.org/docs/installation/) or go to the [Bonsai Archives](https://bitbucket.org/horizongir/bonsai) to download earlier versions.
+You can download the latest version of [Bonsai](https://bonsai-rx.org/docs/installation/) or download earlier versions [here](https://github.com/bonsai-rx/bonsai/releases).
 BonZeb can be easily downloaded using Bonsai's built-in package manager. 
 BonZeb can also be added to Bonsai manually by downloading the [GitHub Repository](https://github.com/ncguilbeault/BonZeb) and adding it to the package manager.
 To add the package manually to the package manager, navigate to settings and add the .nuget folder of the repository to the list of available package sources. 
 
 # Dependencies
-When installing BonZeb, all of the essential dependencies will be installed automatically. To implement the example workflows, users must also install the following Bonsai libraries:
+When installing BonZeb, all of the essential dependencies will be installed automatically. However, some of the example workflows draw from other non-dependant Bonsai libraries. These libraries include:
 
 * Bonsai - Arduino Library
 * Bonsai - Core Library
@@ -57,7 +50,7 @@ Modules in a workflow are linked by edges to form pipelines, also called data st
 The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
 Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.
 
-If you are just learning about Bonsai for the first time, see the [Getting Started](<Getting Started/>) folder to learn more about the basics of Bonsai. If you are already familiar with Bonsai and how it works, feel free to skip this section.
+If you are using Bonsai for the first time, check out [Basics](</basics/>) to learn more. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
 BonZeb is completely modular and works with any camera module alreay supported in Bonsai (Basler, FLIR, DirectShow, etc.). Additionally, BonZeb interfaces with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:

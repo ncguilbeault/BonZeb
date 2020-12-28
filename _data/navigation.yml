@@ -1,0 +1,17 @@
+# main links
+main:
+  - title: "Introduction"
+    url: /introduction/
+  - title: "Basics"
+    url: /basics/
+  - title: "Docs"
+    url: /docs/
+
+docs:
+  - title: "Visual Stimulation"
+    children:
+    - title: "Visual Stimulus Library"
+      url: /docs/visual-stimulus-library/
+    - title: "Visual Stimulation Workflow"
+      url: /docs/visual-stimulation-workflow/
+    
