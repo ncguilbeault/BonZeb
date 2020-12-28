@@ -50,7 +50,7 @@ Modules in a workflow are linked by edges to form pipelines, also called data st
 The basic premise for building Bonsai workflows is adding nodes into the workflow and connecting nodes together to form pipelines or data streams. 
 Data streams can be split and merged together in various ways such that the final workflow can have multiple data streams operating synchronously or asynchronously, simultaneously.
 
-If you are using Bonsai for the first time, check out [Basics](/basics/) to learn more. If you are already familiar with Bonsai and how it works, feel free to skip this section.
+If you are using Bonsai for the first time, check out [Basics](</basics/>) to learn more. If you are already familiar with Bonsai and how it works, feel free to skip this section.
 
 # Video Acquisition
 BonZeb is completely modular and works with any camera module alreay supported in Bonsai (Basler, FLIR, DirectShow, etc.). Additionally, BonZeb interfaces with Allied Vision, Teledyne Dalsa, and Euresys CameraLink Frame Grabber hardware devices for high-speed video acquisition. The following video acqusition packages are available for download:
