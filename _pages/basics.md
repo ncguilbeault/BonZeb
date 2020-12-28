@@ -1,10 +1,5 @@
 ---
 permalink: /basics/
-sidebar:
-  - title: "BonZeb"
-    image: /assets/images/BonZeb_Logo_Man.svg
-    image_alt: "BonZeb"
-    text: "A Bonsai library for behavioural tracking and stimulation."
 ---
 
 # Getting Started with the Basics
@@ -110,7 +105,7 @@ Sinks perform side operations on the input without modifying the data.
 Sink nodes consist of modules for saving data to a csv file, sending commands to an Arduino, writing videos, etc. 
 Combinators are a large class of diverse nodes.
 Each combinator has a specific function and produces different behaviors.
-You can read more about specific combinator nodes in the [Combinators Section](<Combinators>)
+You can read more about specific combinator nodes in the [Combinators Section](#combinators)
 
 # Data Types
 The inputs and outputs of modules in Bonsai are data types, similar to data types in other programming languages. 
