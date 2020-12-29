@@ -6,7 +6,12 @@ permalink: /basics/
 In this section, users will find information about the basics of Bonsai and the Bonsai programmming language as they relate to BonZeb.
 These guides are meant to help users with little to no experience in Bonsai.
 Experienced users can skip this section.
-For more information about Bonsai, please visit these websites: [1](https://bonsai-rx.org/resources/), [2](https://bonsai-rx.org/community/), [3](https://gitter.im/bonsai-rx/Lobby), and [4](https://groups.google.com/forum/#!forum/bonsai-users).
+For more information about Bonsai, please visit these websites: 
+* [Bonsai Resources](https://bonsai-rx.org/resources/)
+* [Bonsai Community](https://bonsai-rx.org/community/)
+* [Bonsai Users Google Group](https://groups.google.com/forum/#!forum/bonsai-users)
+* [Bonsai Discord Channel](https://discord.gg/Cp8ZfQ9ytp)
+* [Bonsai Gitter](https://gitter.im/bonsai-rx/Lobby)
 
 # Starting Bonsai
 When you run Bonsai, two windows will appear.
@@ -183,7 +188,7 @@ The outputs of each `Timer` are combined in 3 seperate data streams using `Zip`,
 Every time the combinators produces a value, an `Int` of 1 is accumulated with an `Accumulate` node to observe the total number of outputs from each combinator. 
 As shown in the example below, the difference between combining data streams with `Zip`, `CombineLatest`, and `WithLatestFrom` is in the content and timing of their output.
 
-[![](\assets\workflows\Zip CombineLatest WithLatestFrom.svg)](\assets\workflows\Zip CombineLatest WithLatestFrom.bonsai)
+[![](./../assets/workflows/Zip CombineLatest WithLatestFrom.svg)](./../assets/workflows/Zip CombineLatest WithLatestFrom.bonsai)
 
 At the start of the workflow, both timers produce a value of 0.
 Upon starting the workflow, all 3 combinators are the same in that each combined the two streams and produced a single output.
@@ -308,7 +313,7 @@ After 3 seconds, the workflow continues to run despite the fact that no more val
 This only works if a subscriber is issued to `BehaviorSubject`.
 If you remove the `SubscribeSubject` for the `BehaviorSubject` variable, the behaviour of the workflow will return to what it was previously and terminate after 3 seconds.
 
-[![](\assets\workflows\Subjects.svg)](\assets\workflows\Subjects.bonsai)
+[![](./../assets/workflows/Subjects.svg)](./../assets/workflows/Subjects.bonsai)
 
 # Shaders
 BonZeb was built to interface with the Bonsai Shaders package to generate visual stimuli.
@@ -369,7 +374,7 @@ The `TextureResources` node configures the texture resources for the shader.
 The `ShaderResources` node configures the shader resources for the shader.
 All of the configuration resources are loaded with the `LoadResources` node.
 
-[![](\assets\workflows\Shaders.svg)](\assets\workflows\Shaders.bonsai)
+[![](./../assets/workflows/Shaders.svg)](./../assets/workflows/Shaders.bonsai)
 
 # Uniform Variables
 Uniform variables allow you to pass variables from the Bonsai workflow to the shader. 
@@ -393,4 +398,4 @@ An `ExpressionTransform` node maps the values of the x coordinate between 0 and 
 The output is then passed to the `UpdateUniform` node.
 In this way, the grayscale intensity of the shader window is dependant on the x position of the mouse, which changes as the cursor moves from left to right across the shader window.
 
-[![](\assets\workflows\UpdateUniform.svg)](<\assets\workflows\UpdateUniform.zip>)
+[![](./../assets/workflows/UpdateUniform.svg)](./../assets/workflows/UpdateUniform.zip)

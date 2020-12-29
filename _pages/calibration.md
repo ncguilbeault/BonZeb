@@ -5,7 +5,7 @@ sidebar:
 ---
 
 # Calibration
-Map an area of the visual display to a camera’s field of view (FOV) or a sub region (calibration) is essential to closed-loop and open-loop visual feedback.
+Mapping an area of the visual display to a camera’s field of view (FOV) or a sub region (calibration) is essential to closed-loop and open-loop visual feedback.
 There are multiple ways to calibrate a visual display with BonZeb. 
 BonZeb provides the `DrawRectangle` node which is used to generate the values for the x and y offset, as well as the x and y range needed to update the vertex shader.
 Multiple `DrawRectangle` nodes can be used to calibrate regions of interest (ROIs) within a larger field of view (FOV)

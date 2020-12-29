@@ -13,7 +13,7 @@ Welcome to BonZeb - a [Bonsai](https://bonsai-rx.org/) library for behavioural t
 BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution behavioural tracking and stimulation. 
 BonZeb provides essential tools for zebrafish behavioural tracking and analysis.
 Here, you will find information and examples for how to use BonZeb to implement behavioural analysis, multi-animal tracking, closed-loop and virtual open-loop visual stimulation, and more.
-For more information on Bonsai, please check out the forums on [Gitter](https://gitter.im/bonsai-rx/Lobby) and [Google Groups](https://groups.google.com/forum/#!forum/bonsai-users)
+For more information on Bonsai, please check out the forums on [Gitter](https://gitter.im/bonsai-rx/Lobby), [Google Groups](https://groups.google.com/forum/#!forum/bonsai-users), and [Discord](https://discord.gg/Cp8ZfQ9ytp).
 
 # Download
 This package was originally built in Bonsai version 2.4.0 but should work for newer versions of Bonsai as well. 
