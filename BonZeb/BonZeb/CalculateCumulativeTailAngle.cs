@@ -11,26 +11,26 @@ namespace BonZeb
     [Description("Calculates the tail curvature by rotating an array of points around the angle between the first two points and calculating the angle between each pair of remaining points.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class CalculateCumulativeTailAngle : Transform<TailPoints, TailAngles<double>>
+    public class CalculateCumulativeTailAngle : Transform<TailPointData, TailAngleData<double>>
     {
-        public override IObservable<TailAngles<double>> Process(IObservable<TailPoints> source)
+        public override IObservable<TailAngleData<double>> Process(IObservable<TailPointData> source)
         {
-            return source.Select(value => new TailAngles<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value.Points)), value.Points, value.Image));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value.Points)), value.Points, value.Image));
         }
 
-        public IObservable<TailAngles<double>> Process(IObservable<Point2f[]> source)
+        public IObservable<TailAngleData<double>> Process(IObservable<Point2f[]> source)
         {
-            return source.Select(value => new TailAngles<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value)), value));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value)), value));
         }
 
-        public IObservable<TailAngles<double>> Process(IObservable<TailAngles<double[]>> source)
+        public IObservable<TailAngleData<double>> Process(IObservable<TailAngleData<double[]>> source)
         {
-            return source.Select(value => new TailAngles<double>(Utilities.CalculateSum(value.Angles), value.Points, value.Image));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(value.Angles), value.Points, value.Image));
         }
 
-        public IObservable<TailAngles<double>> Process(IObservable<double[]> source)
+        public IObservable<TailAngleData<double>> Process(IObservable<double[]> source)
         {
-            return source.Select(value => new TailAngles<double>(Utilities.CalculateSum(value)));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(value)));
         }
     }
 }

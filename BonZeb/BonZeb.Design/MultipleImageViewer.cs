@@ -10,7 +10,6 @@ namespace BonZeb.Design
     {
         ToolStripComboBox selectImage;
         ToolStripStatusLabel statusLabel;
-        string currentSelectedImage;
 
         public MultipleImageViewer()
         {
@@ -19,7 +18,7 @@ namespace BonZeb.Design
             selectImage.DropDownStyle = ComboBoxStyle.DropDownList;
             selectImage.FlatStyle = FlatStyle.Flat;
             selectImage.BackColor = statusStrip.BackColor;
-            selectImage.Width = 100;
+            selectImage.Width = 200;
             statusLabel = new ToolStripStatusLabel();
             statusStrip.Items.Add(selectImage);
             statusStrip.Items.Add(statusLabel);
@@ -51,13 +50,19 @@ namespace BonZeb.Design
 
             selectImage.SelectedIndexChanged += (sender, e) =>
             {
-                currentSelectedImage = (string)selectImage.SelectedItem;
+                SelectedImageViewer = (string)selectImage.SelectedItem;
+                SelectedImageIndex = selectImage.SelectedIndex;
             };
         }
 
-        //public StatusStrip StatusStrip { get => statusStrip; set => statusStrip += value; }
+        public void SelectImageIndex(int index)
+        {
+            selectImage.SelectedIndex = index;
+        }
 
-        public string SelectedImageViewer { get => currentSelectedImage; }
+        public int SelectedImageIndex { get; private set; }
+
+        public string SelectedImageViewer { get; private set; }
 
         public VisualizerCanvas Canvas { get => imageControl; }
 
@@ -68,15 +73,15 @@ namespace BonZeb.Design
                 statusStrip.Visible = !statusStrip.Visible;
             }
         }
-        public void Update(IplImage frame)
+        public void Update(IplImage image)
         {
-            imageControl.Image = frame;
-            if (frame == null)
+            imageControl.Image = image;
+            if (image == null)
             {
                 statusLabel.Text = string.Empty;
             }
         }
-        public void PopulateComboBoxItems<T>()
+        public void PopulateMultipleImageViewer<T>()
         {
             Type type = typeof(T);
             foreach (PropertyInfo property in type.GetProperties())
@@ -85,9 +90,20 @@ namespace BonZeb.Design
                 {
                     selectImage.Items.Add(property.Name);
                     selectImage.SelectedItem = property.Name;
-                    currentSelectedImage = (string)selectImage.SelectedItem;
+                    SelectedImageViewer = (string)selectImage.SelectedItem;
                 }
             }
+        }
+
+        public void AddItemToMultipleImageViewer(string item)
+        {
+            selectImage.Items.Add(item);
+            selectImage.SelectedItem = item;
+            SelectedImageViewer = (string)selectImage.SelectedItem;
+        }
+        
+        public void MaximizeDropDownMenuWidth()
+        {
             int maxWidth = 0;
             foreach (var obj in selectImage.Items)
             {

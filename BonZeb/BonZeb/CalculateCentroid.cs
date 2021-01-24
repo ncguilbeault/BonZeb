@@ -53,17 +53,40 @@ namespace BonZeb
         {
             return source.Select(value => CalculateCentroidFunc(value));
         }
+
         public IObservable<CentroidData> Process(IObservable<IplImage> source)
         {
             return source.Select(value => CalculateCentroidFunc(new BackgroundSubtractionData(value)));
         }
+
         private CentroidData CalculateCentroidFunc(BackgroundSubtractionData input)
         {
-            IplImage image = input.Image;
+            IplImage image = new IplImage(input.Image.Size, input.Image.Depth, 1);
+
+            if (input.Image.Channels != 1)
+            {
+                CV.CvtColor(input.Image, image, ColorConversion.Bgr2Gray);
+            }
+            else
+            {
+                image = input.Image.Clone();
+            }
+
+            IplImage backgroundSubtractedImage = input.BackgroundSubtractedImage;
             IplImage thresh = new IplImage(image.Size, image.Depth, image.Channels);
-            CV.Threshold(image, thresh, ThresholdValue, maxValue, ThresholdType);
+
+            if (backgroundSubtractedImage == null)
+            {
+                CV.Threshold(image, thresh, ThresholdValue, maxValue, ThresholdType);
+            }
+            else
+            {
+                CV.Threshold(backgroundSubtractedImage, thresh, ThresholdValue, maxValue, ThresholdType);
+            }
+
             Moments moments = new Moments(thresh, true);
             Point2f centroid = new Point2f((float)(moments.M10 / moments.M00), (float)(moments.M01 / moments.M00));
+
             if (CentroidTrackingMethod == CentroidTrackingMethod.LargestBinaryRegion)
             {
                 IplImage temp = thresh.Clone();
@@ -95,17 +118,10 @@ namespace BonZeb
                 {
                     List<ConnectedComponent> sortedComponents = connectedComponents.OrderByDescending(contour => contour.Area).ToList();
                     centroid = sortedComponents[0].Centroid;
-                    IplImage contourImage = new IplImage(temp.Size, IplDepth.U8, 3);
-                    contourImage.SetZero();
-
-
-                    CV.DrawContours(contourImage, sortedComponents[0].Contour, Scalar.All(255), Scalar.All(0), 0, -1);
-                    CV.DrawContours(contourImage, sortedComponents[0].Contour, new Scalar(0, 0, 255), Scalar.All(0), 0, 1);
-
-                    return new CentroidData(centroid, image, thresh, contourImage);
+                    return new CentroidData(centroid, image, thresh, backgroundSubtractedImage, sortedComponents[0]);
                 }
             }
-            return new CentroidData(centroid, image, thresh);
+            return new CentroidData(centroid, image, thresh, backgroundSubtractedImage);
         }
     }
 }

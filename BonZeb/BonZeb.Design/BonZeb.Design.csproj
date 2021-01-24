@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Title>BonZeb</Title>
+    <Title>BonZeb Design Library</Title>
     <Description>Visualizers for BonZeb package.</Description>
     <Authors>Nicholas Guilbeault</Authors>
     <Copyright>Copyright © Nicholas Guilbeault 2020</Copyright>
@@ -14,7 +14,7 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
     <TargetFramework>net472</TargetFramework>
     <Features>strict</Features>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

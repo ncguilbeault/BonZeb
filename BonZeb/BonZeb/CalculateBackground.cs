@@ -27,21 +27,37 @@ namespace BonZeb
 
             return source.Select(value =>
             {
-                if (background == null)
+                IplImage image = new IplImage(value.Size, value.Depth, 1);
+                if (value.Channels != 1)
                 {
-                    background = value.Clone();
+                    CV.CvtColor(value, image, ColorConversion.Bgr2Gray);
                 }
                 else
                 {
-                    IplImage temp = new IplImage(value.Size, value.Depth, value.Channels);
+                    image = value.Clone();
+                }
+                if (background == null)
+                {
+                    if (value.Channels != 1)
+                    {
+                        background = new IplImage(value.Size, value.Depth, 1);
+                        CV.CvtColor(value, background, ColorConversion.Bgr2Gray);
+                    }
+                    else
+                    {
+                        background = value.Clone();
+                    }
+                }
+                else
+                {
+                    IplImage temp = new IplImage(image.Size, image.Depth, image.Channels);
                     if (PixelSearch == PixelSearchMethod.Brightest)
                     {
-                        CV.Sub(value, background, temp);
+                        CV.Sub(image, background, temp);
                         if (noiseThreshold != 0)
                         {
-                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
-                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
-                            CV.Add(temp, background, background, mask);
+                            CV.SubS(temp, Scalar.All(noiseThreshold), image);
+                            CV.Add(temp, background, background, image);
                         }
                         else
                         {
@@ -50,12 +66,11 @@ namespace BonZeb
                     }
                     else
                     {
-                        CV.Sub(background, value, temp);
+                        CV.Sub(background, image, temp);
                         if (noiseThreshold != 0)
                         {
-                            IplImage mask = new IplImage(value.Size, value.Depth, value.Channels);
-                            CV.SubS(temp, new Scalar(noiseThreshold, noiseThreshold, noiseThreshold, noiseThreshold), mask);
-                            CV.Sub(background, temp, background, mask);
+                            CV.SubS(temp, Scalar.All(noiseThreshold), image);
+                            CV.Sub(background, temp, background, image);
                         }
                         else
                         {

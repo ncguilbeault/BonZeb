@@ -71,13 +71,13 @@ namespace BonZeb.Design
             this.statusStrip.TabIndex = 3;
             this.statusStrip.Text = "statusStrip";
             // 
-            // ThresholdImageViewerControl
+            // MultipleImageViewerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel);
             this.Controls.Add(this.statusStrip);
-            this.Name = "ThresholdImageViewerControl";
+            this.Name = "MultipleImageViewerControl";
             this.Size = new System.Drawing.Size(320, 240);
             this.tableLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);

@@ -26,7 +26,14 @@ namespace BonZeb
             turnCount = 0;
             prevHeadingAngle = null;
             initHeadingAngle = null;
-            return source.Select(value => CalculateHeadingAngleWithPointsFunc(value[0], value[1]));
+            return source.Select(value =>
+            {
+                if (value.Length < 2)
+                {
+                    return double.NaN;
+                }
+                return CalculateHeadingAngleWithPointsFunc(value[0], value[1]);
+            });
         }
 
         public IObservable<double> Process(IObservable<Tuple<Point2f, Point2f>> source)
@@ -47,6 +54,10 @@ namespace BonZeb
             initHeadingAngle = null;
             return source.Select(value =>
             {
+                if (value.Item1.Count < 2 || value.Item2.Length < 2)
+                {
+                    return double.NaN;
+                }
                 if (value.Item1.Count == 2)
                 {
                     return CalculateHeadingAngleWithEyesFunc(value.Item1, value.Item2[0]);
@@ -62,11 +73,15 @@ namespace BonZeb
             initHeadingAngle = null;
             return source.Select(value =>
             {
+                if (value.Item1.Length < 2 || value.Item2.Count < 2)
+                {
+                    return double.NaN;
+                }
                 if (value.Item2.Count == 2)
                 {
                     return CalculateHeadingAngleWithEyesFunc(value.Item2, value.Item1[0]);
                 }
-                return CalculateHeadingAngleWithPointsFunc(value.Item1[0], value.Item1[2]);
+                return CalculateHeadingAngleWithPointsFunc(value.Item1[0], value.Item1[1]);
             });
         }
 

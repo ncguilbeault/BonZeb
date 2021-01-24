@@ -11,16 +11,27 @@ namespace BonZeb
     [Description("Calculates the tail curvature by rotating an array of points around the angle between the first two points and calculating the angle between each pair of remaining points.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class CalculateMeanTailAngle : Transform<double[], double>
+    public class CalculateMeanTailAngle : Transform<TailPointData, TailAngleData<double>>
     {
-        public override IObservable<double> Process(IObservable<double[]> source)
+
+        public override IObservable<TailAngleData<double>> Process(IObservable<TailPointData> source)
         {
-            return source.Select(value => Utilities.CalculateMean(value));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateMean(Utilities.CalculateTailAngle(value.Points)), value.Points, value.Image));
         }
 
-        public IObservable<double> Process(IObservable<Point2f[]> source)
+        public IObservable<TailAngleData<double>> Process(IObservable<Point2f[]> source)
         {
-            return source.Select(value => Utilities.CalculateMean(Utilities.CalculateTailAngle(value)));
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateMean(Utilities.CalculateTailAngle(value)), value));
+        }
+
+        public IObservable<TailAngleData<double>> Process(IObservable<TailAngleData<double[]>> source)
+        {
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateMean(value.Angles), value.Points, value.Image));
+        }
+
+        public IObservable<TailAngleData<double>> Process(IObservable<double[]> source)
+        {
+            return source.Select(value => new TailAngleData<double>(Utilities.CalculateMean(value)));
         }
     }
 }

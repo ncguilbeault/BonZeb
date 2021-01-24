@@ -10,7 +10,7 @@ namespace BonZeb
     [Description("Detects tail beat frequency from tail curvature using a peak signal detection method to determine the time between successive positive peaks.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
-    public class DetectTailBeatKinematics : Transform<TailAngles<double>, TailKinematics>
+    public class DetectTailBeatKinematics : Transform<TailAngleData<double>, TailKinematicsData>
     {
 
         public DetectTailBeatKinematics()
@@ -55,7 +55,7 @@ namespace BonZeb
         private double[] valWindow;
         private double sumValDiff;
 
-        public override IObservable<TailKinematics> Process(IObservable<TailAngles<double>> source)
+        public override IObservable<TailKinematicsData> Process(IObservable<TailAngleData<double>> source)
         {
             findMax = true;
             boutDetected = false;
@@ -71,7 +71,7 @@ namespace BonZeb
             return source.Select(value => DetectTailKinematicsFunc(value.Angles));
         }
 
-        public IObservable<TailKinematics> Process(IObservable<TailAngles<double[]>> source)
+        public IObservable<TailKinematicsData> Process(IObservable<TailAngleData<double[]>> source)
         {
             findMax = true;
             boutDetected = false;
@@ -87,7 +87,7 @@ namespace BonZeb
             return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value.Angles)));
         }
 
-        public IObservable<TailKinematics> Process(IObservable<double> source)
+        public IObservable<TailKinematicsData> Process(IObservable<double> source)
         {
             findMax = true;
             boutDetected = false;
@@ -103,7 +103,7 @@ namespace BonZeb
             return source.Select(value => DetectTailKinematicsFunc(value));
         }
 
-        public IObservable<TailKinematics> Process(IObservable<double[]> source)
+        public IObservable<TailKinematicsData> Process(IObservable<double[]> source)
         {
             findMax = true;
             boutDetected = false;
@@ -119,7 +119,7 @@ namespace BonZeb
             return source.Select(value => DetectTailKinematicsFunc(Utilities.CalculateMean(value)));
         }
 
-        private TailKinematics DetectTailKinematicsFunc(double value)
+        private TailKinematicsData DetectTailKinematicsFunc(double value)
         {
 
             if (value > maxVal)
@@ -226,7 +226,7 @@ namespace BonZeb
 
             prevPeakCounter = startPeakCounter;
 
-            return new TailKinematics(frequency, amplitude, boutDetected);
+            return new TailKinematicsData(frequency, amplitude, boutDetected);
         }
     }
 }

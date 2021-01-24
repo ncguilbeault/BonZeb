@@ -6,11 +6,12 @@ using System.Reactive.Linq;
 using OpenCV.Net;
 using Bonsai.Vision;
 using Bonsai;
+using Bonsai.Reactive;
 
 namespace BonZeb
 {
 
-    [Description("Calculates the eye angles by finding the angles of the minor axis of each circle enclosing the two largest binary thresholded regions that lie on the circumference of a circle centered around the centroid.")]
+    [Description("Calculates the eye angles by finding the angles of the minor axis of each circle enclosing the two binary thresholded regions that lie on the circumference of a circle centered around the centroid.")]
     [WorkflowElementCategory(ElementCategory.Transform)]
 
     public class FindEyeContours : Transform<Tuple<Point2f[], ConnectedComponentCollection>, ConnectedComponentCollection>
@@ -85,11 +86,15 @@ namespace BonZeb
         {
             if (contours.Count < 2)
             {
-                return contours;
+                return new ConnectedComponentCollection(new List<ConnectedComponent> { new ConnectedComponent(), new ConnectedComponent() }, contours.ImageSize);
             }
+
             double headingAngle = Math.Atan2(points[0].Y - points[1].Y, points[0].X - points[1].X);
+
             List<ConnectedComponent> sortedContours = contours.OrderBy(contour => Math.Abs(Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X))).ToList();
+
             if (angleRangeForEyeSearch.HasValue || DiscardRegionContainingCentroid || minDistance.HasValue || maxDistance.HasValue)
+            {
                 for (int i = sortedContours.Count - 1; i >= 0; i--)
                 {
                     if (angleRangeForEyeSearch.HasValue)
@@ -118,45 +123,61 @@ namespace BonZeb
                         sortedContours.Remove(sortedContours[i]);
                     }
                 }
+            }
+
             if (sortedContours.Count < 2)
             {
-                return contours;
+                return new ConnectedComponentCollection(new List<ConnectedComponent> { new ConnectedComponent(), new ConnectedComponent() }, contours.ImageSize);
             }
+
             List<ConnectedComponent> eyeContours = new List<ConnectedComponent> { sortedContours[0], sortedContours[1] }.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
+            
             if (!FitEllipsesToEyes)
             {
                 return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
             }
-            //ConnectedComponentCollection ellipseContours = new ConnectedComponentCollection(contours.ImageSize);
+
             IplImage ellipseImage = new IplImage(contours.ImageSize, depth, channels);
-            foreach (ConnectedComponent eyeContour in eyeContours)
+            ellipseImage.SetZero();
+
+            try
             {
-                try
+                foreach (ConnectedComponent eyeContour in eyeContours)
                 {
                     RotatedRect ellipse = CV.FitEllipse2(eyeContour.Contour);
                     CV.EllipseBox(ellipseImage, ellipse, new Scalar(255, 255, 255, 255), -1);
                 }
-                catch
-                {
-                    return new ConnectedComponentCollection(eyeContours, contours.ImageSize);
-                }
             }
+            catch
+            {
+                return new ConnectedComponentCollection(new List<ConnectedComponent> { new ConnectedComponent(), new ConnectedComponent() }, contours.ImageSize);
+            }
+
             MemStorage ellipseMemStorage = new MemStorage();
             int contourCount = CV.FindContours(ellipseImage, ellipseMemStorage, out Seq seqEllipseContours);
             Contours ellipseContours = new Contours(seqEllipseContours, ellipseImage.Size);
             Seq currentEllipseContour = ellipseContours.FirstContour;
             ConnectedComponentCollection ellipseConnectedComponents = new ConnectedComponentCollection(ellipseContours.ImageSize);
+
             while (currentEllipseContour != null)
             {
                 ellipseConnectedComponents.Add(ConnectedComponent.FromContour(currentEllipseContour));
                 currentEllipseContour = currentEllipseContour.HNext;
             }
+
             List<ConnectedComponent> ellipses = ellipseConnectedComponents.OrderBy(contour => Math.Atan2(Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).Y - points[0].Y, Utilities.RotatePoint(contour.Centroid, points[0], -headingAngle).X - points[0].X)).ToList();
+
+            if (ellipses.Count < 2)
+            {
+                return new ConnectedComponentCollection(new List<ConnectedComponent> { new ConnectedComponent(), new ConnectedComponent() }, contours.ImageSize);
+            }
+
             return new ConnectedComponentCollection(ellipses, contours.ImageSize);
         }
 
         private ConnectedComponentCollection FindEyeContoursFromImageFunc(IplImage image, Point2f[] points)
         {
+
             IplImage temp = image.Clone();
             MemStorage memStorage = new MemStorage();
             int contourCount = CV.FindContours(temp, memStorage, out Seq seqContours);

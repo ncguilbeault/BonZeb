@@ -30,7 +30,9 @@ namespace BonZeb.Design
         public override void Load(IServiceProvider provider)
         {
             imageViewer = new MultipleImageViewer { Dock = DockStyle.Fill };
-            imageViewer.PopulateComboBoxItems<BackgroundSubtractionData>();
+            imageViewer.PopulateMultipleImageViewer<BackgroundSubtractionData>();
+            imageViewer.MaximizeDropDownMenuWidth();
+            imageViewer.SelectImageIndex(0);
             var visualizerService = (IDialogTypeVisualizerService)provider.GetService(typeof(IDialogTypeVisualizerService));
             if (visualizerService != null)
             {

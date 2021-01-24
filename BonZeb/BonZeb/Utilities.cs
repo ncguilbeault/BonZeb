@@ -134,14 +134,31 @@ namespace BonZeb
             return imageData;
         }
 
-        public static double[] CalculateTailAngle(Point2f[] points)
+        public static double[] CalculateTailAngle(Point2f[] points, bool normalizeToHeading = true)
         {
-            double headingAngle = -Math.Atan2(points[1].Y - points[0].Y, points[1].X - points[0].X);
-            Point2f[] rotatedPoints = RotatePoints(points, points[0], headingAngle);
-            double[] tailCurvature = new double[rotatedPoints.Length - 1];
-            for (int i = 0; i < rotatedPoints.Length - 1; i++)
+
+            if (points.Length == 1)
             {
-                tailCurvature[i] = Math.Atan2(rotatedPoints[i + 1].Y - rotatedPoints[i].Y, rotatedPoints[i + 1].X - rotatedPoints[i].X);
+                return new double[] { double.NaN };
+            }
+            else if (points.Length == 2)
+            {
+                return new double[] { Math.Atan2(points[1].Y - points[0].Y, points[1].X - points[0].X) };
+            }
+            Point2f[] Points = new Point2f[points.Length];
+            if (normalizeToHeading)
+            {
+                double headingAngle = -Math.Atan2(points[1].Y - points[0].Y, points[1].X - points[0].X);
+                Points = RotatePoints(points, points[0], headingAngle);
+            }
+            else
+            {
+                points.CopyTo(Points, 0);
+            }
+            double[] tailCurvature = new double[Points.Length - 1];
+            for (int i = 0; i < Points.Length - 1; i++)
+            {
+                tailCurvature[i] = Math.Atan2(Points[i + 1].Y - Points[i].Y, Points[i + 1].X - Points[i].X);
                 if (i > 0)
                 {
                     if (tailCurvature[i] - tailCurvature[i - 1] > Math.PI)

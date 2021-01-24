@@ -3,21 +3,20 @@ using Bonsai.Vision.Design;
 using BonZeb;
 using BonZeb.Design;
 using OpenCV.Net;
-using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-[assembly: TypeVisualizer(typeof(TailAnglesVisualizer), Target = typeof(TailAngles<double>))]
-[assembly: TypeVisualizer(typeof(TailAnglesVisualizer), Target = typeof(TailAngles<double[]>))]
+[assembly: TypeVisualizer(typeof(TailAnglesVisualizer), Target = typeof(TailAngleData<double>))]
+[assembly: TypeVisualizer(typeof(TailAnglesVisualizer), Target = typeof(TailAngleData<double[]>))]
 
 namespace BonZeb.Design
 {
     class TailAnglesVisualizer : IplImageVisualizer
     {
-        object tailAngles;
+        Point2f[] tailPoints = new Point2f[0];
         OpenCV.Net.Size imageSize;
         IplImage labelImage;
         IplImageTexture labelTexture;
@@ -33,31 +32,38 @@ namespace BonZeb.Design
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             };
         }
-        public static Vector2 NormalizePoint(Point2f point, OpenCV.Net.Size imageSize)
-        {
-            return new Vector2((point.X * 2f / imageSize.Width) - 1, -((point.Y * 2f / imageSize.Height) - 1));
-        }
-        public static Vector2 NormalizePointForTailAngle(Point2f point, double angle, OpenCV.Net.Size imageSize)
-        {
-            return new Vector2(((point.X + (float)Math.Cos(angle) * 10f) * 2f / imageSize.Width) - 1, -(((point.Y + (float)Math.Sin(angle) * 10f) * 2f / imageSize.Height) - 1));
-        }
 
-        public void Show(TailAngles<double> value)
+        public override void Show(object value)
         {
-            tailAngles = value;
-            if (value != null && value.Image != null)
+            if (value != null)
             {
-                imageSize = value.Image.Size;
-                base.Show(value.Image);
+                if (value is TailAngleData<double>)
+                {
+                    TailAngleData<double> newValue = (TailAngleData<double>)value;
+                    if (newValue.Image != null)
+                    {
+                        tailPoints = newValue.Points;
+                        imageSize = newValue.Image.Size;
+                        base.Show(newValue.Image);
+                    }
+                }
+                else if (value is TailAngleData<double[]>)
+                {
+                    TailAngleData<double[]> newValue = (TailAngleData<double[]>)value;
+                    if (newValue.Image != null)
+                    {
+                        tailPoints = newValue.Points;
+                        imageSize = newValue.Image.Size;
+                        base.Show(newValue.Image);
+                    }
+                }
             }
-        }
-        public void Show(TailAngles<double[]> value)
-        {
-            tailAngles = value;
-            if (value != null && value.Image != null)
+            else
             {
-                imageSize = value.Image.Size;
-                base.Show(value.Image);
+                if (tailPoints.Length != 0)
+                {
+                    tailPoints = new Point2f[0];
+                }
             }
         }
 
@@ -66,7 +72,7 @@ namespace BonZeb.Design
             GL.Color4(Color4.White);
             base.RenderFrame();
 
-            if (tailAngles != null && tailAngles.GetType().GetProperty("Image").GetValue(tailAngles) != null)
+            if (tailPoints.Length != 0)
             {
                 if (labelImage == null || labelImage.Size != imageSize)
                 {
@@ -82,13 +88,12 @@ namespace BonZeb.Design
                     GL.LineWidth(3 * VisualizerCanvas.Height / 640f);
                     try
                     {
-                        Point2f[] tailPoints = (Point2f[]) tailAngles.GetType().GetProperty("Points").GetValue(tailAngles);
                         for (int i = 0; i < tailPoints.Length - 1; i++)
                         {
                             GL.Begin(PrimitiveType.Lines);
                             GL.Color4(1.0, 0.0, 0.0, 1.0);
-                            GL.Vertex2(NormalizePointForTailAngle(tailPoints[i], Math.Atan2(tailPoints[i].Y - tailPoints[i + 1].Y, tailPoints[i].X - tailPoints[i + 1].X), imageSize));
-                            GL.Vertex2(NormalizePointForTailAngle(tailPoints[i + 1], Math.Atan2(tailPoints[i + 1].Y - tailPoints[i].Y, tailPoints[i + 1].X - tailPoints[i].X), imageSize));
+                            GL.Vertex2(Utilities.NormalizePointForTailAngle(tailPoints[i], Math.Atan2(tailPoints[i].Y - tailPoints[i + 1].Y, tailPoints[i].X - tailPoints[i + 1].X), imageSize));
+                            GL.Vertex2(Utilities.NormalizePointForTailAngle(tailPoints[i + 1], Math.Atan2(tailPoints[i + 1].Y - tailPoints[i].Y, tailPoints[i + 1].X - tailPoints[i].X), imageSize));
                             GL.End();
                         }
                     }

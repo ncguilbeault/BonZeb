@@ -5,17 +5,19 @@ namespace BonZeb
 {
     public class CentroidData
     {
-        // Class used for creating a data type which contains the calculated tail points.
+        // Class used for creating a data type which contains the centroid data.
         public Point2f Centroid { get; set; }
         public IplImage Image { get; set; }
+        public IplImage BackgroundSubtractedImage { get; set; }
         public IplImage ThresholdImage { get; set; }
-        public IplImage Contours { get; set; }
-        public CentroidData(Point2f centroid, IplImage image, IplImage thresholdImage, IplImage contours = null)
+        public ConnectedComponent LargestContour { get; set; }
+        public CentroidData(Point2f centroid, IplImage image, IplImage thresholdImage = null, IplImage backgroundSubtractedImage = null, ConnectedComponent largestContour = null)
         {
             Centroid = centroid;
             Image = image;
             ThresholdImage = thresholdImage;
-            Contours = contours;
+            BackgroundSubtractedImage = backgroundSubtractedImage;
+            LargestContour = largestContour;
         }
     }
 }

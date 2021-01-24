@@ -10,13 +10,13 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-[assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPoints))]
+[assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPointData))]
 
 namespace BonZeb.Design
 {
     public class TailPointsVisualizer : IplImageVisualizer
     {
-        TailPoints tailPoints;
+        TailPointData tailPoints;
         IplImage labelImage;
         IplImageTexture labelTexture;
 
@@ -34,18 +34,11 @@ namespace BonZeb.Design
 
         public override void Show(object value)
         {
-            tailPoints = (TailPoints)value;
+            tailPoints = (TailPointData)value;
             if (tailPoints != null)
             {
                 base.Show(tailPoints.Image);
             }
-        }
-
-        public static Vector2 NormalizePoint(Point2f point, OpenCV.Net.Size imageSize)
-        {
-            return new Vector2(
-                (point.X * 2f / imageSize.Width) - 1,
-                -((point.Y * 2f / imageSize.Height) - 1));
         }
 
         protected override void RenderFrame()
@@ -73,7 +66,7 @@ namespace BonZeb.Design
                         for (int i = 0; i < tailPoints.Points.Length; i++)
                         {
                             GL.Color3(1.0, 0.0, 0.0);
-                            GL.Vertex2(NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
+                            GL.Vertex2(Utilities.NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
                         }
                     }
                     finally

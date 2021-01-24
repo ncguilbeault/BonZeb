@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BonZeb", "BonZeb\BonZeb.csproj", "{C4FD2B39-D964-4537-839C-844FBA7AD8BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BonZeb", "BonZeb\BonZeb.csproj", "{C4FD2B39-D964-4537-839C-844FBA7AD8BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BonZeb.Design", "BonZeb.Design\BonZeb.Design.csproj", "{AC5D4FC0-D1FE-4AC0-B8C0-E70459B175BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BonZeb.Design", "BonZeb.Design\BonZeb.Design.csproj", "{AC5D4FC0-D1FE-4AC0-B8C0-E70459B175BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
