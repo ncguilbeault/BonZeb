@@ -6,6 +6,8 @@ main:
     url: /basics/
   - title: "Docs"
     url: /docs/
+  - title: "Resources"
+    url: /resources/
 
 docs:
   - title: "Visual Stimulation"
@@ -16,5 +18,16 @@ docs:
       url: /docs/visual-stimulation-workflow/
     - title: "Calibration"
       url: /docs/calibration/
-
+  - title: "Behavioural Tracking and Analysis"
+    url: /docs/behavioural-tracking-and-analysis/
+  - title: "Multi-animal Tracking"
+    url: /docs/multi-animal-tracking/
+  - title: "Virtual Open-loop Stimulation"
+    url: /docs/virtual-open-loop-stimulation/
+  - title: "Closed-loop Stimulation"
+    url: /docs/virtual-open-loop-stimulation/
+  - title: "Optogenetics"
+    url: /docs/optogenetics/
+  - title: "Calcium Imaging"
+    url: /docs/calcium-imaging/
     

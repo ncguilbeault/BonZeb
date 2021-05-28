@@ -13,7 +13,6 @@ Welcome to BonZeb - a [Bonsai](https://bonsai-rx.org/) library for behavioural t
 BonZeb is a [Bonsai](https://bonsai-rx.org/) library for high-resolution behavioural tracking and stimulation. 
 BonZeb provides essential tools for zebrafish behavioural tracking and analysis.
 Here, you will find information and examples for how to use BonZeb to implement behavioural analysis, multi-animal tracking, closed-loop and virtual open-loop visual stimulation, and more.
-For more information on Bonsai, please check out the forums on [Gitter](https://gitter.im/bonsai-rx/Lobby), [Google Groups](https://groups.google.com/forum/#!forum/bonsai-users), and [Discord](https://discord.gg/Cp8ZfQ9ytp).
 
 # Download
 This package was originally built in Bonsai version 2.4.0 but should work for newer versions of Bonsai as well. 
@@ -64,48 +63,17 @@ Both the Allied Vision and Teledyne Dalsa modules require bonsai to be run in no
 
 `Bonsai.exe --noboot`
 
-# Visual Stimulation
-BonZeb can be used with Bonsai Shaders to generate closed-loop and open-loop visual stimuli with controlled behavioural feedback.
-The Bonsai Shaders package utilizes OpenGL for rendering visual stimuli and offers immense flexibility.
+# Tools, Workflows, and Applications
+BonZeb is fully modular and easily slots into custom Bonsai workflows. Here are a few examples of the types of applications using BonZeb.
 
-See the [Visual Stimulation](./../docs/visual-stimulus-library) section in the [Docs](./../docs) for how to generate visual stimuli such as optomotor gratings, optokinetic gratings, looming dots, small prey, and phototaxic stimuli.
-
-# Calibration
-BonZeb provides a simple solution for users to map the area used for visual stimulus rendering to a camera’s field of view (FOV) or a specified region within the FOV (calibration).
-
-See the [Calibration](./../docs/calibration) section in the [Docs](./../docs) for how to calibrate visual display devices for rendering visual stimuli.
-
-# Behavioural Tracking and Analysis
-BonZeb provides many different modules and workflows for behavioural tracking and analysis.
-These include methods for background calculation, centroid tracking, tail tracking, eye tracking, and tail beat analysis.
-BonZeb can be used for online tracking, offline tracking, and batch processing.
-
-See the [Behavioural Tracking and Analysis](./../docs/behavioural-tracking-and-analysis) section in the [Docs](./../docs) for how to implement these methods.
-
-# Multi-animal Tracking
-BonZeb provides examples for how to perform multi-animal free-swimming and head-fixed tracking. 
-
-See the [Multi-animal Tracking](./../docs/multi-animal-tracking) section in the [Docs](./../docs) for how to perform multi-animal free-swimming and head-fixed tracking.
-
-# Virtual Open-loop Free-swimming
-BonZeb provides examples for how to build and implement virtual open-loop free-swimming behavioural assays. 
-
-See the [Virtual Open-loop Free-swimming](<Examples/Virtual Open-loop Free-swimming>) folder for how ti implement virtual open-loop free-swimming behavioural assays.
-
-# Closed-loop Head-fixed
-BonZeb provides examples for how to build and implement closed-loop head-fixed behavioural assays. 
-
-See the [Closed-loop Head-fixed](<Examples/Closed-loop Head-fixed>) folder for how a closed-loop head-fixed behavioural assay can be used and implemented.
-
-# Optogenetics
-BonZeb provides examples for how to perform optogenetics. 
-
-See the [Optogenetics](<Examples/Optogenetics>) folder for how to implement an optogenetic stimulation paradigm.
-
-# Calcium Imaging
-BonZeb provides examples for how to perform calcium imaging with closed-loop visual stimulation. 
-
-See the [Calcium Imaging](<Examples/Calcium Imaging>) folder for how to implement calcium imaging with closed-loop visual stimulation.
+* [Visual Stimulation](./../docs/visual-stimulus-library)
+* [Calibration](./../docs/calibration)
+* [Behavioural Tracking and Analysis](./../docs/behavioural-tracking-and-analysis)
+* [Multi-animal Tracking](./../docs/multi-animal-tracking)
+* [Virtual Open-loop Stimulation](<Examples/Virtual Open-loop Free-swimming>)
+* [Closed-loop Stimulation](<Examples/Closed-loop Head-fixed>)
+* [Optogenetics](<Examples/Optogenetics>)
+* [Calcium Imaging](<Examples/Calcium Imaging>)
 
 # Acknowledgements
 Thank you to all of the people who tested BonZeb and provided useful feedback on the manuscript. Thank you to the developers for creating the elegant and powerful programming language Bonsai and to the larger community for welcoming the exchange of ideas. 

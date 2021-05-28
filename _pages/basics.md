@@ -1,17 +1,16 @@
 ---
 permalink: /basics/
+sidebar:
+  - title: "BonZeb"
+    image: /assets/images/BonZeb_Logo_Man.svg
+    image_alt: "BonZeb"
+    text: "A Bonsai library for behavioural tracking and stimulation."
 ---
 
 # Getting Started with the Basics
 In this section, users will find information about the basics of Bonsai and the Bonsai programmming language as they relate to BonZeb.
 These guides are meant to help users with little to no experience in Bonsai.
 Experienced users can skip this section.
-For more information about Bonsai, please visit these websites: 
-* [Bonsai Resources](https://bonsai-rx.org/resources/)
-* [Bonsai Community](https://bonsai-rx.org/community/)
-* [Bonsai Users Google Group](https://groups.google.com/forum/#!forum/bonsai-users)
-* [Bonsai Discord Channel](https://discord.gg/Cp8ZfQ9ytp)
-* [Bonsai Gitter](https://gitter.im/bonsai-rx/Lobby)
 
 # Starting Bonsai
 When you run Bonsai, two windows will appear.
