@@ -9,6 +9,6 @@ sidebar:
 ---
 
 # Resources
-* [BonZeb Discord Channel](https://discord.gg/yfGfhA4W)
+* [BonZeb Discord Channel](https://discord.gg/mU7RtUy6qr)
 * [Bonsai Users Google Group](https://groups.google.com/forum/#!forum/bonsai-users)
-* [Bonsai Discord Channel](https://discord.gg/Cp8ZfQ9ytp)
+* [Bonsai Discord Channel](https://discord.gg/mU7RtUy6qr)
