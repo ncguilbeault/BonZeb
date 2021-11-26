@@ -19,7 +19,7 @@ out vec4 frag_colour;
 void gratings() 
 {
 
-  float value = 0.5f * sin(((tex_coord.x - (fish_position_y / 1088.0)) * sin(angle + (threehalvespi)) + (tex_coord.y - (fish_position_x / 1088.0)) * cos(angle + (threehalvespi))) * twopi * frequency - speed * phase) + 0.5f;
+  float value = 0.5f * sin(((tex_coord.x - (fish_position_y / 1088.0)) * sin(angle + (threehalvespi)) + (tex_coord.y - (fish_position_x / 1088.0)) * cos(angle + (threehalvespi))) * twopi * frequency - speed * time) + 0.5f;
   frag_colour = vec4(value, value, value, 1);
   return;
 
@@ -28,7 +28,7 @@ void gratings()
 void gratings_2() 
 {
 
-  float value = 0.5f * sin(((tex_coord.x - (fish_position_y / 1088.0)) * sin(angle + (halfpi)) + (tex_coord.y - (fish_position_x / 1088.0)) * cos(angle + (halfpi))) * twopi * frequency - speed * phase) + 0.5f;
+  float value = 0.5f * sin(((tex_coord.x - (fish_position_y / 1088.0)) * sin(angle + (halfpi)) + (tex_coord.y - (fish_position_x / 1088.0)) * cos(angle + (halfpi))) * twopi * frequency - speed * time) + 0.5f;
   frag_colour = vec4(value, value, value, 1);
   return;
 

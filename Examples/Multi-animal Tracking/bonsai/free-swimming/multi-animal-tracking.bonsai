@@ -16,7 +16,7 @@
           <Nodes>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:FileCapture">
-                <cv:FileName>C:\Users\Nicholas\Downloads\MultipleFish_22fps_hugeResolution.avi</cv:FileName>
+                <cv:FileName>C:\Users\Nicholas\Downloads\Plate 1 Testing MCC950 on TL and panx1a 29 September 2020_c001_0001.avi</cv:FileName>
                 <cv:PlaybackRate>0</cv:PlaybackRate>
                 <cv:StartPosition>0</cv:StartPosition>
                 <cv:PositionUnits>Frames</cv:PositionUnits>
@@ -97,7 +97,7 @@
             </Expression>
             <Expression xsi:type="Combinator">
               <Combinator xsi:type="cv:Threshold">
-                <cv:ThresholdValue>70</cv:ThresholdValue>
+                <cv:ThresholdValue>32</cv:ThresholdValue>
                 <cv:MaxValue>255</cv:MaxValue>
                 <cv:ThresholdType>Binary</cv:ThresholdType>
               </Combinator>
@@ -110,7 +110,7 @@
                   <cv:X>0</cv:X>
                   <cv:Y>0</cv:Y>
                 </cv:Offset>
-                <cv:MinArea>40</cv:MinArea>
+                <cv:MinArea xsi:nil="true" />
                 <cv:MaxArea xsi:nil="true" />
               </Combinator>
             </Expression>
@@ -151,14 +151,15 @@
                         </Expression>
                         <Expression xsi:type="Combinator">
                           <Combinator xsi:type="bz:CalculateTailPoints">
-                            <bz:DistTailBase>12</bz:DistTailBase>
+                            <bz:DistTailBase>5</bz:DistTailBase>
                             <bz:HeadingDirection>-1</bz:HeadingDirection>
-                            <bz:NumTailSegments>7</bz:NumTailSegments>
-                            <bz:DistTailPoints>6</bz:DistTailPoints>
+                            <bz:NumTailSegments>2</bz:NumTailSegments>
+                            <bz:DistTailPoints>5</bz:DistTailPoints>
                             <bz:RangeTailPointAngles>150</bz:RangeTailPointAngles>
                             <bz:PixelSearchMethod>Brightest</bz:PixelSearchMethod>
                             <bz:OffsetX>0</bz:OffsetX>
                             <bz:OffsetY>0</bz:OffsetY>
+                            <bz:TailTipContrastThreshold xsi:nil="true" />
                             <bz:TailPointCalculationMethod>PixelSearch</bz:TailPointCalculationMethod>
                           </Combinator>
                         </Expression>

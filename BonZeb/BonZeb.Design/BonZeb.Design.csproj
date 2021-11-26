@@ -4,9 +4,9 @@
     <Title>BonZeb Design Library</Title>
     <Description>Visualizers for BonZeb package.</Description>
     <Authors>Nicholas Guilbeault</Authors>
-    <Copyright>Copyright © Nicholas Guilbeault 2020</Copyright>
+    <Copyright>Copyright © Nicholas Guilbeault 2021</Copyright>
     <ProjectUrl>https://github.com/ncguilbeault/BonZeb</ProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/bonvision/BonVision/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/ncguilbeault/BonZeb/master/LICENSE</PackageLicenseUrl>
     <PackageIconUrl>https://github.com/ncguilbeault/BonZeb/blob/master/Resources/BonZeb_Logo.png?raw=true</PackageIconUrl>
     <PackageOutputPath>..\bin\$(Configuration)</PackageOutputPath>
     <PackageTags>Bonsai Rx BonZeb Visualizers Tracking Stimulation Zebrafish</PackageTags>
@@ -14,7 +14,7 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
     <TargetFramework>net472</TargetFramework>
     <Features>strict</Features>
-    <Version>1.1.0</Version>
+    <Version>1.1.0.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

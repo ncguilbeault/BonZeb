@@ -108,7 +108,6 @@ namespace BonZeb
             int imageHeight = image.Height;
             byte[] imageData = Utilities.ConvertIplImageToByteArray(image);
             Point2f[] points = CalculateTailPointsFunc(centroid, imageWidthStep, imageHeight, imageData);
-            Console.WriteLine(points.Length);
             return new TailPointData(points, image);
         }
 

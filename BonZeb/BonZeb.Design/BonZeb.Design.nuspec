@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>BonZeb.Design</id>
+    <version>1.1.0</version>
+    <title>BonZeb Design Library</title>
+    <authors>Nicholas Guilbeault</authors>
+    <owners>Nicholas Guilbeault</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://raw.githubusercontent.com/bonvision/BonVision/master/LICENSE</licenseUrl>
+    <iconUrl>https://github.com/ncguilbeault/BonZeb/blob/master/Resources/BonZeb_Logo.png?raw=true</iconUrl>
+    <description>Visualizers for BonZeb package.</description>
+    <copyright>Copyright © Nicholas Guilbeault 2020</copyright>
+    <tags>Bonsai Rx BonZeb Visualizers Tracking Stimulation Zebrafish</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.7.2">
+        <dependency id="BonZeb" version="1.1.0" exclude="Build,Analyzers" />
+        <dependency id="Bonsai.Core" version="2.5.0" exclude="Build,Analyzers" />
+        <dependency id="Bonsai.System" version="2.5.1" exclude="Build,Analyzers" />
+        <dependency id="Bonsai.Vision" version="2.5.1" exclude="Build,Analyzers" />
+        <dependency id="Bonsai.Vision.Design" version="2.5.1" exclude="Build,Analyzers" />
+        <dependency id="OpenCV.Net" version="3.3.1" exclude="Build,Analyzers" />
+        <dependency id="OpenTK" version="3.1.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Windows.Forms" targetFramework=".NETFramework4.7.2" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
