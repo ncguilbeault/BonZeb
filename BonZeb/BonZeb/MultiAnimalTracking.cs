@@ -129,6 +129,8 @@ namespace BonZeb
                 currentContour = currentContour.HNext;
             }
 
+            MathNet.Numerics.Statistics.Statistics.
+
             Point2f[] centroids = numCentroids.HasValue ? new Point2f[numCentroids.Value] : new Point2f[connectedComponents.Count];
 
             if (connectedComponents.Count != 0)
@@ -142,15 +144,12 @@ namespace BonZeb
 
             if (centroids.Length == 0)
             {
-                //Console.WriteLine("Centroids not found");
                 return new MultiAnimalTrackingData(input.Image, thresh, input.BackgroundSubtractedImage);
             }
 
             List<Point2f> updatedCentroids = new List<Point2f>();
             List<int[]> result = new List<int[]>();
             (updatedCentroids, result) = ReorderCentroidsForIdentities(centroids.ToList());
-
-            //Point2f[] orderedCentroids = new Point2f[updatedCentroids.Count];
             List<Point2f> tempCentroids = new List<Point2f>();
             for (int i = 0; i < result[1].Length; i++)
             {
@@ -159,32 +158,7 @@ namespace BonZeb
                     tempCentroids.Add(updatedCentroids[result[1][i]]);
                 }
             }
-            //Point2f[] orderedCentroids = new Point2f[tempCentroids.Count];
             Point2f[] orderedCentroids = tempCentroids.ToArray();
-            string centroidsString = "";
-            string updatedCentroidsString = "";
-            string orderedCentroidsString = "";
-            string prevCentroidsString = "";
-            for (int i = 0; i < prevCentroids.Length; i++)
-            {
-                prevCentroidsString += $"{prevCentroids[i]},";
-            }
-            for (int i = 0; i < centroids.Length; i++)
-            {
-                centroidsString += $"{centroids[i]},";
-            }
-            for (int i = 0; i < updatedCentroids.Count; i++)
-            {
-                updatedCentroidsString += $"{updatedCentroids[i]},";
-            }
-            for (int i = 0; i < orderedCentroids.Length; i++)
-            {
-                orderedCentroidsString += $"{orderedCentroids[i]},";
-            }
-            Console.WriteLine($"Prev centroids: {prevCentroidsString}");
-            Console.WriteLine($"Centroids: {centroidsString}");
-            Console.WriteLine($"Updated centroids: {updatedCentroidsString}");
-            Console.WriteLine($"Ordered centroids: {orderedCentroidsString}");
             prevCentroids = orderedCentroids;
             return new MultiAnimalTrackingData(input.Image, centroids, result[1], orderedCentroids, thresh, input.BackgroundSubtractedImage);
 
@@ -198,29 +172,14 @@ namespace BonZeb
 
         private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentities(List<Point2f> centroids)
         {
-            Console.WriteLine($"Centroids: {centroids.Count}");
             double[,] cost = prevCentroids != null ? cDist(centroids.ToArray(), prevCentroids) : cDist(centroids.ToArray());
             if (prevCentroids == null)
             {
                 prevCentroids = new Point2f[] { new Point2f(0, 0) };
             }
-            Console.WriteLine($"Cost: {cost.GetLength(0)}, {cost.GetLength(1)}");
             List<int[]> result = LinearSumAssignment(cost);
-            Console.WriteLine($"Linear Assignment: {result.Count}, {result[0].Length}");
             int[] rowIndices = result[0];
             int[] colIndices = result[1];
-            string rowIndicesString = "";
-            string colIndicesString = "";
-            for (int i = 0; i < rowIndices.Length; i++)
-            {
-                rowIndicesString += $"{rowIndices[i]},";
-            }
-            for (int i = 0; i < colIndices.Length; i++)
-            {
-                colIndicesString += $"{colIndices[i]},";
-            }
-            Console.WriteLine($"Row indices: {rowIndicesString}");
-            Console.WriteLine($"Col indices: {colIndicesString}");
             List<Point2f> updatedCentroids = new List<Point2f>();
             for (int i = 0; i < centroids.Count; i++)
             {
@@ -228,7 +187,6 @@ namespace BonZeb
             }
             if (prevCentroids.Length > centroids.Count)
             {
-                Console.WriteLine("here1");
                 int missedIndex = 0;
                 for (int i = 0; i < colIndices.Length; i++)
                 {
@@ -237,7 +195,6 @@ namespace BonZeb
                         missedIndex = i;
                     }
                 }
-                Console.WriteLine($"her2 {missedIndex}");
                 double minCost = cost[0, missedIndex];
                 int mergedIndex = 0;
                 for (int i = 1; i < cost.GetLength(0); i++)
@@ -283,7 +240,6 @@ namespace BonZeb
                     result[i, j] = distance(XA[i], XB[j]);
                 }
             }
-            //Transpose(ref result);
             return result;
         }
 

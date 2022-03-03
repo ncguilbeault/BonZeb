@@ -562,7 +562,7 @@ def convert_timestamps(timestamps, format = "ms"):
     return timestamps
 
 def normalize_data(data):
-    return (data - np.min(data)) / (np.max(data) - np.min(data))
+    return (data - np.nanmin(data)) / (np.nanmax(data) - np.nanmin(data))
 
 def order_data_by_timestamps(data, timestamps):
     ordered_timestamps = np.unique([val for arr in timestamps for val in arr])
