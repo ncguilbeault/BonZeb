@@ -43,7 +43,16 @@ namespace BonZeb
         [Description("The number of centroids to track.")]
         public int? NumCentroids { get => numCentroids; set => numCentroids = value.HasValue && value > 0 ? value : null; }
 
+        [Description("The method to use to assign identities to tracked objects over time.")]
+        public IdentityTrackingMethod IdentityTrackingMethod { get; set; }
+
+        private double samplingRate;
+        [Description("The kalman filter sampling rate.")]
+        public double SamplingRate { get => samplingRate; set => samplingRate = value; }
+
         private Point2f[] prevCentroids;
+        private Point2f[] prevCentroids2;
+        private KalmanFilter[] kalmanFilters;
 
         public MultiAnimalTracking()
         {
@@ -60,8 +69,7 @@ namespace BonZeb
             prevCentroids = null;
             return source.Select(value => 
             {
-                //prevCentroids = null;
-                return MultiAnimalCentroidsFunc(value);
+                return MultiAnimalCentroidsFromImage(value);
             });
         }
 
@@ -70,12 +78,31 @@ namespace BonZeb
             prevCentroids = null;
             return source.Select(value =>
             {
-                //prevCentroids = null;
-                return MultiAnimalCentroidsFunc(new BackgroundSubtractionData(value));
+                return MultiAnimalCentroidsFromImage(new BackgroundSubtractionData(value));
             });
         }
 
-        private MultiAnimalTrackingData MultiAnimalCentroidsFunc(BackgroundSubtractionData input)
+        public IObservable<MultiAnimalTrackingData> Process(IObservable<ConnectedComponentCollection> source)
+        {
+            prevCentroids = null;
+            return source.Select(value =>
+            {
+                ConnectedComponentCollection connectedComponents = value;
+                Point2f[] centroids = numCentroids.HasValue ? new Point2f[numCentroids.Value] : new Point2f[connectedComponents.Count];
+                if (connectedComponents.Count != 0)
+                {
+                    List<ConnectedComponent> sortedComponents = connectedComponents.OrderByDescending(contour => contour.Area).ToList();
+                    for (int i = 0; i < connectedComponents.Count; i++)
+                    {
+                        centroids[i] = sortedComponents[i].Centroid;
+                    }
+                }
+
+                return MultiAnimalCentroidsFunc(centroids);
+            });
+        }
+
+        private MultiAnimalTrackingData MultiAnimalCentroidsFromImage(BackgroundSubtractionData input)
         {
             IplImage image = new IplImage(input.Image.Size, input.Image.Depth, 1);
 
@@ -129,8 +156,6 @@ namespace BonZeb
                 currentContour = currentContour.HNext;
             }
 
-            MathNet.Numerics.Statistics.Statistics.
-
             Point2f[] centroids = numCentroids.HasValue ? new Point2f[numCentroids.Value] : new Point2f[connectedComponents.Count];
 
             if (connectedComponents.Count != 0)
@@ -146,38 +171,55 @@ namespace BonZeb
             {
                 return new MultiAnimalTrackingData(input.Image, thresh, input.BackgroundSubtractedImage);
             }
-
-            List<Point2f> updatedCentroids = new List<Point2f>();
-            List<int[]> result = new List<int[]>();
-            (updatedCentroids, result) = ReorderCentroidsForIdentities(centroids.ToList());
-            List<Point2f> tempCentroids = new List<Point2f>();
-            for (int i = 0; i < result[1].Length; i++)
-            {
-                if (result[1][i] != -1)
-                {
-                    tempCentroids.Add(updatedCentroids[result[1][i]]);
-                }
-            }
-            Point2f[] orderedCentroids = tempCentroids.ToArray();
-            prevCentroids = orderedCentroids;
-            return new MultiAnimalTrackingData(input.Image, centroids, result[1], orderedCentroids, thresh, input.BackgroundSubtractedImage);
-
-            //}
-            //catch
-            //{
-            //    return new MultiAnimalTrackingData(input.Image, thresh, input.BackgroundSubtractedImage);
-            //}
+            MultiAnimalTrackingData result = MultiAnimalCentroidsFunc(centroids);
+            return new MultiAnimalTrackingData(input.Image, result.UnorderedCentroids, result.UnorderedIdentities, result.OrderedCentroids, thresh, input.BackgroundSubtractedImage);
 
         }
 
-        private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentities(List<Point2f> centroids)
+        private MultiAnimalTrackingData MultiAnimalCentroidsFunc(Point2f[] centroids)
+        { 
+
+            List<Point2f> updatedCentroids = new List<Point2f>();
+            List<int[]> result = new List<int[]>();
+            List<Point2f> tempCentroids = new List<Point2f>();
+
+            if (IdentityTrackingMethod == IdentityTrackingMethod.Hungarian)
+            {
+                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(centroids.ToList());
+                for (int i = 0; i < result[1].Length; i++)
+                {
+                    if (result[1][i] != -1)
+                    {
+                        tempCentroids.Add(updatedCentroids[result[1][i]]);
+                    }
+                }
+            }
+            else
+            {
+                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingKalmanFilter(centroids.ToList());
+                for (int i = 0; i < result[1].Length; i++)
+                {
+                    if (result[1][i] != -1)
+                    {
+                        tempCentroids.Add(updatedCentroids[result[1][i]]);
+                    }
+                }
+            }
+
+            Point2f[] orderedCentroids = tempCentroids.ToArray();
+            prevCentroids = orderedCentroids;
+            return new MultiAnimalTrackingData(centroids, result[1], orderedCentroids);
+
+        }
+
+        private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentitiesUsingHungarian(List<Point2f> centroids)
         {
-            double[,] cost = prevCentroids != null ? cDist(centroids.ToArray(), prevCentroids) : cDist(centroids.ToArray());
             if (prevCentroids == null)
             {
                 prevCentroids = new Point2f[] { new Point2f(0, 0) };
             }
-            List<int[]> result = LinearSumAssignment(cost);
+            double[,] cost = Hungarian.cDist(centroids.ToArray(), prevCentroids);
+            List<int[]> result = Hungarian.LinearSumAssignment(cost);
             int[] rowIndices = result[0];
             int[] colIndices = result[1];
             List<Point2f> updatedCentroids = new List<Point2f>();
@@ -206,194 +248,54 @@ namespace BonZeb
                     }
                 }
                 updatedCentroids.Add(centroids[mergedIndex]);
-                (updatedCentroids, result) = ReorderCentroidsForIdentities(updatedCentroids);
+                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(updatedCentroids);
             }
             return Tuple.Create(updatedCentroids, result);
         }
 
-            private double distance(Point2f A, Point2f B)
+        private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentitiesUsingKalmanFilter(List<Point2f> centroids)
         {
-            return Math.Sqrt(Math.Pow(A.X - B.X, 2) + Math.Pow(A.Y - B.Y, 2));
-        }
-
-        private double[,] cDist(Point2f[] XA, Point2f[] XB)
-        {
-
-            /* Parameters
-				XA: array_like
-					An mA by n array of mA original observations in an n-dimensional space. Inputs are converted to double type.
-				XB: array_like
-					An mB by n array of mB original observations in an n-dimensional space. Inputs are converted to double type.
-			Returns
-				Y: ndarray
-				A mA by mB distance matrix is returned. For each i and j, the metric dist(u=XA[i], v=XB[j]) is computed and stored 
-				in the ij th entry.
-			*/
-            int mA = XA.Length, mB = XB.Length;
-
-            double[,] result = new double[mA, mB];
-
-            for (int i = 0; i < mA; i++)
+            if (prevCentroids == null)
             {
-                for (int j = 0; j < mB; j++)
+                prevCentroids = new Point2f[] { new Point2f(0, 0) };
+            }
+            for (int i = 0; i < centroids.Count; i++)
+            {
+                KalmanFilter km = new KalmanFilter();
+                kalmanFilters.Append(km);
+            }    
+            List<int[]> result = Hungarian.LinearSumAssignment(cost);
+            int[] rowIndices = result[0];
+            int[] colIndices = result[1];
+            List<Point2f> updatedCentroids = new List<Point2f>();
+            for (int i = 0; i < centroids.Count; i++)
+            {
+                updatedCentroids.Add(centroids[i]);
+            }
+            if (prevCentroids.Length > centroids.Count)
+            {
+                int missedIndex = 0;
+                for (int i = 0; i < colIndices.Length; i++)
                 {
-                    result[i, j] = distance(XA[i], XB[j]);
-                }
-            }
-            return result;
-        }
-
-        private double[,] cDist(Point2f[] XA)
-        {
-            Point2f[] XB = new Point2f[XA.Length];
-            for (int i = 0; i < XA.Length; i++)
-{
-                XB[i] = new Point2f(0, 0);
-            }
-            return cDist(XA, XB);
-        }
-
-        private static List<int[]> LinearSumAssignment(double[,] cost)
-        {
-            /*
-				Parameters
-				----------
-				cost_matrix : array
-					The cost matrix of the bipartite graph.
-				Returns
-				-------
-				row_ind, col_ind : array
-					An array of row indices and one of corresponding column indices giving
-					the optimal assignment. The cost of the assignment can be computed
-					as ``cost_matrix[row_ind, col_ind].sum()``. The row indices will be
-					sorted; in the case of a square cost matrix they will be equal to
-					``numpy.arange(cost_matrix.shape[0])``.
-			*/
-
-            var nr = cost.GetLength(0);
-            var nc = cost.GetLength(1);
-
-            if (nr >= nc)
-            {
-                var tmpCost = new double[nc, nr];
-                for (var i = 0; i < nc; i++)
-                    for (var j = 0; j < nr; j++)
-                        tmpCost[i, j] = cost[j, i];
-                cost = tmpCost;
-                nr = cost.GetLength(0);
-                nc = cost.GetLength(1);
-            }
-
-            // Initialize working arrays
-            var u = new double[nr];
-            var v = new double[nc];
-            var shortestPathCosts = new double[nc];
-            var path = new int[nc];
-            var x = new int[nr];
-            var y = new int[nc];
-            var sr = new bool[nr];
-            var sc = new bool[nc];
-
-            for (int i = 0; i < nc; i++)
-            {
-                path[i] = -1;
-                y[i] = -1;
-            }
-
-            for (int i = 0; i < nr; i++)
-            {
-                x[i] = -1;
-            }
-
-            // Find a matching one vertex at a time
-            for (var curRow = 0; curRow < nr; curRow++)
-            {
-                double minVal = 0;
-                var i = curRow;
-                // Reset working arrays
-                var remaining = new int[nc].ToList();
-                var numRemaining = nc;
-                for (var jp = 0; jp < nc; jp++)
-                {
-                    remaining[jp] = jp;
-                    shortestPathCosts[jp] = double.PositiveInfinity;
-                }
-                Array.Clear(sr, 0, sr.Length);
-                Array.Clear(sc, 0, sc.Length);
-
-                // Start finding augmenting path
-                var sink = -1;
-                while (sink == -1)
-                {
-                    sr[i] = true;
-                    var indexLowest = -1;
-                    var lowest = double.PositiveInfinity;
-                    for (var jk = 0; jk < numRemaining; jk++)
+                    if (colIndices.Contains(i) == false)
                     {
-                        var jl = remaining[jk];
-                        // Note that this is the main bottleneck of this method; looking up the cost array
-                        // is costly. Some obvious attempts to improve performance include swapping rows and
-                        // columns, and disabling CLR bounds checking by using pointers to access the elements
-                        // instead. We do not seem to get any significant improvements over the simpler
-                        // approach below though.
-                        var r = minVal + cost[i, jl] - u[i] - v[jl];
-                        if (r < shortestPathCosts[jl])
-                        {
-                            path[jl] = i;
-                            shortestPathCosts[jl] = r;
-                        }
-                        // Console.WriteLine(lowest + " " + shortestPathCosts[jl]);
-
-                        if (shortestPathCosts[jl] < lowest || shortestPathCosts[jl] == lowest && y[jl] == -1)
-                        {
-                            lowest = shortestPathCosts[jl];
-                            indexLowest = jk;
-                        }
+                        missedIndex = i;
                     }
-                    minVal = lowest;
-                    // Console.WriteLine(indexLowest);
-                    var jp = remaining[indexLowest];
-                    if (double.IsPositiveInfinity(minVal))
-                        throw new InvalidOperationException("No feasible solution.");
-                    if (y[jp] == -1)
-                        sink = jp;
-                    else
-                        i = y[jp];
-
-                    sc[jp] = true;
-                    remaining[indexLowest] = remaining[--numRemaining];
-                    remaining.RemoveAt(numRemaining);
                 }
-                if (sink < 0)
-                    throw new InvalidOperationException("No feasible solution.");
-
-                // Update dual variables
-                u[curRow] += minVal;
-                for (var ip = 0; ip < nr; ip++)
-                    if (sr[ip] && ip != curRow)
-                        u[ip] += minVal - shortestPathCosts[x[ip]];
-
-                for (var jp = 0; jp < nc; jp++)
-                    if (sc[jp])
-                        v[jp] -= minVal - shortestPathCosts[jp];
-
-                // Augment previous solution
-                var j = sink;
-                while (true)
+                double minCost = cost[0, missedIndex];
+                int mergedIndex = 0;
+                for (int i = 1; i < cost.GetLength(0); i++)
                 {
-                    var ip = path[j];
-                    y[j] = ip;
-                    (j, x[ip]) = (x[ip], j);
-                    if (ip == curRow)
-                        break;
+                    if (minCost > cost[i, missedIndex])
+                    {
+                        minCost = cost[i, missedIndex];
+                        mergedIndex = i;
+                    }
                 }
+                updatedCentroids.Add(centroids[mergedIndex]);
+                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(updatedCentroids);
             }
-            var ret = new List<int[]>();
-            Array.Sort(y);
-            ret.Add(y);
-            ret.Add(x);
-            return ret;
+            return Tuple.Create(updatedCentroids, result);
         }
-
     }
 }

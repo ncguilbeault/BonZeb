@@ -23,6 +23,16 @@ namespace BonZeb
             BackgroundSubtractedImage = backgroundSubtractedImage;
         }
 
+        public MultiAnimalTrackingData(Point2f[] unorderedCentroids, int[] unorderedIdentities, Point2f[] orderedCentroids)
+        {
+            UnorderedCentroids = unorderedCentroids;
+            UnorderedIdentities = unorderedIdentities;
+            OrderedCentroids = orderedCentroids;
+            Image = null;
+            ThresholdImage = null;
+            BackgroundSubtractedImage = null;
+        }
+
         public MultiAnimalTrackingData(IplImage image, IplImage thresholdImage = null, IplImage backgroundSubtractedImage = null)
         {
             UnorderedCentroids = null;
