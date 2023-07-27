@@ -1,11 +1,6 @@
 ---
 toc: false
 permalink: /resources/
-sidebar:
-  - title: "BonZeb"
-    image: /assets/images/BonZeb_Logo_Man.svg
-    image_alt: "BonZeb"
-    text: "A Bonsai library for behavioural tracking and stimulation."
 ---
 
 # BonZeb Resources

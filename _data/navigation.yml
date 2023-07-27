@@ -9,6 +9,84 @@ main:
   - title: "Resources"
     url: /resources/
 
+basics:
+  - title: "Getting Started"
+    children:
+    - title: "Starting Bonsai"
+      url: /basics/#starting-bonsai
+    - title: "Bonsai Interface"
+      url: /basics/#bonsai-interface
+    - title: "Package Manager"
+      url: /basics/#package-manager
+    - title: "Adding Local Package"
+      url: /basics/#adding-a-local-package
+  - title: "Observables"
+    url: /basics/#observables
+    children:
+    - title: "Types of Nodes"
+      url: /basics/#types-of-nodes
+    - title: "Data Types"
+      url: /basics/#data-types
+    - title: "Member Selectors"
+      url: /basics/#member-selectors
+    - title: "Externalized Properties"
+      url: /basics/#externalized-properties
+    - title: "Property Mapping"
+      url: /basics/#property-mapping
+    - title: "Property Source"
+      url: /basics/#property-source
+  - title: "Visualizers"
+    url: /basics/#visualizers
+    children:
+    - title: "Data Type Visualizers"
+      url: /basics/#data-type-visualizers
+  - title: "Combinators"
+    url: /basics/#combinators
+    children:
+    - title: "Zip"
+      url: /basics/#zip
+    - title: "CombineLatest"
+      url: /basics/#combinelatest
+    - title: "WithLatestFrom"
+      url: /basics/#withlatestfrom
+    - title: "Combinators Example with Timers"
+      url: /basics/#combinators-example-with-timers
+  - title: "Groups"
+    url: /basics/#groups
+    children:
+    - title: "Nested Workflow"
+      url: /basics/#nestedworkflow
+    - title: "Group Workflow"
+      url: /basics/#groupworkflow
+    - title: "Include Workflow"
+      url: /basics/#includeworkflow
+    - title: "Create Observable"
+      url: /basics/#createobservable
+    - title: "Select Many"
+      url: /basics/#selectmany
+    - title: "Scan"
+      url: /basics/#scan
+    - title: "Condition"
+      url: /basics/#condition
+  - title: "Subjects"
+    url: /basics/#subjects
+    children:
+    - title: "Types of Subjects"
+      url: /basics/#types-of-subjects
+    - title: "Subjects Example with Timers"
+      url: /basics/#subjects-example-with-timers
+  - title: "Shaders"
+    url: /basics/#shaders
+    children:
+    - title: "Vertex Files"
+      url: /basics/#vertex-files
+    - title: "Fragment Files"
+      url: /basics/#fragment-files
+    - title: "Shader Configuration"
+      url: /basics/#shader-configuration
+    - title: "Uniform Variables"
+      url: /basics/#uniform-variables
+
 docs:
   - title: "Visual Stimulation"
     children:
@@ -30,4 +108,3 @@ docs:
     url: /docs/optogenetics/
   - title: "Calcium Imaging"
     url: /docs/calcium-imaging/
-    

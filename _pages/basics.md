@@ -1,10 +1,7 @@
 ---
 permalink: /basics/
 sidebar:
-  - title: "BonZeb"
-    image: /assets/images/BonZeb_Logo_Man.svg
-    image_alt: "BonZeb"
-    text: "A Bonsai library for behavioural tracking and stimulation."
+  - nav: "basics"
 classes: wide
 ---
 
@@ -12,6 +9,7 @@ classes: wide
 In this section, users will find information about the basics of Bonsai and the Bonsai programmming language as they relate to BonZeb.
 These guides are meant to help users with little to no experience in Bonsai.
 Experienced users can skip this section.
+For more information on getting started, jump to the [Resources sections](/resources) and check out more links to resources.
 
 # Starting Bonsai
 When you run Bonsai, two windows will appear.
@@ -79,8 +77,8 @@ Once all of this is set, press the `OK` button in the bottom right.
 After the above steps, the package will be made available inside of the package manager.
 The new package is available to install under online packages.
 
-# Observable Sequences
-The developers of Bonsai do a magnificent job explaining concepts and I highly recommend users to read [this](https://bonsai-rx.org/docs/observables/).
+# Observables
+The developers of Bonsai do a magnificent job explaining concepts and I highly recommend users to read [the official Bonsai documentation](https://bonsai-rx.org/).
 In summary, Bonsai (Bonsai-Rx) is built in C#/.NET and is based on the [ReactiveX (Rx)](http://reactivex.io/) programming architecture. 
 Bonsai is an object-oriented, compiled programming language with a visual programming interface that operates using observable sequences. 
 Observable sequences are essentially streams of data. 
@@ -126,7 +124,7 @@ You can then pass these output properties as specific inputs to downstream modul
 Both the Height and Width properties of the IplImage data structure are integers. 
 These new outputs, which are downstream of the FileCapture module, can now be visualized or passed as specific inputs to other downstream nodes.
 
-# Externalized Properties and Property Mapping
+# Externalized Properties
 Each module is equipped with its own unique set of user-defined properties.
 The values of these properties can be set in the properties interface. 
 Some of these properties will update while a workflow is running whereas others may only update after the workflow has restarted.
@@ -134,6 +132,7 @@ In addition to changing the properties manually, it is possible to set the value
 Properties can be externalized to become accessible within the Bonsai workflow. 
 Externalize the property of a module by right-clicking a node and selecting the property to externalize from the `Externalize Property` list.
 
+# Property Mapping
 The output of a module can be passed as the input to a property. 
 This can be used to change the property of a single module, multiple modules, at the start of a workflow, or dynamically. 
 The `PropertyMapping` module can be used to map multiple inputs to different properties of a module in a single node. 
@@ -159,29 +158,35 @@ Visualizer windows appear when a workflow is started and the node attached to th
 Each module has a different set of visualizers that are specific to the data type of the output. 
 For example, the image associated with IplImage data type can be viewed online with the unique IplImage visualizer available from the `Bonsai Vision Design` package.
 
+# Data Type Visualizers
 Data types can have multiple visualizers.
 In the above example, the `ObjectTextVisualizer` shows descriptive text describing some of the properties of the incoming images, such as height and width. 
 Double-clicking on a node while the workflow is running will open the first visualizer of a module.
+If you attempt to double-click on a node and nothing appears, then most likely the window was closed accidentally.
+You should be able to bring up the visualizer by right-clicking on the node, deselecting and reselecting the correct visualizer.
 
 # Combinators
 Combinators are a class of operators which are very diverse and can be very useful for building Bonsai scripts.
 There are many different types of combinators, all of which have unique properties and behaviors.
 Below are descriptions and examples of some of the most commonly used combinators.
-
-# Zip, CombineLatest, WithLatestFrom
 `Zip`, `CombineLatest`, and `WithLatestFrom`, are essential combinators to understand.
 Each operator works by combining individual elements from multiple data streams into a single data stream consisting of multiple elements.
 The behavior of each operator differs in the timing and content of their outputs.
 
+# Zip
 `Zip` produces output only when each of the previous data streams produces a value. 
 Both data streams must produce a new value for `Zip` to generate a single output. 
 The timing of `Zip` is limited by the timing of the slower of the two input data streams and the output will always link the sequence of both inputs together. 
 
+# CombineLatest
 `CombineLatest` produces an output each time either of the input data streams generates a new value. 
 Thus, the timing of `CombineLatest` is faster than the timing of either of the two input data streams and the output will consist of the most recent combination of inputs.
+
+# WithLatestFrom
 `WithLatestFrom` produces an output each time the driver sequence produces a value. 
 The timing of `WithLatestFrom` is the same as the driver sequence but contains the most recent combination of both input streams from when the driver sequence produced a value.
 
+# Combinators Example with Timers
 To illustrate this difference, two `Timer` nodes are used. 
 One produces a value every 3 seconds and the other produces a value every 5 seconds.
 The outputs of each `Timer` are combined in 3 seperate data streams using `Zip`, `CombineLatest`, and `WithLatestFrom`.
@@ -221,7 +226,7 @@ This is an important thing to keep in mind when building pipelines.
 The group modules are subclass of combinators. 
 Group nodes encapsulate a more complex workflow into a single node.
 They tend to receive input from the main workflow, operate on the input using the encapsulated workflow, and then produce output back to the main workflow, though it is also possible to use a group node that receives no input and produces no output.
-You can learn more about higher-order observables and groups [here](https://bonsai-rx.org/docs/higher-order/).
+You can learn more about higher-order observables and groups from the [official Bonsai website](https://bonsai-rx.org).
 
 # NestedWorkflow
 The `NestedWorkflow` module groups or encapsulates a complex workflow into a single node and places the encapsulated workflow into a new build context. 
@@ -254,8 +259,20 @@ If the boolean returns `False`, the no data are passed downstream.
 
 # Subjects
 Subjects are a useful way to take the output of any module in any data stream and broadcast it to other parts of the workflow. 
-Subjects are similar to global variables in other programming languages/
+Subjects are similar to global variables in other programming languages.
 There are different ways to define subjects to produce different workflow behaviours. 
+
+# Types of Subjects
+Different types of subjects produce different behaviours. 
+`PublishSubject` changes a cold observable sequence into a hot sequence.
+`ReplaySubject` turns a hot sequence into a cold sequence.
+`BehaviorSubject` is similar to `ReplaySubject` except that it will wait for subscription even if the sequence it is broadcasting has been terminated. 
+The `MulticastSubject` pushes values from one data stream into a subject originating from another data stream. 
+`SubscribeSubject` gives access to the observables of a subject. 
+Depending on where subjects are placed inside of group nodes, they will only broadcast the subject within the group node and not to the entire global workflow. 
+More information about subjects can be found [here](https://bonsai-rx.org/docs/subjects/).
+
+# Subjects Example with Timers
 Below is an example demonstrating how to use subjects and why they are important.
 There are two timers set to produce a value every 3 seconds and a value every 5 seconds, respectively.
 The outputs of each `Timer` are combined in 3 seperate data streams using `Zip`, `CombineLatest`, and `WithLatestFrom`.
@@ -274,15 +291,6 @@ Subjects can be used not only to broadcast variables, but can be used to assign 
 Subjects are a type of sink, meaning they simply pass along the input from upstream nodes to downstream nodes without modifying the input.
 In this example, subjects were used to provide each timer with a relevant variable name.
 Visualizing the outputs of the subjects rather than their associated upstream node allows us to distinguish which data stream we are visualizing. 
-
-Different types of subjects produce different behaviours. 
-`PublishSubject` changes a cold observable sequence into a hot sequence.
-`ReplaySubject` turns a hot sequence into a cold sequence.
-`BehaviorSubject` is similar to `ReplaySubject` except that it will wait for subscription even if the sequence it is broadcasting has been terminated. 
-The `MulticastSubject` pushes values from one data stream into a subject originating from another data stream. 
-`SubscribeSubject` gives access to the observables of a subject. 
-Depending on where subjects are placed inside of group nodes, they will only broadcast the subject within the group node and not to the entire global workflow. 
-More information about subjects can be found [here](https://bonsai-rx.org/docs/subjects/).
 
 It is important to understand the difference in behaviors between subjects. 
 In the example below, a `Timer` is set to fire every 2 seconds.
@@ -321,14 +329,14 @@ The Bonsai Shaders package utilizes OpenGL for rendering visual graphics.
 Bonsai Shaders provide extensive flexibility for programming in OpenGL. 
 Visual stimuli in BonZeb are generated using a vertex file and a fragment file.
 
-# Fragment and Vertex Files
-Fragment and vertex files are essential components of the OpenGL shader rendering pipeline.
+# Vertex Files
 The vertex file (ending in .vert) processes vertices.
 Vertices map areas of the shader window into a texture space to be processed by the fragment file.
 The vertex coordinates, given by vp, can range from (-1, -1) to (1, 1), where each of these coordinates represent opposite corners of the shader window.
 Below is an example of a vertex file.
 In this case, we define the vertices to be in the furthest corners of the shader window so that the shader will be rendered to the entire window.
 
+# Fragment Files
 The fragment file (ending in .frag) receives texture coordinates and processes these into fragments.
 Fragments determine what colour value to assign each coordinate.
 The texture coordinates processed by the fragment shader range from (0, 0) to (1, 1).
