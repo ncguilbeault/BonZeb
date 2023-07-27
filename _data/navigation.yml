@@ -11,6 +11,7 @@ main:
 
 basics:
   - title: "Getting Started"
+    url: /basics/#top
     children:
     - title: "Starting Bonsai"
       url: /basics/#starting-bonsai
