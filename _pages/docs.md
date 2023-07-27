@@ -2,6 +2,7 @@
 permalink: /docs/
 sidebar:
   - nav: "docs"
+classes: wide
 ---
 
 # Docs

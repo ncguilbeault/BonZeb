@@ -2,6 +2,7 @@
 permalink: /docs/calibration/
 sidebar:
   - nav: "docs"
+classes: wide
 ---
 
 # Calibration

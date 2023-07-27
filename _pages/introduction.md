@@ -5,6 +5,9 @@ sidebar:
     image: /assets/images/BonZeb_Logo_Man.svg
     image_alt: "BonZeb"
     text: "A Bonsai library for behavioural tracking and stimulation."
+toc: true
+toc_label: "Table of Contents"
+toc_sticky: true
 ---
 
 # Introduction

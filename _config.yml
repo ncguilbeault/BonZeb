@@ -247,6 +247,7 @@ tag_archive:
 #   permalinks:
 #     category: /categories/:name/
 #     tag: /tags/:name/
+permalink: pretty
 
 
 # HTML Compression
@@ -274,9 +275,9 @@ defaults:
     values:
       layout: single
       strip_title: true
-      toc: true
-      toc_label: "Table of Contents"
-      toc_sticky: true
+      # toc: true
+      # toc_label: "Table of Contents"
+      # toc_sticky: true
 
 titles_from_headings:
   enabled:     true

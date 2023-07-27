@@ -5,6 +5,7 @@ sidebar:
     image: /assets/images/BonZeb_Logo_Man.svg
     image_alt: "BonZeb"
     text: "A Bonsai library for behavioural tracking and stimulation."
+classes: wide
 ---
 
 # Getting Started with the Basics

@@ -2,6 +2,7 @@
 permalink: /docs/visual-stimulus-library/
 sidebar:
   - nav: "docs"
+classes: wide
 ---
 
 # Visual Stimulation

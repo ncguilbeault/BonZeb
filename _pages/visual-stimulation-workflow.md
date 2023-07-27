@@ -2,6 +2,7 @@
 permalink: /docs/visual-stimulation-workflow/
 sidebar:
   - nav: "docs"
+classes: wide
 ---
 
 # Visual Stimulation Workflow
