@@ -1,0 +1,307 @@
+# =======================================================================================================================================================================
+# BonZeb CI/CD
+# =======================================================================================================================================================================
+# Index:
+# * Build and package .NET
+# * Build documentation
+# * Render workflow images
+# * Publish packages to GitHub
+# * Publish packages to NuGet.org
+# * Publish documentation
+# =======================================================================================================================================================================
+# Adapted from the bonsai-rx/prefect reference workflow for BonZeb's specific needs:
+#   * Windows-only build matrix (BonZeb.Design depends on System.Windows.Forms)
+#   * No test steps (BonZeb has no test projects yet)
+#   * Documentation publish decoupled from package releases (manual or continuous only)
+# =======================================================================================================================================================================
+name: BonZeb
+on:
+  push:
+    # This prevents tag pushes from triggering this workflow
+    branches: ['**']
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish-documentation:
+        description: "Publish documentation to GitHub Pages?"
+        default: "false"
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_GENERATE_ASPNET_CERTIFICATE: false
+  ContinuousIntegrationBuild: true
+jobs:
+  # =====================================================================================================================================================================
+  # Build and package .NET
+  # =====================================================================================================================================================================
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ['debug', 'release']
+    name: Windows x64 ${{matrix.configuration}}
+    runs-on: windows-latest
+    outputs:
+      need-workflow-image-render: ${{steps.configure-build.outputs.need-workflow-image-render}}
+    steps:
+      # ----------------------------------------------------------------------- Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------- Set up tools
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      # ----------------------------------------------------------------------- Configure build
+      - name: Configure build
+        id: configure-build
+        uses: bonsai-rx/configure-build@v1
+
+      # ----------------------------------------------------------------------- Build
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration ${{matrix.configuration}}
+
+      # ----------------------------------------------------------------------- Pack
+      - name: Pack
+        id: pack
+        run: dotnet pack --no-restore --no-build --configuration ${{matrix.configuration}}
+
+      # ----------------------------------------------------------------------- Collect artifacts
+      - name: Collect NuGet packages
+        uses: actions/upload-artifact@v4
+        if: matrix.configuration == 'release' && steps.pack.outcome == 'success' && always()
+        with:
+          name: Packages
+          if-no-files-found: error
+          path: artifacts/package/${{matrix.configuration}}/**
+
+  # =====================================================================================================================================================================
+  # Build documentation
+  # =====================================================================================================================================================================
+  build-documentation:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      # ----------------------------------------------------------------------- Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------- Set up tools
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Set up .NET tools
+        run: dotnet tool restore
+
+      # ----------------------------------------------------------------------- Configure build
+      - name: Configure build
+        id: configure-build
+        uses: bonsai-rx/configure-build@v1
+
+      # ----------------------------------------------------------------------- Restore
+      - name: Restore
+        run: dotnet restore
+
+      # ----------------------------------------------------------------------- Build metadata
+      - name: Build metadata
+        id: build-metadata
+        run: dotnet docfx metadata docs/docfx.json --noRestore
+
+      # ----------------------------------------------------------------------- Build documentation
+      - name: Build documentation
+        id: build-documentation
+        run: dotnet docfx build docs/docfx.json
+
+      # ----------------------------------------------------------------------- Collect artifacts
+      - name: Collect documentation metadata
+        uses: actions/upload-artifact@v4
+        if: steps.build-metadata.outcome == 'success' && always()
+        with:
+          name: DocumentationMetadata
+          if-no-files-found: error
+          path: artifacts/docs/api/
+
+      - name: Collect documentation artifact
+        uses: actions/upload-artifact@v4
+        if: steps.build-documentation.outcome == 'success' && always()
+        with:
+          name: DocumentationWebsite
+          if-no-files-found: error
+          path: artifacts/docs/site/
+
+  # =====================================================================================================================================================================
+  # Render workflow images
+  # =====================================================================================================================================================================
+  workflow-images:
+    name: Render workflow images
+    runs-on: windows-latest
+    needs: build
+    if: needs.build.outputs.need-workflow-image-render == 'true'
+    steps:
+      # ----------------------------------------------------------------------- Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------- Download built packages
+      - name: Download packages for rendering
+        uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: artifacts/packages/
+
+      # ----------------------------------------------------------------------- Set up Bonsai environments
+      - name: Set up Bonsai environments
+        uses: bonsai-rx/setup-bonsai@v1
+        with:
+          environment-paths: '**/.bonsai/'
+          inject-packages: artifacts/packages/*.nupkg
+
+      # ----------------------------------------------------------------------- Render
+      - name: Render images
+        id: render
+        run: pwsh ./docs/export-images.ps1 -OutputFolder artifacts/docs/site/ -Verbose
+
+      # ----------------------------------------------------------------------- Collect artifacts
+      - name: Collect images
+        uses: actions/upload-artifact@v4
+        if: steps.render.outcome == 'success' && always()
+        with:
+          name: DocumentationWorkflowImages
+          if-no-files-found: error
+          path: artifacts/docs/site/
+
+  # =====================================================================================================================================================================
+  # Publish packages to GitHub
+  # =====================================================================================================================================================================
+  publish-github:
+    name: Publish packages to GitHub
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      # Needed to attach files to releases
+      contents: write
+      # Needed to upload to GitHub Packages
+      packages: write
+    if: github.event_name == 'push' || github.event_name == 'release'
+    steps:
+      # ----------------------------------------------------------------------- Set up .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      # ----------------------------------------------------------------------- Download built packages
+      - name: Download built packages
+        uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: artifacts/packages/
+
+      # ----------------------------------------------------------------------- Upload release assets
+      - name: Upload release assets
+        if: github.event_name == 'release'
+        run: gh release upload --repo ${{github.repository}} ${{github.event.release.tag_name}} artifacts/packages/* --clobber
+        env:
+          GH_TOKEN: ${{github.token}}
+
+      # ----------------------------------------------------------------------- Push to GitHub Packages
+      - name: Push to GitHub Packages
+        run: dotnet nuget push "artifacts/packages/*.nupkg" --skip-duplicate --no-symbols --api-key ${{secrets.GITHUB_TOKEN}} --source https://nuget.pkg.github.com/${{github.repository_owner}}
+        env:
+          # This is a workaround for https://github.com/NuGet/Home/issues/9775
+          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+
+  # =====================================================================================================================================================================
+  # Publish packages to NuGet.org
+  # =====================================================================================================================================================================
+  publish-packages-nuget-org:
+    name: Publish packages to NuGet.org
+    runs-on: ubuntu-latest
+    environment: public-release
+    needs: build
+    if: github.event_name == 'release'
+    steps:
+      # ----------------------------------------------------------------------- Set up .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      # ----------------------------------------------------------------------- Download built packages
+      - name: Download built packages
+        uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: artifacts/packages/
+
+      # ----------------------------------------------------------------------- Push to NuGet.org
+      - name: Push to NuGet.org
+        run: dotnet nuget push "artifacts/packages/*.nupkg" --api-key ${{secrets.NUGET_API_KEY}} --source ${{vars.NUGET_API_URL}}
+        env:
+          # This is a workaround for https://github.com/NuGet/Home/issues/9775
+          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+
+
+  # =====================================================================================================================================================================
+  # Publish documentation
+  # =====================================================================================================================================================================
+  publish-documentation:
+    name: Publish documentation
+    runs-on: ubuntu-latest
+    # Doc publish is decoupled from package releases: triggered manually via workflow_dispatch
+    # or automatically when CONTINUOUS_DOCUMENTATION is enabled.
+    needs: [build-documentation, workflow-images]
+    permissions:
+      # Both required by actions/deploy-pages
+      pages: write
+      id-token: write
+    environment:
+      # Intentionally not using the "default" github-pages environment as it's not compatible with this workflow
+      name: documentation-website
+      url: ${{steps.publish.outputs.page_url}}
+    # Only run if the workflow isn't dying and build-documentation was successful and either A) the user manually requested it or B) we have continuous deployment enabled
+    if: |
+      !cancelled() && !failure() && needs.build-documentation.result == 'success'
+      && ((github.event_name == 'workflow_dispatch' && github.event.inputs.publish-documentation == 'true')
+        || (vars.CONTINUOUS_DOCUMENTATION && github.event_name != 'pull_request')
+      )
+    steps:
+      # ----------------------------------------------------------------------- Download documentation website components
+      # It is intentional that we use two independent download steps here as it ensures that workflow images are permitted
+      # to overwrite any conflicts in the docfx output but not the other way around.
+      - name: Download documentation website
+        uses: actions/download-artifact@v4
+        with:
+          name: DocumentationWebsite
+
+      - name: Download workflow images
+        if: ${{needs.workflow-images.result == 'success'}}
+        uses: actions/download-artifact@v4
+        with:
+          name: DocumentationWorkflowImages
+
+      # ----------------------------------------------------------------------- Collect artifacts
+      - name: Upload final documentation website artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      # ----------------------------------------------------------------------- Publish to GitHub Pages
+      - name: Publish to GitHub Pages
+        id: publish
+        uses: actions/deploy-pages@v4
