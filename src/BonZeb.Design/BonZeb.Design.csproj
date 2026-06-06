@@ -1,30 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Title>BonZeb Design Library</Title>
     <Description>Visualizers for BonZeb package.</Description>
-    <Authors>Nicholas Guilbeault</Authors>
-    <Copyright>Copyright © Nicholas Guilbeault 2021</Copyright>
-    <ProjectUrl>https://github.com/ncguilbeault/BonZeb</ProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/ncguilbeault/BonZeb/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://github.com/ncguilbeault/BonZeb/blob/master/Resources/BonZeb_Logo.png?raw=true</PackageIconUrl>
-    <PackageOutputPath>..\bin\$(Configuration)</PackageOutputPath>
-    <PackageTags>Bonsai Rx BonZeb Visualizers Tracking Stimulation Zebrafish</PackageTags>
-    <IncludeSymbols Condition="'$(Configuration)'=='Release'">true</IncludeSymbols>
-    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+    <PackageTags>$(PackageTags) Visualizers Tracking Stimulation</PackageTags>
     <TargetFramework>net472</TargetFramework>
-    <Features>strict</Features>
-    <Version>1.1.0.1</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bonsai.Core" version="2.5.0" />
-    <PackageReference Include="Bonsai.System" version="2.5.1" />
-    <PackageReference Include="Bonsai.Vision" version="2.5.1" />
-    <PackageReference Include="Bonsai.Vision.Design" version="2.5.1" />
-    <PackageReference Include="OpenCV.Net" version="3.3.1" />
-    <PackageReference Include="OpenTK" version="3.1.0" />
+    <PackageReference Include="Bonsai.Core" Version="2.5.0" />
+    <PackageReference Include="Bonsai.System" Version="2.5.1" />
+    <PackageReference Include="Bonsai.Vision" Version="2.5.1" />
+    <PackageReference Include="Bonsai.Vision.Design" Version="2.5.1" />
+    <PackageReference Include="OpenCV.Net" Version="3.3.1" />
+    <PackageReference Include="OpenTK" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
