@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <PackageTags>Bonsai Rx Zebrafish</PackageTags>
+    <PackageProjectUrl>https://github.com/ncguilbeault/$REPO-SLUG$</PackageProjectUrl>
+    <Authors>Nicholas Guilbeault</Authors>
+    <Copyright>Copyright © Nicholas Guilbeault</Copyright>
+  </PropertyGroup>
+</Project>

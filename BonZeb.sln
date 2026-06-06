@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BonZeb", "src\BonZeb\BonZeb.csproj", "{F1AF8E82-B3E8-4E79-83F8-930CADD8C227}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BonZeb.Design", "src\BonZeb.Design\BonZeb.Design.csproj", "{31315911-4879-49A6-83B9-2AF17E7DFA49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{DEE5DD87-39C1-BF34-B639-A387DCCF972B}"
+	ProjectSection(SolutionItems) = preProject
+		build\icon.png = build\icon.png
+		build\Common.csproj.props = build\Common.csproj.props
+		build\Common.csproj.targets = build\Common.csproj.targets
+		build\Project.csproj.props = build\Project.csproj.props
+		build\Package.props = build\Package.props
+		build\Common.Tests.csproj.props = build\Common.Tests.csproj.props
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1AF8E82-B3E8-4E79-83F8-930CADD8C227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1AF8E82-B3E8-4E79-83F8-930CADD8C227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1AF8E82-B3E8-4E79-83F8-930CADD8C227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1AF8E82-B3E8-4E79-83F8-930CADD8C227}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31315911-4879-49A6-83B9-2AF17E7DFA49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31315911-4879-49A6-83B9-2AF17E7DFA49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31315911-4879-49A6-83B9-2AF17E7DFA49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31315911-4879-49A6-83B9-2AF17E7DFA49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

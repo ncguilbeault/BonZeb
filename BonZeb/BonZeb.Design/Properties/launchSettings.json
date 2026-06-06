@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Bonsai": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Users\\Nicholas\\Downloads\\Bonsai\\Bonsai.exe",
-      "commandLineArgs": "--lib:$(TargetDir)."
-    }
-  }
-}

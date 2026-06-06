@@ -1,6 +1,7 @@
-bin
-obj
-.vs
+.vs/
+**/.bonsai/Bonsai.exe*
+**/.bonsai/Packages/
+**/.bonsai/Settings/
+/artifacts/
 *.user
 *.ai
-.nuget
