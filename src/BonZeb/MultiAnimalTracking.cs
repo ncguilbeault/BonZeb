@@ -99,6 +99,26 @@ namespace BonZeb
             });
         }
 
+        public IObservable<MultiAnimalTrackingData> Process(IObservable<Tuple<ConnectedComponentCollection, IplImage>> source)
+        {
+            prevCentroids = null;
+            kalmanFilters = null;
+            return source.Select(value => MultiAnimalCentroidsFromComponents(value.Item1, value.Item2));
+        }
+
+        public IObservable<MultiAnimalTrackingData> Process(IObservable<Tuple<IplImage, ConnectedComponentCollection>> source)
+        {
+            prevCentroids = null;
+            kalmanFilters = null;
+            return source.Select(value => MultiAnimalCentroidsFromComponents(value.Item2, value.Item1));
+        }
+
+        private MultiAnimalTrackingData MultiAnimalCentroidsFromComponents(ConnectedComponentCollection connectedComponents, IplImage image)
+        {
+            MultiAnimalTrackingData result = MultiAnimalCentroidsFunc(SelectCentroids(connectedComponents));
+            return new MultiAnimalTrackingData(image, result.UnorderedCentroids, result.UnorderedIdentities, result.OrderedCentroids);
+        }
+
         private MultiAnimalTrackingData MultiAnimalCentroidsFromImage(BackgroundSubtractionData input)
         {
             IplImage image = new IplImage(input.Image.Size, input.Image.Depth, 1);
