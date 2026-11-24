@@ -18,6 +18,16 @@ namespace BonZeb
             return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value.Points)), value.Points, value.Image));
         }
 
+        public IObservable<TailAngleData<double>[]> Process(IObservable<TailPointData[]> source)
+        {
+            return source.Select(value => Array.ConvertAll(value, tail => new TailAngleData<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(tail.Points)), tail.Points, tail.Image)));
+        }
+
+        public IObservable<TailAngleData<double>[]> Process(IObservable<TailAngleData<double[]>[]> source)
+        {
+            return source.Select(value => Array.ConvertAll(value, tail => new TailAngleData<double>(Utilities.CalculateSum(tail.Angles), tail.Points, tail.Image)));
+        }
+
         public IObservable<TailAngleData<double>> Process(IObservable<Point2f[]> source)
         {
             return source.Select(value => new TailAngleData<double>(Utilities.CalculateSum(Utilities.CalculateTailAngle(value)), value));

@@ -92,6 +92,21 @@ namespace BonZeb
             return source.Select(value => GetTailPoints(value.Item2, value.Item1));
         }
 
+        public IObservable<TailPointData[]> Process(IObservable<MultiAnimalTrackingData> source)
+        {
+            return source.Select(value => GetTailPoints(value));
+        }
+
+        public IObservable<TailPointData[]> Process(IObservable<Tuple<MultiAnimalTrackingData, IplImage>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item1.OrderedCentroids, value.Item2, value.Item2));
+        }
+
+        public IObservable<TailPointData[]> Process(IObservable<Tuple<IplImage, MultiAnimalTrackingData>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item2.OrderedCentroids, value.Item1, value.Item1));
+        }
+
         public TailPointData GetTailPoints(CentroidData data)
         {
             int imageWidthStep = data.Image.WidthStep;
@@ -99,6 +114,30 @@ namespace BonZeb
             byte[] imageData = data.BackgroundSubtractedImage == null ? Utilities.ConvertIplImageToByteArray(data.Image) : Utilities.ConvertIplImageToByteArray(data.BackgroundSubtractedImage);
             Point2f[] points = CalculateTailPointsFunc(data.Centroid, imageWidthStep, imageHeight, imageData);
             return new TailPointData(points, data.Image);
+        }
+
+        public TailPointData[] GetTailPoints(MultiAnimalTrackingData data)
+        {
+            if (data.Image == null)
+            {
+                throw new InvalidOperationException("The multi-animal tracking data does not contain an image.");
+            }
+            return GetTailPoints(data.OrderedCentroids, data.BackgroundSubtractedImage ?? data.Image, data.Image);
+        }
+
+        private TailPointData[] GetTailPoints(Point2f[] centroids, IplImage searchImage, IplImage outputImage)
+        {
+            // Calculates the tail points of each centroid in the search image. The output follows the order of the centroids.
+            centroids = centroids ?? new Point2f[0];
+            int imageWidthStep = searchImage.WidthStep;
+            int imageHeight = searchImage.Height;
+            byte[] imageData = Utilities.ConvertIplImageToByteArray(searchImage);
+            TailPointData[] tailPoints = new TailPointData[centroids.Length];
+            for (int i = 0; i < centroids.Length; i++)
+            {
+                tailPoints[i] = new TailPointData(CalculateTailPointsFunc(centroids[i], imageWidthStep, imageHeight, imageData), outputImage);
+            }
+            return tailPoints;
         }
 
         public TailPointData GetTailPoints(Point2f centroid, IplImage image)
