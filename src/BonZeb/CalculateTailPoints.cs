@@ -48,9 +48,8 @@ namespace BonZeb
 
         private double rangeTailPointAngles;
         private double rangeAngles;
-        private int nIterations;
         [Description("Range of angles in degrees for searching for points along the arc of the previous point and radius of the distance between tail points.")]
-        public double RangeTailPointAngles { get => rangeTailPointAngles; set { rangeTailPointAngles = value < 0 ? 0 : value > 360 ? 360 : value; nIterations = (int)(value * potentialTailPoints.Length / 360); rangeAngles = value * Math.PI / 360; } }
+        public double RangeTailPointAngles { get => rangeTailPointAngles; set { rangeTailPointAngles = value < 0 ? 0 : value > 360 ? 360 : value; rangeAngles = rangeTailPointAngles * Math.PI / 180; } }
 
         [Description("Method to use when searching for comparing pixel values. Darkest searches for darkest pixels in image whereas brightest searches for brightest pixels.")]
         public PixelSearchMethod PixelSearchMethod { get; set; }
@@ -136,6 +135,7 @@ namespace BonZeb
             for (int i = 1; i < points.Length - 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - (rangeAngles / 2);
+                int nIterations = (int)(rangeTailPointAngles * potentialTailPoints.Length / 360);
                 int startIteration = tailAngle < 0 ? (int)((tailAngle + (Math.PI * 2.0)) * potentialTailPoints.Length / (Math.PI * 2.0)) : (int)(tailAngle * potentialTailPoints.Length / (Math.PI * 2.0));
                 Point2f[] newPotentialTailPoints = Utilities.OffsetPoints(potentialTailPoints, (int)points[i].X, (int)points[i].Y);
                 if (TailPointCalculationMethod == TailPointCalculationMethod.PixelSearch)
