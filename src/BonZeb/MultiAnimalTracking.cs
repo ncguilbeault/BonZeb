@@ -47,11 +47,14 @@ namespace BonZeb
         public IdentityTrackingMethod IdentityTrackingMethod { get; set; }
 
         private double samplingRate;
-        [Description("The kalman filter sampling rate.")]
-        public double SamplingRate { get => samplingRate; set => samplingRate = value; }
+        [Description("The sampling rate of the input sequence in Hz. Used by the kalman filter to predict the positions of tracked objects.")]
+        public double SamplingRate { get => samplingRate; set => samplingRate = value > 0 ? value : 1; }
+
+        private double accelerationStdDev;
+        [Description("The standard deviation of the acceleration of tracked objects in pixels per second squared. Larger values make the kalman filter follow the measured centroids more closely.")]
+        public double AccelerationStdDev { get => accelerationStdDev; set => accelerationStdDev = value > 0 ? value : 0; }
 
         private Point2f[] prevCentroids;
-        private Point2f[] prevCentroids2;
         private KalmanFilter[] kalmanFilters;
 
         public MultiAnimalTracking()
@@ -62,11 +65,14 @@ namespace BonZeb
             MinArea = 0;
             MaxArea = null;
             NumCentroids = null;
+            SamplingRate = 100;
+            AccelerationStdDev = 1000;
         }
 
         public override IObservable<MultiAnimalTrackingData> Process(IObservable<BackgroundSubtractionData> source)
         {
             prevCentroids = null;
+            kalmanFilters = null;
             return source.Select(value => 
             {
                 return MultiAnimalCentroidsFromImage(value);
@@ -76,6 +82,7 @@ namespace BonZeb
         public IObservable<MultiAnimalTrackingData> Process(IObservable<IplImage> source)
         {
             prevCentroids = null;
+            kalmanFilters = null;
             return source.Select(value =>
             {
                 return MultiAnimalCentroidsFromImage(new BackgroundSubtractionData(value));
@@ -85,20 +92,10 @@ namespace BonZeb
         public IObservable<MultiAnimalTrackingData> Process(IObservable<ConnectedComponentCollection> source)
         {
             prevCentroids = null;
+            kalmanFilters = null;
             return source.Select(value =>
             {
-                ConnectedComponentCollection connectedComponents = value;
-                Point2f[] centroids = numCentroids.HasValue ? new Point2f[numCentroids.Value] : new Point2f[connectedComponents.Count];
-                if (connectedComponents.Count != 0)
-                {
-                    List<ConnectedComponent> sortedComponents = connectedComponents.OrderByDescending(contour => contour.Area).ToList();
-                    for (int i = 0; i < connectedComponents.Count; i++)
-                    {
-                        centroids[i] = sortedComponents[i].Centroid;
-                    }
-                }
-
-                return MultiAnimalCentroidsFunc(centroids);
+                return MultiAnimalCentroidsFunc(SelectCentroids(value));
             });
         }
 
@@ -156,146 +153,138 @@ namespace BonZeb
                 currentContour = currentContour.HNext;
             }
 
-            Point2f[] centroids = numCentroids.HasValue ? new Point2f[numCentroids.Value] : new Point2f[connectedComponents.Count];
-
-            if (connectedComponents.Count != 0)
-            {
-                List<ConnectedComponent> sortedComponents = connectedComponents.OrderByDescending(contour => contour.Area).ToList();
-                for (int i = 0; i < connectedComponents.Count; i++)
-                {
-                    centroids[i] = sortedComponents[i].Centroid;
-                }
-            }
-
-            if (centroids.Length == 0)
-            {
-                return new MultiAnimalTrackingData(input.Image, thresh, input.BackgroundSubtractedImage);
-            }
-            MultiAnimalTrackingData result = MultiAnimalCentroidsFunc(centroids);
+            MultiAnimalTrackingData result = MultiAnimalCentroidsFunc(SelectCentroids(connectedComponents));
             return new MultiAnimalTrackingData(input.Image, result.UnorderedCentroids, result.UnorderedIdentities, result.OrderedCentroids, thresh, input.BackgroundSubtractedImage);
 
         }
 
-        private MultiAnimalTrackingData MultiAnimalCentroidsFunc(Point2f[] centroids)
-        { 
-
-            List<Point2f> updatedCentroids = new List<Point2f>();
-            List<int[]> result = new List<int[]>();
-            List<Point2f> tempCentroids = new List<Point2f>();
-
-            if (IdentityTrackingMethod == IdentityTrackingMethod.Hungarian)
+        private Point2f[] SelectCentroids(ConnectedComponentCollection connectedComponents)
+        {
+            // Returns the centroids of the connected components in descending order of area, limited to the number of centroids to track.
+            IEnumerable<ConnectedComponent> sortedComponents = connectedComponents.OrderByDescending(contour => contour.Area);
+            if (numCentroids.HasValue)
             {
-                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(centroids.ToList());
-                for (int i = 0; i < result[1].Length; i++)
+                sortedComponents = sortedComponents.Take(numCentroids.Value);
+            }
+            return sortedComponents.Select(contour => contour.Centroid).ToArray();
+        }
+
+        private MultiAnimalTrackingData MultiAnimalCentroidsFunc(Point2f[] centroids)
+        {
+            if (prevCentroids == null)
+            {
+                prevCentroids = new Point2f[0];
+            }
+
+            if (centroids.Length == 0)
+            {
+                return new MultiAnimalTrackingData(centroids, Enumerable.Repeat(-1, prevCentroids.Length).ToArray(), prevCentroids);
+            }
+
+            // Identities are matched against the previous centroids, or against the positions predicted by the kalman filters.
+            bool useKalmanFilter = IdentityTrackingMethod == IdentityTrackingMethod.KalmanFilter;
+            Point2f[] referencePoints = prevCentroids;
+            if (useKalmanFilter)
+            {
+                if (kalmanFilters == null || kalmanFilters.Length != prevCentroids.Length)
                 {
-                    if (result[1][i] != -1)
-                    {
-                        tempCentroids.Add(updatedCentroids[result[1][i]]);
-                    }
+                    kalmanFilters = prevCentroids.Select(CreateKalmanFilter).ToArray();
+                }
+                referencePoints = new Point2f[kalmanFilters.Length];
+                for (int i = 0; i < kalmanFilters.Length; i++)
+                {
+                    kalmanFilters[i].Predict();
+                    referencePoints[i] = new Point2f((float)kalmanFilters[i].X, (float)kalmanFilters[i].Y);
                 }
             }
             else
             {
-                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingKalmanFilter(centroids.ToList());
-                for (int i = 0; i < result[1].Length; i++)
+                kalmanFilters = null;
+            }
+
+            List<int> identities = AssignIdentities(centroids, referencePoints).ToList();
+
+            // Centroids that were not matched to an existing identity are given new identities.
+            int maxIdentities = numCentroids ?? int.MaxValue;
+            for (int i = 0; i < centroids.Length && identities.Count < maxIdentities; i++)
+            {
+                if (!identities.Contains(i))
                 {
-                    if (result[1][i] != -1)
-                    {
-                        tempCentroids.Add(updatedCentroids[result[1][i]]);
-                    }
+                    identities.Add(i);
                 }
             }
 
-            Point2f[] orderedCentroids = tempCentroids.ToArray();
+            Point2f[] orderedCentroids = identities.Select(index => centroids[index]).ToArray();
+
+            if (useKalmanFilter)
+            {
+                KalmanFilter[] updatedFilters = new KalmanFilter[orderedCentroids.Length];
+                for (int i = 0; i < orderedCentroids.Length; i++)
+                {
+                    if (i < kalmanFilters.Length)
+                    {
+                        updatedFilters[i] = kalmanFilters[i];
+                        updatedFilters[i].Update(orderedCentroids[i].X, orderedCentroids[i].Y);
+                    }
+                    else
+                    {
+                        updatedFilters[i] = CreateKalmanFilter(orderedCentroids[i]);
+                    }
+                }
+                kalmanFilters = updatedFilters;
+            }
+
             prevCentroids = orderedCentroids;
-            return new MultiAnimalTrackingData(centroids, result[1], orderedCentroids);
-
+            return new MultiAnimalTrackingData(centroids, identities.ToArray(), orderedCentroids);
         }
 
-        private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentitiesUsingHungarian(List<Point2f> centroids)
+        private KalmanFilter CreateKalmanFilter(Point2f position)
         {
-            if (prevCentroids == null)
-            {
-                prevCentroids = new Point2f[] { new Point2f(0, 0) };
-            }
-            double[,] cost = Hungarian.cDist(centroids.ToArray(), prevCentroids);
-            List<int[]> result = Hungarian.LinearSumAssignment(cost);
-            int[] rowIndices = result[0];
-            int[] colIndices = result[1];
-            List<Point2f> updatedCentroids = new List<Point2f>();
-            for (int i = 0; i < centroids.Count; i++)
-            {
-                updatedCentroids.Add(centroids[i]);
-            }
-            if (prevCentroids.Length > centroids.Count)
-            {
-                int missedIndex = 0;
-                for (int i = 0; i < colIndices.Length; i++)
-                {
-                    if (colIndices.Contains(i) == false)
-                    {
-                        missedIndex = i;
-                    }
-                }
-                double minCost = cost[0, missedIndex];
-                int mergedIndex = 0;
-                for (int i = 1; i < cost.GetLength(0); i++)
-                {
-                    if (minCost > cost[i, missedIndex])
-                    {
-                        minCost = cost[i, missedIndex];
-                        mergedIndex = i;
-                    }
-                }
-                updatedCentroids.Add(centroids[mergedIndex]);
-                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(updatedCentroids);
-            }
-            return Tuple.Create(updatedCentroids, result);
+            return new KalmanFilter(samplingRate, 0, accelerationStdDev) { X = position.X, Y = position.Y };
         }
 
-        private Tuple<List<Point2f>, List<int[]>> ReorderCentroidsForIdentitiesUsingKalmanFilter(List<Point2f> centroids)
+        private static int[] AssignIdentities(Point2f[] centroids, Point2f[] referencePoints)
         {
-            if (prevCentroids == null)
+            // Returns the index of the centroid assigned to each reference point, minimizing the total distance between them.
+            int[] assignment = new int[referencePoints.Length];
+            if (referencePoints.Length == 0)
             {
-                prevCentroids = new Point2f[] { new Point2f(0, 0) };
+                return assignment;
             }
-            for (int i = 0; i < centroids.Count; i++)
+
+            double[,] cost = Hungarian.cDist(centroids, referencePoints);
+            int[] rowAssignment = Hungarian.LinearSumAssignment(cost)[1];
+            if (centroids.Length >= referencePoints.Length)
             {
-                KalmanFilter km = new KalmanFilter();
-                kalmanFilters.Append(km);
-            }    
-            List<int[]> result = Hungarian.LinearSumAssignment(cost);
-            int[] rowIndices = result[0];
-            int[] colIndices = result[1];
-            List<Point2f> updatedCentroids = new List<Point2f>();
-            for (int i = 0; i < centroids.Count; i++)
-            {
-                updatedCentroids.Add(centroids[i]);
+                return rowAssignment;
             }
-            if (prevCentroids.Length > centroids.Count)
+
+            for (int i = 0; i < assignment.Length; i++)
             {
-                int missedIndex = 0;
-                for (int i = 0; i < colIndices.Length; i++)
+                assignment[i] = -1;
+            }
+            for (int i = 0; i < rowAssignment.Length; i++)
+            {
+                assignment[rowAssignment[i]] = i;
+            }
+
+            // Reference points left without a centroid, such as when two animals merge into one contour, take the nearest centroid.
+            for (int i = 0; i < assignment.Length; i++)
+            {
+                if (assignment[i] == -1)
                 {
-                    if (colIndices.Contains(i) == false)
+                    int nearest = 0;
+                    for (int j = 1; j < centroids.Length; j++)
                     {
-                        missedIndex = i;
+                        if (cost[j, i] < cost[nearest, i])
+                        {
+                            nearest = j;
+                        }
                     }
+                    assignment[i] = nearest;
                 }
-                double minCost = cost[0, missedIndex];
-                int mergedIndex = 0;
-                for (int i = 1; i < cost.GetLength(0); i++)
-                {
-                    if (minCost > cost[i, missedIndex])
-                    {
-                        minCost = cost[i, missedIndex];
-                        mergedIndex = i;
-                    }
-                }
-                updatedCentroids.Add(centroids[mergedIndex]);
-                (updatedCentroids, result) = ReorderCentroidsForIdentitiesUsingHungarian(updatedCentroids);
             }
-            return Tuple.Create(updatedCentroids, result);
+            return assignment;
         }
     }
 }
