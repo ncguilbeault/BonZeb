@@ -62,24 +62,21 @@ namespace BonZeb
         {
             // Function that generates an array of points that lie on the circumference of a circle with a given radius and an origin at 0,0.
             List<Point2f> PointsList = new List<Point2f>();
-            int X = radius;
-            int Y = 0;
-            PointsList.Add(new Point2f(X, Y));
-            while (X >= Y)
+            for (int Y = 0; ; Y++)
             {
-                Y++;
-                if (Math.Sqrt(Math.Pow(X, 2) + Math.Pow(Y, 2)) > radius)
+                int X = (int)Math.Floor(Math.Sqrt(radius * radius - Y * Y) + 0.5);
+                if (X < Y)
                 {
-                    X--;
+                    break;
                 }
                 PointsList.Add(new Point2f(X, Y));
             }
             for (int i = PointsList.Count - 1; i >= 0; i--)
-            { 
+            {
                 if (PointsList[i].Y != PointsList[i].X)
                 {
                     PointsList.Add(new Point2f(PointsList[i].Y, PointsList[i].X));
-                }              
+                }
             }
             for (int i = PointsList.Count - 2; i >= 0; i--)
             {

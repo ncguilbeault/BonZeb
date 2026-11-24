@@ -31,7 +31,7 @@ namespace BonZeb
         private int distTailBase;
         private Point2f[] potentialTailBasePoints;
         [Description("Distance between the eyes and the tail trunk in number of pixels. Only used for the EyeTracking method and Centroid method.")]
-        public int DistTailBase { get => distTailBase; set { distTailBase = value > 0 ? value : 0; potentialTailBasePoints = Utilities.GeneratePointsArray(value); } }
+        public int DistTailBase { get => distTailBase; set { distTailBase = value > 0 ? value : 0; potentialTailBasePoints = Utilities.GeneratePointsArray(distTailBase); } }
 
         private double headingDirection;
         [Description("Angle of heading direction in degrees. If value is -1, no heading direction will be used. Otherwise, the heading direction supplied will seed the tail tracking search algorithm.")]
@@ -44,12 +44,12 @@ namespace BonZeb
         private int distTailPoints;
         private Point2f[] potentialTailPoints;
         [Description("Distance between tail points in number of pixels. Value must be greater than or equal to 5.")]
-        public int DistTailPoints { get => distTailPoints; set { distTailPoints = value > 5 ? value : 5; potentialTailPoints = Utilities.GeneratePointsArray(value); } }
+        public int DistTailPoints { get => distTailPoints; set { distTailPoints = value > 5 ? value : 5; potentialTailPoints = Utilities.GeneratePointsArray(distTailPoints); } }
 
         private double rangeTailPointAngles;
         private double rangeAngles;
         [Description("Range of angles in degrees for searching for points along the arc of the previous point and radius of the distance between tail points.")]
-        public double RangeTailPointAngles { get => rangeTailPointAngles; set { rangeTailPointAngles = value < 0 ? 0 : value > 360 ? 360 : value; rangeAngles = rangeTailPointAngles * Math.PI / 180; } }
+        public double RangeTailPointAngles { get => rangeTailPointAngles; set { rangeTailPointAngles = value < 0 ? 0 : value > 360 ? 360 : value; rangeAngles = Utilities.ConvertDegreesToRadians(rangeTailPointAngles); } }
 
         [Description("Method to use when searching for comparing pixel values. Darkest searches for darkest pixels in image whereas brightest searches for brightest pixels.")]
         public PixelSearchMethod PixelSearchMethod { get; set; }
@@ -92,6 +92,21 @@ namespace BonZeb
             return source.Select(value => GetTailPoints(value.Item2, value.Item1));
         }
 
+        public IObservable<TailPointData[]> Process(IObservable<MultiAnimalTrackingData> source)
+        {
+            return source.Select(value => GetTailPoints(value));
+        }
+
+        public IObservable<TailPointData[]> Process(IObservable<Tuple<MultiAnimalTrackingData, IplImage>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item1.OrderedCentroids, value.Item2, value.Item2));
+        }
+
+        public IObservable<TailPointData[]> Process(IObservable<Tuple<IplImage, MultiAnimalTrackingData>> source)
+        {
+            return source.Select(value => GetTailPoints(value.Item2.OrderedCentroids, value.Item1, value.Item1));
+        }
+
         public TailPointData GetTailPoints(CentroidData data)
         {
             int imageWidthStep = data.Image.WidthStep;
@@ -99,6 +114,30 @@ namespace BonZeb
             byte[] imageData = data.BackgroundSubtractedImage == null ? Utilities.ConvertIplImageToByteArray(data.Image) : Utilities.ConvertIplImageToByteArray(data.BackgroundSubtractedImage);
             Point2f[] points = CalculateTailPointsFunc(data.Centroid, imageWidthStep, imageHeight, imageData);
             return new TailPointData(points, data.Image);
+        }
+
+        public TailPointData[] GetTailPoints(MultiAnimalTrackingData data)
+        {
+            if (data.Image == null)
+            {
+                throw new InvalidOperationException("The multi-animal tracking data does not contain an image.");
+            }
+            return GetTailPoints(data.OrderedCentroids, data.BackgroundSubtractedImage ?? data.Image, data.Image);
+        }
+
+        private TailPointData[] GetTailPoints(Point2f[] centroids, IplImage searchImage, IplImage outputImage)
+        {
+            // Calculates the tail points of each centroid in the search image. The output follows the order of the centroids.
+            centroids = centroids ?? new Point2f[0];
+            int imageWidthStep = searchImage.WidthStep;
+            int imageHeight = searchImage.Height;
+            byte[] imageData = Utilities.ConvertIplImageToByteArray(searchImage);
+            TailPointData[] tailPoints = new TailPointData[centroids.Length];
+            for (int i = 0; i < centroids.Length; i++)
+            {
+                tailPoints[i] = new TailPointData(CalculateTailPointsFunc(centroids[i], imageWidthStep, imageHeight, imageData), outputImage);
+            }
+            return tailPoints;
         }
 
         public TailPointData GetTailPoints(Point2f centroid, IplImage image)
@@ -131,7 +170,6 @@ namespace BonZeb
             bool success;
             Point2f point;
             (points[1], success) = headingDirection == -1 ? FindNextPointWithPixelSearch(0, newPotentialTailBasePoints.Length, newPotentialTailBasePoints, PixelSearchMethod, imageWidthStep, imageHeight, imageData, true) : FindNextPointWithPixelSearch((int)(Utilities.ConvertDegreesToRadians(headingDirection) * newPotentialTailBasePoints.Length / (Math.PI * 2.0)), 1, newPotentialTailBasePoints, PixelSearchMethod, imageWidthStep, imageHeight, imageData, true);
-            Console.WriteLine(success);
             for (int i = 1; i < points.Length - 1; i++)
             {
                 double tailAngle = Math.Atan2(points[i].Y - points[i - 1].Y, points[i].X - points[i - 1].X) - (rangeAngles / 2);
@@ -161,7 +199,7 @@ namespace BonZeb
             {
                 points = Utilities.OffsetPoints(points, OffsetX, OffsetY);
             }
-            
+
             return points;
         }
 

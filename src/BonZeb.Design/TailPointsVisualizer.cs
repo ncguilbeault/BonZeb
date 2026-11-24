@@ -1,84 +1,62 @@
 ﻿using Bonsai;
+using Bonsai.Design;
+using Bonsai.Vision;
 using Bonsai.Vision.Design;
 using BonZeb;
 using BonZeb.Design;
 using OpenCV.Net;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 [assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPointData))]
+[assembly: TypeVisualizer(typeof(TailPointsVisualizer), Target = typeof(TailPointData[]))]
+[assembly: TypeVisualizer(typeof(TailPointsOverlay), Target = typeof(MashupSource<ImageMashupVisualizer, TailPointsVisualizer>))]
 
 namespace BonZeb.Design
 {
+    // Shows the image carried by the tail data with the tail points drawn over it.
     public class TailPointsVisualizer : IplImageVisualizer
     {
-        TailPointData tailPoints;
-        IplImage labelImage;
-        IplImageTexture labelTexture;
+        IplImage canvas;
+
+        public override void Show(object value)
+        {
+            if (DesignHelper.TryGetTails(value, out Point2f[][] tails, out IplImage image, out bool multipleAnimals) && image != null)
+            {
+                canvas = IplImageHelper.EnsureColorCopy(canvas, image);
+                DesignHelper.DrawTailPoints(canvas, tails, multipleAnimals);
+                base.Show(canvas);
+            }
+        }
+
+        public override void Unload()
+        {
+            base.Unload();
+            canvas = null;
+        }
+    }
+
+    // Draws the tail points over the image of another image visualizer when used as a mashup.
+    public class TailPointsOverlay : DialogTypeVisualizer
+    {
+        ImageMashupVisualizer visualizer;
 
         public override void Load(IServiceProvider provider)
         {
-            base.Load(provider);
-            VisualizerCanvas.Load += (sender, e) =>
-            {
-                labelTexture = new IplImageTexture();
-                GL.Enable(EnableCap.Blend);
-                GL.Enable(EnableCap.PointSmooth);
-                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            };
+            visualizer = (ImageMashupVisualizer)provider.GetService(typeof(MashupVisualizer));
         }
 
         public override void Show(object value)
         {
-            tailPoints = (TailPointData)value;
-            if (tailPoints != null)
+            IplImage image = visualizer?.VisualizerImage;
+            if (image != null && DesignHelper.TryGetTails(value, out Point2f[][] tails, out _, out bool multipleAnimals))
             {
-                base.Show(tailPoints.Image);
+                DesignHelper.DrawTailPoints(image, tails, multipleAnimals);
             }
         }
 
-        protected override void RenderFrame()
+        public override void Unload()
         {
-            GL.Color4(Color4.White);
-            base.RenderFrame();
-    
-            if (tailPoints != null)
-            {
-                GL.PointSize(5 * VisualizerCanvas.Height / 640f);
-                if (labelImage == null || labelImage.Size != tailPoints.Image.Size)
-                {
-                    labelImage = new IplImage(tailPoints.Image.Size, IplDepth.U8, 4);
-                }
-
-                labelImage.SetZero();
-                GL.Disable(EnableCap.Texture2D);
-                GL.Begin(PrimitiveType.Points);
-                using (var labelBitmap = new Bitmap(labelImage.Width, labelImage.Height, labelImage.WidthStep, System.Drawing.Imaging.PixelFormat.Format32bppArgb, labelImage.ImageData))
-                using (var graphics = Graphics.FromImage(labelBitmap))
-                {
-                    graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    try
-                    {
-                        for (int i = 0; i < tailPoints.Points.Length; i++)
-                        {
-                            GL.Color3(1.0, 0.0, 0.0);
-                            GL.Vertex2(Utilities.NormalizePoint(tailPoints.Points[i], tailPoints.Image.Size));
-                        }
-                    }
-                    finally
-                    {
-                        GL.End();
-                        GL.Color4(Color4.White);
-                        GL.Enable(EnableCap.Texture2D);
-                        labelTexture.Update(labelImage);
-                        labelTexture.Draw();
-                    }
-                }
-            }
+            visualizer = null;
         }
     }
 }

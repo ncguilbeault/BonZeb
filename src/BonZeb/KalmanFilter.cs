@@ -71,33 +71,34 @@ namespace BonZeb
             Acceleration = acceleration;
             AccelerationStdDev = accelerationStdDev;
 
-            double SamplingRate2 = Math.Pow(SamplingRate, 2);
-            double SamplingRate3 = Math.Pow(SamplingRate, 3);
-            double SamplingRate4 = Math.Pow(SamplingRate, 4);
+            double dt = 1.0 / samplingRate;
+            double dt2 = Math.Pow(dt, 2);
+            double dt3 = Math.Pow(dt, 3);
+            double dt4 = Math.Pow(dt, 4);
 
-            A = DenseMatrix.OfArray(new double[,] 
+            A = DenseMatrix.OfArray(new double[,]
             {
-                { 1, 0, SamplingRate, 0 },
-                { 0, 1, 0, SamplingRate },
+                { 1, 0, dt, 0 },
+                { 0, 1, 0, dt },
                 { 0, 0, 1, 0 },
                 { 0, 0, 0, 1 }
             });
 
-            B = DenseMatrix.OfArray(new double[,] 
+            B = DenseMatrix.OfArray(new double[,]
             {
-                { SamplingRate2 / 2 },
-                { SamplingRate2 / 2 },
-                { SamplingRate },
-                { SamplingRate }
+                { dt2 / 2 },
+                { dt2 / 2 },
+                { dt },
+                { dt }
             });
 
-            C = DenseMatrix.OfArray(new double[,] 
+            C = DenseMatrix.OfArray(new double[,]
             {
                 { 1, 0, 0, 0 },
                 { 0, 1, 0, 0 }
             });
 
-            Ez = DenseMatrix.OfArray(new double[,] 
+            Ez = DenseMatrix.OfArray(new double[,]
             {
                 { 1.0, 0.0 },
                 { 0.0, 1.0 }
@@ -105,12 +106,12 @@ namespace BonZeb
 
             double aVar = Math.Pow(accelerationStdDev, 2);
 
-            Ex = DenseMatrix.OfArray(new double[4, 4] 
+            Ex = DenseMatrix.OfArray(new double[4, 4]
             {
-                { SamplingRate4 / 4, 0, SamplingRate3 / 2, 0 },
-                { 0, SamplingRate4 / 4, 0, SamplingRate3 / 2 },
-                { SamplingRate3 / 2, 0, SamplingRate2, 0 },
-                { 0, SamplingRate3 / 2, 0, SamplingRate2 }
+                { dt4 / 4, 0, dt3 / 2, 0 },
+                { 0, dt4 / 4, 0, dt3 / 2 },
+                { dt3 / 2, 0, dt2, 0 },
+                { 0, dt3 / 2, 0, dt2 }
             });
 
             Ex.Multiply(aVar, result: Ex);
@@ -119,33 +120,32 @@ namespace BonZeb
             P = Ex.Clone();
         }
 
-        public void Push(double x, double y)
+        public void Predict()
         {
-            Matrix<double> Qloc = DenseMatrix.OfArray(new double[,] 
+            // Advances the state estimate by one time step.
+            Q_estimate = A.Multiply(Q_estimate).Add(B.Multiply(Acceleration));
+            P = A.Multiply(P).Multiply(A.Transpose()).Add(Ex);
+        }
+
+        public void Update(double x, double y)
+        {
+            // Updates the state estimate with a measured position.
+            Matrix<double> Qloc = DenseMatrix.OfArray(new double[,]
             {
                 { x },
                 { y }
             });
 
-            Q_estimate = Dot(A, Q_estimate).Add(B.Multiply(Acceleration));
-            P = Dot(A, Dot(P, A.Transpose())).Add(Ex);
-            Aux = Dot(C, Dot(P, C.Transpose())).Add(Ez).PseudoInverse();
-            K = Dot(P, Dot(C.Transpose(), Aux));
-            Q_estimate = Q_estimate.Add(Dot(K, Qloc.Subtract(Dot(C, Q_estimate))));
-            P = Dot(diagonal.Subtract(Dot(K, C)), P);
+            Aux = C.Multiply(P).Multiply(C.Transpose()).Add(Ez).PseudoInverse();
+            K = P.Multiply(C.Transpose()).Multiply(Aux);
+            Q_estimate = Q_estimate.Add(K.Multiply(Qloc.Subtract(C.Multiply(Q_estimate))));
+            P = diagonal.Subtract(K.Multiply(C)).Multiply(P);
         }
 
-        public Matrix<double> Dot(Matrix<double> X, Matrix<double> Y)
+        public void Push(double x, double y)
         {
-            Matrix<double> dotProduct = DenseMatrix.OfArray(new double[X.RowCount, Y.ColumnCount]);
-            for (int i = 0; i <= X.RowCount; i++)
-            {
-                for (int j = 0; j <= Y.ColumnCount; j++)
-                {
-                    dotProduct[i, j] += X.Row(i).DotProduct(Y.Column(j));
-                }
-            }
-            return dotProduct;
+            Predict();
+            Update(x, y);
         }
     }
 }
