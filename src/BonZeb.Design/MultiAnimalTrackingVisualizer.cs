@@ -22,8 +22,6 @@ namespace BonZeb.Design
         MultipleImageViewer imageViewer;
         IplImage labelImage;
         IplImageTexture labelTexture;
-        Random rnd = new Random(0);
-        List<Color> randomColors = new List<Color>();
 
         public override VisualizerCanvas VisualizerCanvas
         {
@@ -36,7 +34,6 @@ namespace BonZeb.Design
             imageViewer.PopulateMultipleImageViewer<MultiAnimalTrackingData>();
             imageViewer.MaximizeDropDownMenuWidth();
             imageViewer.SelectImageIndex(0);
-            Random rnd = new Random();
             var visualizerService = (IDialogTypeVisualizerService)provider.GetService(typeof(IDialogTypeVisualizerService));
             if (visualizerService != null)
             {
@@ -83,11 +80,6 @@ namespace BonZeb.Design
                 labelImage.SetZero();
                 GL.PointSize(5 * VisualizerCanvas.Height / 640f);
                 GL.Disable(EnableCap.Texture2D);
-                while (randomColors.Count < multiAnimalTrackingData.OrderedCentroids.Length)
-                {
-                    Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-                    randomColors.Add(randomColor);
-                }
                 using (var labelBitmap = new Bitmap(labelImage.Width, labelImage.Height, labelImage.WidthStep, System.Drawing.Imaging.PixelFormat.Format32bppArgb, labelImage.ImageData))
                 using (var graphics = Graphics.FromImage(labelBitmap))
                 {
@@ -96,7 +88,8 @@ namespace BonZeb.Design
                     {
                         for (int i = 0; i < multiAnimalTrackingData.OrderedCentroids.Length; i++)
                         {
-                            GL.Color4(randomColors[i].R, randomColors[i].G, randomColors[i].B, randomColors[i].A);
+                            Color color = Utilities.GetIdentityColor(i);
+                            GL.Color4(color.R, color.G, color.B, color.A);
                             //GL.Color4(1.0, 0.0, 0.0, 1.0);
                             GL.Begin(PrimitiveType.Points);
                             GL.Vertex2(Utilities.NormalizePoint(multiAnimalTrackingData.OrderedCentroids[i], multiAnimalTrackingData.Image.Size));
