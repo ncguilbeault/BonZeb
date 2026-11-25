@@ -7,6 +7,10 @@ $PSNativeCommandUseErrorActionPreference = $true
 
 Push-Location $PSScriptRoot
 try {
+    if (Test-Path "..\artifacts\docs") {
+        Remove-Item "..\artifacts\docs\*" -Recurse -Force
+    }
+
     $libPaths = @()
     $libPaths += Get-ChildItem "..\artifacts\bin\*\release_net4*" -Directory | Select-Object -Expand FullName
     $libPaths += "..\artifacts\package\release"
